@@ -14,7 +14,8 @@ public class MySQLCSVWriterConsumer implements Consumer<List<Object>>, Closeable
     MySQLCSVConvertor mySQLCSVConvertor = new MySQLCSVConvertor();
 
     public MySQLCSVWriterConsumer(File file) throws IOException {
-        CSVFormat format = CSVFormat.MYSQL.withNullString("\\N").withEscape('~');
+        CSVFormat format = CSVFormat.MYSQL;
+        //CSVFormat format = CSVFormat.MYSQL.withNullString("\\N").withEscape('~');
         printer = new CSVPrinter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"), format);
     }
 

@@ -184,7 +184,7 @@ public class TableOperations {
 
 
         String selectData = "select " + String.join(",", table.getColumns().stream().map(Column::getName).collect(Collectors.toList())) + " from " + table.getName();
-        selectData +=" where id=12";
+        //selectData +=" where id=12";
         try (Statement st = connection.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             st.setFetchSize(Integer.MIN_VALUE);//todo - this is just for mysql!
             ResultSet rs = st.executeQuery(selectData);
