@@ -6,6 +6,7 @@ import com.ccreanga.jdbc.model.Schema;
 import com.ccreanga.usecases.export.MySqlTablesExport;
 import org.apache.commons.cli.*;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -90,7 +91,10 @@ public class DbtoolsApplication {
             String folder = exportArgs[1];
             String overwrite = exportArgs[2];
             MySqlTablesExport mySqlTablesExport = new MySqlTablesExport();
+            long t1= System.currentTimeMillis();
             mySqlTablesExport.exportTables(dbConnection,new Schema(schema),pattern,folder,overwrite.equalsIgnoreCase("y"));
+            long t2= System.currentTimeMillis();
+            System.out.println((t2-t1)/1000);
         }
 
 

@@ -42,7 +42,7 @@ public class MySqlTablesExport {
                         tableOperations.processTableRows(connection, t, mySQLCSVWriter);
                     } catch (IOException e) {
                         if (!dumpFile.delete())
-                            System.out.println("exception occured, tying to clean the dump file but failes");
+                            System.out.println("exception occured, trying to clean the dump file but failed");
                         throw new GenericException(e);
                     } finally {
                         if (mySQLCSVWriter != null)
@@ -66,8 +66,7 @@ public class MySqlTablesExport {
 
 
     private String loadInline(Table table) {
-        //LOAD DATA INFILE 'file' INTO TABLE `table` (column1, column2, @var1) SET column3 = UNHEX(@var1)
-        StringBuilder sb = new StringBuilder("LOAD DATA INFILE " + table.getName() +".txt"+ " INTO TABLE `"+table.getName()+"` FIELDS ESCAPED BY '@' (");
+        StringBuilder sb = new StringBuilder("LOAD DATA INFILE " + table.getName() +".txt"+ " INTO TABLE `"+table.getName()+"` (");
 
         boolean found = false;
         List<Column> columns = table.getColumns();

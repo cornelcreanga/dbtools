@@ -202,7 +202,6 @@ public class TableOperations {
                         throw new DatabaseException(e);
                     }
                 }
-                System.out.println(line);
                 consumer.accept(line);
 
             }
