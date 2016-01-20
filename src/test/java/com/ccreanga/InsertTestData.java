@@ -27,22 +27,70 @@ public class InsertTestData {
             for (int i = 0; i < 1000; i++) {
                 for (int j = 0; j < 10; j++) {
                     for (int k = 0; k < 100; k++) {
-                        ps.setString(1, generateString(20));
-                        ps.setBinaryStream(2, new ByteArrayInputStream(generateBytes(300+random.nextInt(1000))));
-                        ps.setCharacterStream(3,new StringReader(generateString(300+random.nextInt(1000))));
-                        ps.setBinaryStream(4, new ByteArrayInputStream(generateBytes(300+random.nextInt(1000))));
-                        ps.setTime(5,new Time(generateDate().getTime()));
-                        ps.setTimestamp(6,new Timestamp(generateDate().getTime()));
-                        ps.setDate(7,new java.sql.Date(generateDate().getTime()));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(1,Types.VARCHAR);
+                        else
+                            ps.setString(1, generateString(20));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(2,Types.LONGVARBINARY);
+                        else
+                            ps.setBinaryStream(2, new ByteArrayInputStream(generateBytes(300+random.nextInt(1000))));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(3,Types.LONGVARCHAR);
+                        else
+                            ps.setCharacterStream(3,new StringReader(generateString(300+random.nextInt(1000))));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(4,Types.LONGVARBINARY);
+                        else
+                            ps.setBinaryStream(4, new ByteArrayInputStream(generateBytes(300+random.nextInt(1000))));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(5,Types.TIME);
+                        else
+                            ps.setTime(5,new Time(generateDate().getTime()));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(6,Types.TIMESTAMP);
+                        else
+                            ps.setTimestamp(6,new Timestamp(generateDate().getTime()));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(7,Types.DATE);
+                        else
+                            ps.setDate(7,new java.sql.Date(generateDate().getTime()));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(8,Types.TIMESTAMP);
+                        else
                         ps.setTimestamp(8,new java.sql.Timestamp(generateDate().getTime()));
-                        ps.setBigDecimal(9,new BigDecimal(10_000_000_000d*random.nextDouble()));
-                        ps.setDouble(10, Double.MAX_VALUE*random.nextDouble());
-                        ps.setFloat(11, Float.MAX_VALUE*random.nextFloat());
-                        ps.setLong(12,random.nextLong());
-                        ps.setInt(13,random.nextInt());
-                        ps.setInt(14,random.nextInt(100_000));
-                        ps.setInt(15,random.nextInt(10_000));
-                        ps.setInt(16,random.nextInt(100));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(9,Types.DECIMAL);
+                        else
+                            ps.setBigDecimal(9,new BigDecimal(10_000_000_000d*random.nextDouble()));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(10,Types.DOUBLE);
+                        else
+                            ps.setDouble(10, Double.MAX_VALUE*random.nextDouble());
+                        if (random.nextInt(100)==0)
+                            ps.setNull(11,Types.FLOAT);
+                        else
+                            ps.setFloat(11, Float.MAX_VALUE*random.nextFloat());
+                        if (random.nextInt(100)==0)
+                            ps.setNull(12,Types.BIGINT);
+                        else
+                            ps.setLong(12,random.nextLong());
+                        if (random.nextInt(100)==0)
+                            ps.setNull(13,Types.INTEGER);
+                        else
+                            ps.setInt(13,random.nextInt());
+                        if (random.nextInt(100)==0)
+                            ps.setNull(14,Types.INTEGER);
+                        else
+                            ps.setInt(14,random.nextInt(100_000));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(15,Types.INTEGER);
+                        else
+                            ps.setInt(15,random.nextInt(10_000));
+                        if (random.nextInt(100)==0)
+                            ps.setNull(16,Types.INTEGER);
+                        else
+                            ps.setInt(16,random.nextInt(100));
 
                         ps.addBatch();
                         counter++;
@@ -82,9 +130,10 @@ public class InsertTestData {
     }
 
     private static String generateString(int len){
+        Random random = new Random();
         char[] chars = "abcdefghijklmnopqrstuvwxyz\n".toCharArray();
         StringBuilder sb = new StringBuilder(len);
-        Random random = new Random();
+
         for (int i = 0; i < len; i++) {
             char c = chars[random.nextInt(chars.length)];
             sb.append(c);
