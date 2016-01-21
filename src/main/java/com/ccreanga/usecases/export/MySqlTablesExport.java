@@ -49,7 +49,7 @@ public class MySqlTablesExport {
                             mySQLCSVWriter.close();
                     }
                     try {
-                        opWriter.write(loadInline(t));
+                        opWriter.write(loadInline(t)+"\n");
                     } catch (Exception e) {
                         throw new GenericException(e);
                     }
@@ -82,14 +82,16 @@ public class MySqlTablesExport {
         sb.append(")");
         if (found) {
             sb.append(" SET ");
-        }
-        for (Column c : columns) {
-            if (binaryType(c)) {
-                sb.append(c.getName()).append("=UNHEX(@").append(c.getName()).append("),");
+
+            for (Column c : columns) {
+                if (binaryType(c)) {
+                    sb.append(c.getName()).append("=UNHEX(@").append(c.getName()).append("),");
+                }
             }
+            sb.deleteCharAt(sb.length() - 1);
         }
-        sb.deleteCharAt(sb.length()-1);
         sb.append(";");
+
         return sb.toString();
     }
 

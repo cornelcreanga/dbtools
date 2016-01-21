@@ -1,8 +1,6 @@
 package com.ccreanga;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.*;
@@ -13,7 +11,39 @@ import java.util.Random;
 
 public class InsertTestData {
 
-    public static void insert(Connection c) throws Exception {
+    public static void insertIntoParentChild(Connection c) throws Exception {
+        Statement stmt = null;
+        long counter = 0;
+        long t1 = System.currentTimeMillis(), t2;
+        try {
+            stmt = c.createStatement();
+                    //c.prepareStatement("INSERT INTO parent(name) VALUES(?)");
+            for (int k = 0; k < 100; k++) {
+                stmt.executeUpdate("INSERT INTO parent(name) VALUES('"+generateString(20)+"')",Statement.RETURN_GENERATED_KEYS);
+                ResultSet rs = stmt.getGeneratedKeys();
+                if (rs.next()){
+                    int id=rs.getInt(1);
+                    stmt.executeUpdate("INSERT INTO child(parent_id,name) VALUES("+id+",'"+generateString(20)+"')",Statement.RETURN_GENERATED_KEYS);
+                }
+                rs.close();
+            }
+
+            c.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (e.getNextException() != null) {
+                e.getNextException().printStackTrace();
+            }
+            throw e;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+
+    }
+
+    public static void insertIntoTestTypes(Connection c) throws Exception {
         PreparedStatement ps = null;
         long counter = 0;
         long t1 = System.currentTimeMillis(), t2;
@@ -24,7 +54,7 @@ public class InsertTestData {
                     " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             Random random = new Random();
             int x = 1;
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 1; i++) {
                 for (int j = 0; j < 10; j++) {
                     for (int k = 0; k < 100; k++) {
                         if (random.nextInt(100)==0)
@@ -156,7 +186,8 @@ public class InsertTestData {
         Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/test?user=root&password=root&zeroDateTimeBehavior=convertToNull");
         connection.setAutoCommit(false);
 
-        insert(connection);
+        insertIntoTestTypes(connection);
+        insertIntoParentChild(connection);
 
     }
 

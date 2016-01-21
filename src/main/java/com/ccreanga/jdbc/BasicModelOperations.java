@@ -14,7 +14,9 @@ public class BasicModelOperations {
     public List<Schema> getSchemas(DbConnection connection) {
         List<Schema> schemas = new ArrayList<>(16);
         try (ResultSet rs = connection.meta().getCatalogs()) {
-            schemas.add(new Schema(rs.getString(1)));
+            while(rs.next()) {
+                schemas.add(new Schema(rs.getString(1)));
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -24,20 +26,21 @@ public class BasicModelOperations {
     public List<Table> getTables(DbConnection connection, String schema) {
         List<Table> tables = new ArrayList<>(16);
         try (ResultSet rs = connection.meta().getTables(schema, "%", "%", new String[]{"TABLE"})) {
-            rs.next();
-            String tableName = rs.getString(3);
-            Table table = new Table(
-                    rs.getString(1),
-                    tableName,
-                    rs.getString(4),
-                    rs.getString(5),
-                    getTablePrimaryKeys(connection, schema, tableName),
-                    getColumns(connection, schema, tableName),
-                    getTableImportedKeys(connection, schema, tableName),
-                    getTableExportedKeys(connection, schema, tableName),
-                    null
-            );
-            tables.add(table);
+            while(rs.next()) {
+                String tableName = rs.getString(3);
+                Table table = new Table(
+                        rs.getString(1),
+                        tableName,
+                        rs.getString(4),
+                        rs.getString(5),
+                        getTablePrimaryKeys(connection, schema, tableName),
+                        getColumns(connection, schema, tableName),
+                        getTableImportedKeys(connection, schema, tableName),
+                        getTableExportedKeys(connection, schema, tableName),
+                        null
+                );
+                tables.add(table);
+            }
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
