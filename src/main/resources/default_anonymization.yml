@@ -1,0 +1,15 @@
+anonymize: yes
+types:
+  java.sql.Date: com.ccreanga.anonymizer.DateAnonymizer
+  java.sql.Time: com.ccreanga.anonymizer.TimeAnonymizer
+  java.sql.Timestamp: com.ccreanga.anonymizer.TimestampAnonymizer
+  java.lang.String: com.ccreanga.anonymizer.StringAnonymizer
+  byte[]: com.ccreanga.anonymizer.ByteArrayAnonymizer
+  java.lang.Double: com.ccreanga.anonymizer.DoubleAnonymizer
+  java.lang.Float: com.ccreanga.anonymizer.DoubleAnonymizer
+  java.lang.Long: com.ccreanga.anonymizer.LongAnonymizer
+  java.lang.Integer: com.ccreanga.anonymizer.LongAnonymizer
+  java.lang.Short: com.ccreanga.anonymizer.LongAnonymizer
+  java.lang.Byte: com.ccreanga.anonymizer.LongAnonymizer
+  java.math.BigDecimal: com.ccreanga.anonymizer.DoubleAnonymizer
+

@@ -2,6 +2,7 @@ out
 target
 *.iml
 .idea
+.mvn
 
 # Compiled source #
 ###################

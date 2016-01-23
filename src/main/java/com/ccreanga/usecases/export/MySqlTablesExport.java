@@ -36,6 +36,7 @@ public class MySqlTablesExport {
                         System.out.println("overriding file:" + dumpFile.getName());
                     }
                     TableOperations tableOperations = new TableOperations();
+
                     MySQLCSVWriterConsumer mySQLCSVWriter = null;
                     try {
                         mySQLCSVWriter = new MySQLCSVWriterConsumer(dumpFile);

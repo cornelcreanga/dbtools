@@ -39,8 +39,8 @@ public class DbtoolsApplication {
 
         Option exportOption = Option.builder("e")
                 .valueSeparator(' ')
-                .numberOfArgs(3)
-                .argName("pattern>  <folder> <overwrite")
+                .numberOfArgs(4)
+                .argName("pattern>  <folder> <overwrite> <anonymize")
                 .longOpt("export")
                 .desc("Exports the table matching the specified pattern. ")
                 .build();
@@ -93,7 +93,7 @@ public class DbtoolsApplication {
 
         if (cmd.hasOption("e")){
             String[] exportArgs = cmd.getOptionValues("e");
-            if ((exportArgs==null) || (exportArgs.length!=3)){
+            if ((exportArgs==null) || (exportArgs.length!=4)){
                 System.out.println("export parameters are mandatory");
                 formatter.printHelp( "dbtools", options );
                 System.exit(1);
@@ -102,6 +102,7 @@ public class DbtoolsApplication {
             String pattern = exportArgs[0];
             String folder = exportArgs[1];
             String overwrite = exportArgs[2];
+            String anonymizationRules = exportArgs[3];
             MySqlTablesExport mySqlTablesExport = new MySqlTablesExport();
             long t1= System.currentTimeMillis();
             mySqlTablesExport.exportTables(dbConnection,new Schema(schema),pattern,folder,overwrite.equalsIgnoreCase("y"));

@@ -1,7 +1,8 @@
-package com.ccreanga.anonymizer;
+package com.ccreanga.random;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -16,13 +17,13 @@ public class RandomNameGenerator {
 
     private String fileName;
 
-    public RandomNameGenerator(String fileName) throws Exception{
+    public RandomNameGenerator(String fileName) throws IOException {
         this.fileName = fileName;
         refresh();
     }
 
 
-    public void refresh() throws Exception{
+    private void refresh() throws IOException {
 
         try(BufferedReader reader = new BufferedReader(new FileReader(fileName))){
             String line;
@@ -85,16 +86,16 @@ public class RandomNameGenerator {
     }
 
     private boolean expectsVowel(String s){
-        return s.substring(1).contains("+v");
+        return s.indexOf("+v",1)>-1;
     }
     private boolean expectsConsonant(String s){
-        return s.substring(1).contains("+c");
+        return s.indexOf("+c",1)>-1;
     }
     private boolean hatesPreviousVowels(String s){
-        return s.substring(1).contains("-c");
+        return s.indexOf("-c",1)>-1;
     }
     private boolean hatesPreviousConsonants(String s){
-        return s.substring(1).contains("-v");
+        return s.indexOf("-v",1)>-1;
     }
 
     private String pureSyl(String s){
@@ -132,9 +133,10 @@ public class RandomNameGenerator {
     }
 
     public String compose(int syls){
-        if(syls < 1) throw new RuntimeException("no of sylabs should be greater than 1");
+        if(syls < 1)
+            throw new RuntimeException("no of sylabs should be greater than 1");
         if(syls > 2 && mid.length == 0)
-            throw new RuntimeException("can't compose a name with more than 3 parts witohut middle parts, which requires middle parts");
+            throw new RuntimeException("can't compose a name with more than 3 parts without middle parts, which requires middle parts");
         int expecting = 0; // 1 for Vowel, 2 for consonant
         int last = 0; // 1 for Vowel, 2 for consonant
         int a = (int)(Math.random() * pre.length);
@@ -157,11 +159,13 @@ public class RandomNameGenerator {
         else{
             if(expectsVowel(pre[a])){
                 expecting = 1;
-                if(!containsVocFirst(sur)) throw new RuntimeException("Expecting \"suffix\" part starting with vowel but there is none");
+                if(!containsVocFirst(sur))
+                    throw new RuntimeException("Expecting \"suffix\" part starting with vowel but there is none");
             }
             if(expectsConsonant(pre[a])){
                 expecting = 2;
-                if(!containsConsFirst(sur)) throw new RuntimeException("Expecting \"suffix\" part starting with consonant but there is none");
+                if(!containsConsFirst(sur))
+                    throw new RuntimeException("Expecting \"suffix\" part starting with consonant but there is none");
             }
         }
         if(vowelLast(pureSyl(pre[a])) && !allowVocs(mid))
@@ -191,22 +195,28 @@ public class RandomNameGenerator {
             }
             if(expectsConsonant(mid[b[i]])){
                 expecting = 2;
-                if(i < b.length-3 && !containsConsFirst(mid)) throw new RuntimeException("Expecting \"middle\" part starting with consonant but there is none");
-                if(i == b.length-3 && !containsConsFirst(sur)) throw new RuntimeException("Expecting \"suffix\" part starting with consonant but there is none");
+                if(i < b.length-3 && !containsConsFirst(mid))
+                    throw new RuntimeException("Expecting \"middle\" part starting with consonant but there is none");
+                if(i == b.length-3 && !containsConsFirst(sur))
+                    throw new RuntimeException("Expecting \"suffix\" part starting with consonant but there is none");
             }
-            if(vowelLast(pureSyl(mid[b[i]])) && !allowVocs(mid) && syls > 3) throw new RuntimeException("Expecting \"middle\" part that allows last character of last syllable to be a Vowel, " +
+            if(vowelLast(pureSyl(mid[b[i]])) && !allowVocs(mid) && syls > 3)
+                throw new RuntimeException("Expecting \"middle\" part that allows last character of last syllable to be a Vowel, " +
                     "but there is none. the part used, was : \""+mid[b[i]]+"\", which " +
                     "means there should be a part available, that has \"-v\" requirement or no requirements for previous syllables at all.");
 
-            if(consonantLast(pureSyl(mid[b[i]])) && !allowCons(mid) && syls > 3) throw new RuntimeException("Expecting \"middle\" part that allows last character of last syllable to be a consonant, " +
+            if(consonantLast(pureSyl(mid[b[i]])) && !allowCons(mid) && syls > 3)
+                throw new RuntimeException("Expecting \"middle\" part that allows last character of last syllable to be a consonant, " +
                     "but there is none. the part used, was : \""+mid[b[i]]+"\", which " +
                     "means there should be a part available, that has \"-c\" requirement or no requirements for previous syllables at all.");
             if(i == b.length-3){
-                if(vowelLast(pureSyl(mid[b[i]])) && !allowVocs(sur)) throw new RuntimeException("Expecting \"suffix\" part that allows last character of last syllable to be a Vowel, " +
+                if(vowelLast(pureSyl(mid[b[i]])) && !allowVocs(sur))
+                    throw new RuntimeException("Expecting \"suffix\" part that allows last character of last syllable to be a Vowel, " +
                         "but there is none. the part used, was : \""+mid[b[i]]+"\", which " +
                         "means there should be a suffix available, that has \"-v\" requirement or no requirements for previous syllables at all.");
 
-                if(consonantLast(pureSyl(mid[b[i]])) && !allowCons(sur)) throw new RuntimeException("Expecting \"suffix\" part that allows last character of last syllable to be a consonant, " +
+                if(consonantLast(pureSyl(mid[b[i]])) && !allowCons(sur))
+                    throw new RuntimeException("Expecting \"suffix\" part that allows last character of last syllable to be a consonant, " +
                         "but there is none. the part used, was : \""+mid[b[i]]+"\", which " +
                         "means there should be a suffix available, that has \"-c\" requirement or no requirements for previous syllables at all.");
             }
@@ -218,8 +228,10 @@ public class RandomNameGenerator {
         do{
             c = (int)(Math.random() * sur.length);
         }
-        while(expecting == 1 && !vowelFirst(pureSyl(sur[c])) || expecting == 2 && !consonantFirst(pureSyl(sur[c]))
-                || last == 1 && hatesPreviousVowels(sur[c]) || last == 2 && hatesPreviousConsonants(sur[c]));
+        while(expecting == 1 && !vowelFirst(pureSyl(sur[c])) ||
+                expecting == 2 && !consonantFirst(pureSyl(sur[c])) ||
+                last == 1 && hatesPreviousVowels(sur[c]) ||
+                last == 2 && hatesPreviousConsonants(sur[c]));
 
         StringBuilder sb = new StringBuilder();
         String first = pureSyl(pre[a]);

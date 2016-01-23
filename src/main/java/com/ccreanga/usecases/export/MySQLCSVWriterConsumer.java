@@ -25,7 +25,7 @@ public class MySQLCSVWriterConsumer implements Consumer<List<Object>>, Closeable
             }
             printer.println();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 

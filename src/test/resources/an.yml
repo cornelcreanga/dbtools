@@ -1,0 +1,20 @@
+---
+anonymize: yes
+data:
+  test_types:
+      - field: c_varchar
+        type: com.ccreanga.anonymizer.NameAnonymizer
+        values:
+          syl: 3
+          rememberValues: true
+      - field: c_tiny
+        type: com.ccreanga.anonymizer.LongAnonymizer
+        values:
+          rangeMin: 0
+          rangeMax: 100
+  parent:
+      name: com.ccreanga.anonymizer.NameAnonymizer
+  child:
+      name: com.ccreanga.anonymizer.NameAnonymizer
+...
+
