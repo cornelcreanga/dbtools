@@ -7,12 +7,22 @@ import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
 import com.ccreanga.jdbc.model.Table;
+import com.mysql.fabric.xmlrpc.base.Data;
 
 import java.io.*;
 import java.sql.Types;
 import java.util.List;
 
 public class MySqlTablesExport {
+
+    private DataAnonymizer anonymizer;
+
+    public MySqlTablesExport() {
+    }
+
+    public MySqlTablesExport(DataAnonymizer anonymizer) {
+        this.anonymizer = anonymizer;
+    }
 
     public void exportTables(DbConnection connection, Schema schema, String tablePattern, String folderName, boolean override) {
         BasicModelOperations model = new BasicModelOperations();
@@ -38,9 +48,11 @@ public class MySqlTablesExport {
                     TableOperations tableOperations = new TableOperations();
 
                     MySQLCSVWriterConsumer mySQLCSVWriter = null;
+                    AnonymizerConsumer anonymizerConsumer = new AnonymizerConsumer(anonymizer,t);
                     try {
+
                         mySQLCSVWriter = new MySQLCSVWriterConsumer(dumpFile);
-                        tableOperations.processTableRows(connection, t, mySQLCSVWriter);
+                        tableOperations.processTableRows(connection, t, anonymizerConsumer.andThen(mySQLCSVWriter));
                     } catch (IOException e) {
                         if (!dumpFile.delete())
                             System.out.println("exception occured, trying to clean the dump file but failed");

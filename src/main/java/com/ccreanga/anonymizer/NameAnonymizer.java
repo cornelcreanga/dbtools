@@ -6,7 +6,7 @@ import com.ccreanga.random.RandomNameGenerator;
 import java.io.IOException;
 import java.net.URL;
 
-public class NameAnonymizer {
+public class NameAnonymizer implements Anonymizer{
 
     private static RandomNameGenerator generator;
 
@@ -24,7 +24,7 @@ public class NameAnonymizer {
     private int sylNumber;
     private boolean rememberValues;
 
-    public String anonymize(String original){
+    public Object anonymize(Object original){
         return generator.compose(sylNumber);
     }
 

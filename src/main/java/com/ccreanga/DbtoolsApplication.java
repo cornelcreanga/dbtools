@@ -3,12 +3,14 @@ package com.ccreanga;
 import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
+import com.ccreanga.usecases.export.DataAnonymizer;
 import com.ccreanga.usecases.export.MySqlTablesExport;
 import org.apache.commons.cli.*;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -103,7 +105,21 @@ public class DbtoolsApplication {
             String folder = exportArgs[1];
             String overwrite = exportArgs[2];
             String anonymizationRules = exportArgs[3];
-            MySqlTablesExport mySqlTablesExport = new MySqlTablesExport();
+            DataAnonymizer dataAnonymizer = null;
+
+
+            if (anonymizationRules!=null){
+                try {
+                    dataAnonymizer = new DataAnonymizer(anonymizationRules);
+                } catch (FileNotFoundException e) {
+                    System.out.println("canot found the file:"+anonymizationRules);
+                }
+            }
+
+            MySqlTablesExport mySqlTablesExport = dataAnonymizer==null?
+                    new MySqlTablesExport():
+                    new MySqlTablesExport(dataAnonymizer);
+
             long t1= System.currentTimeMillis();
             mySqlTablesExport.exportTables(dbConnection,new Schema(schema),pattern,folder,overwrite.equalsIgnoreCase("y"));
             long t2= System.currentTimeMillis();

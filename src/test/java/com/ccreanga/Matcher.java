@@ -57,6 +57,7 @@ public class Matcher {
         InputStream input = new FileInputStream(new File(url.getFile()));
         Yaml yaml = new Yaml();
         Map<String, Object> data = (Map<String, Object>) yaml.load(input);
+        System.out.println(data.get("anonymize"));
         HashMap tables = (HashMap) data.get("data");
 
         TablesOption tablesOption = new TablesOption(tables);
