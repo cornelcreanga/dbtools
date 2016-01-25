@@ -21,20 +21,23 @@ public class NameAnonymizer implements Anonymizer{
         }
     }
 
-    private int sylNumber;
+    private int sylNumber = 2;
+    private int wordNumber = 1;
     private boolean rememberValues;
 
     public Object anonymize(Object original){
-        return generator.compose(sylNumber);
+        if (wordNumber==1)//optimization
+            return generator.compose(sylNumber);
+        StringBuilder sb = new StringBuilder();
+        for(int i= 0;i<wordNumber;i++){
+            sb.append(generator.compose(sylNumber));
+            if (i!=(wordNumber-1))
+                sb.append(" ");
+        }
+        return sb.toString();
     }
 
     public NameAnonymizer() {
-        this(2,false);
-    }
-
-    public NameAnonymizer(int sylNumber, boolean rememberValues) {
-        this.sylNumber = sylNumber;
-        this.rememberValues = rememberValues;
     }
 
     public void setSylNumber(int sylNumber) {
@@ -43,5 +46,9 @@ public class NameAnonymizer implements Anonymizer{
 
     public void setRememberValues(boolean rememberValues) {
         this.rememberValues = rememberValues;
+    }
+
+    public void setWordNumber(int wordNumber) {
+        this.wordNumber = wordNumber;
     }
 }

@@ -13,8 +13,16 @@ data:
           rangeMin: 0
           rangeMax: 100
   parent:
-      name: com.ccreanga.anonymizer.NameAnonymizer
+      - field: name
+        type: com.ccreanga.anonymizer.NameAnonymizer
+        values:
+          syl: 3
+          rememberValues: true
   child:
-      name: com.ccreanga.anonymizer.NameAnonymizer
+      - field: name
+        type: com.ccreanga.anonymizer.NameAnonymizer
+        values:
+          syl: 3
+          rememberValues: true
 ...
 

@@ -109,11 +109,7 @@ public class DbtoolsApplication {
 
 
             if (anonymizationRules!=null){
-                try {
-                    dataAnonymizer = new DataAnonymizer(anonymizationRules);
-                } catch (FileNotFoundException e) {
-                    System.out.println("canot found the file:"+anonymizationRules);
-                }
+                dataAnonymizer = new DataAnonymizer(anonymizationRules);
             }
 
             MySqlTablesExport mySqlTablesExport = dataAnonymizer==null?

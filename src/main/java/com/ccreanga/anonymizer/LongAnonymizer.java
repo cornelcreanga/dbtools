@@ -2,7 +2,7 @@ package com.ccreanga.anonymizer;
 
 import java.util.Random;
 
-public class LongAnonymizer {
+public class LongAnonymizer implements Anonymizer{
 
     private long rangeMin;
     private long rangeMax;
@@ -16,17 +16,18 @@ public class LongAnonymizer {
         this.rangeMax = rangeMax;
     }
 
-    public Long anonymize(Number original){
-        Random r = new Random();
-        return (long)(rangeMin + (rangeMax - rangeMin) * r.nextDouble());
-    }
-
-
     public void setRangeMin(long rangeMin) {
         this.rangeMin = rangeMin;
     }
 
     public void setRangeMax(long rangeMax) {
         this.rangeMax = rangeMax;
+    }
+
+    @Override
+    public Object anonymize(Object original) {
+        Random r = new Random();
+        return (long)(rangeMin + (rangeMax - rangeMin) * r.nextDouble());//todo - prevent overflow
+
     }
 }

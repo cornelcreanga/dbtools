@@ -1,20 +1,31 @@
 package com.ccreanga.anonymizer;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
-public class TimestampAnonymizer {
+public class TimestampAnonymizer implements Anonymizer{
 
-    public Timestamp anonymize(Timestamp original, int secondsNegDeviation, int secondsPosDeviation){
+    private int secondsNegDeviation = 1000;
+    private int secondsPosDeviation = 1000;
+
+    public TimestampAnonymizer() {
+    }
+
+    public TimestampAnonymizer(int secondsNegDeviation, int secondsPosDeviation) {
+        this.secondsNegDeviation = secondsNegDeviation;
+        this.secondsPosDeviation = secondsPosDeviation;
+    }
+
+    @Override
+    public Object anonymize(Object original) {
         Random r = new Random();
         int days = r.nextInt(secondsNegDeviation+secondsPosDeviation);
         Calendar calendar = GregorianCalendar.getInstance();
-        calendar.setTime(original);
-        calendar.add(Calendar.DAY_OF_YEAR,days-secondsNegDeviation);
-        return new Timestamp(calendar.getTimeInMillis());
+        calendar.setTime((Date)original);
+        calendar.add(Calendar.SECOND,days-secondsNegDeviation);
+        return new Date(calendar.getTimeInMillis());
     }
-
-
 }
