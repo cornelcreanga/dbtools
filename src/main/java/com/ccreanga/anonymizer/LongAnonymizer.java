@@ -4,17 +4,8 @@ import java.util.Random;
 
 public class LongAnonymizer implements Anonymizer{
 
-    private long rangeMin;
-    private long rangeMax;
-
-    public LongAnonymizer() {
-        this(Integer.MIN_VALUE,Integer.MAX_VALUE);
-    }
-
-    public LongAnonymizer(long rangeMin, long rangeMax) {
-        this.rangeMin = rangeMin;
-        this.rangeMax = rangeMax;
-    }
+    private long rangeMin = Long.MIN_VALUE;
+    private long rangeMax = Long.MAX_VALUE;
 
     public void setRangeMin(long rangeMin) {
         this.rangeMin = rangeMin;

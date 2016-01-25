@@ -13,11 +13,6 @@ public class DateAnonymizer implements Anonymizer{
     public DateAnonymizer() {
     }
 
-    public DateAnonymizer(int daysNegDeviation, int daysPosDeviation) {
-        this.daysNegDeviation = daysNegDeviation;
-        this.daysPosDeviation = daysPosDeviation;
-    }
-
     @Override
     public Object anonymize(Object original) {
         Random r = new Random();
@@ -26,5 +21,13 @@ public class DateAnonymizer implements Anonymizer{
         calendar.setTime((Date)original);
         calendar.add(Calendar.DAY_OF_YEAR,days-daysNegDeviation);
         return new Date(calendar.getTimeInMillis());
+    }
+
+    public void setDaysNegDeviation(int daysNegDeviation) {
+        this.daysNegDeviation = daysNegDeviation;
+    }
+
+    public void setDaysPosDeviation(int daysPosDeviation) {
+        this.daysPosDeviation = daysPosDeviation;
     }
 }

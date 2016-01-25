@@ -4,17 +4,8 @@ import java.util.Random;
 
 public class DoubleAnonymizer implements Anonymizer{
 
-    private double rangeMin;
-    private double rangeMax;
-
-    public DoubleAnonymizer() {
-        this(Double.MIN_VALUE,Double.MAX_VALUE);
-    }
-
-    public DoubleAnonymizer(double rangeMin, double rangeMax) {
-        this.rangeMin = rangeMin;
-        this.rangeMax = rangeMax;
-    }
+    private double rangeMin = Double.MIN_VALUE;
+    private double rangeMax = Double.MAX_VALUE;
 
     public void setRangeMin(double rangeMin) {
         this.rangeMin = rangeMin;

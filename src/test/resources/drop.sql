@@ -1,3 +1,3 @@
-drop table test_types if exists;
-drop table child if exists;
-drop table parent if exists;
+drop table if exists test_types;
+drop table if exists  child;
+drop table if exists parent;

@@ -11,14 +11,6 @@ public class TimeAnonymizer implements Anonymizer{
     private int secondsNegDeviation = 1000;
     private int secondsPosDeviation = 1000;
 
-    public TimeAnonymizer() {
-    }
-
-    public TimeAnonymizer(int secondsNegDeviation, int secondsPosDeviation) {
-        this.secondsNegDeviation = secondsNegDeviation;
-        this.secondsPosDeviation = secondsPosDeviation;
-    }
-
     @Override
     public Object anonymize(Object original) {
         Random r = new Random();
@@ -27,5 +19,13 @@ public class TimeAnonymizer implements Anonymizer{
         calendar.setTime((Date)original);
         calendar.add(Calendar.SECOND,days-secondsNegDeviation);
         return new Date(calendar.getTimeInMillis());
+    }
+
+    public void setSecondsNegDeviation(int secondsNegDeviation) {
+        this.secondsNegDeviation = secondsNegDeviation;
+    }
+
+    public void setSecondsPosDeviation(int secondsPosDeviation) {
+        this.secondsPosDeviation = secondsPosDeviation;
     }
 }

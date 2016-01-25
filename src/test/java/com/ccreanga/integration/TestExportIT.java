@@ -48,7 +48,7 @@ public class TestExportIT {
 
         TestHelper.dropTables(connection);
         TestHelper.createTables(connection);
-        TestHelper.insertTestData(connection,1000);
+        TestHelper.insertTestData(connection,100);
 
     }
 

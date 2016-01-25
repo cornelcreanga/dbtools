@@ -53,9 +53,9 @@ public class TestHelper {
 
     public static void createTables(Connection connection) {
         ScriptRunner scriptRunner = new ScriptRunner(connection);
-        URL file = Thread.currentThread().getContextClassLoader().getResource("insert.sql");
+        URL file = Thread.currentThread().getContextClassLoader().getResource("create.sql");
         if (file == null)
-            throw new RuntimeException("cannot find drop.sql");
+            throw new RuntimeException("cannot find create.sql");
         try {
             scriptRunner.runScript(new FileReader(file.getFile()));
         } catch (FileNotFoundException e) {
@@ -85,7 +85,7 @@ public class TestHelper {
         }
 
 
-        counter = 0;
+        counter = 1;
         long t1 = System.currentTimeMillis(), t2;
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO test_types(c_varchar,c_varbinary,c_text,c_blob,c_time,c_timestamp,c_date,c_datetime," +
@@ -114,19 +114,19 @@ public class TestHelper {
                 if (random.nextInt(100) == 0)
                     ps.setNull(5, Types.TIME);
                 else
-                    ps.setTime(5, new Time(generateDate().getTime()));
+                    ps.setTime(5, new Time(generateDate()));
                 if (random.nextInt(100) == 0)
                     ps.setNull(6, Types.TIMESTAMP);
                 else
-                    ps.setTimestamp(6, new Timestamp(generateDate().getTime()));
+                    ps.setTimestamp(6, new Timestamp(generateDate()));
                 if (random.nextInt(100) == 0)
                     ps.setNull(7, Types.DATE);
                 else
-                    ps.setDate(7, new java.sql.Date(generateDate().getTime()));
+                    ps.setDate(7, new java.sql.Date(generateDate()));
                 if (random.nextInt(100) == 0)
                     ps.setNull(8, Types.TIMESTAMP);
                 else
-                    ps.setTimestamp(8, new java.sql.Timestamp(generateDate().getTime()));
+                    ps.setTimestamp(8, new java.sql.Timestamp(generateDate()));
                 if (random.nextInt(100) == 0)
                     ps.setNull(9, Types.DECIMAL);
                 else
@@ -203,14 +203,14 @@ public class TestHelper {
         return sb.toString();
     }
 
-    private static Date generateDate() {
+    private static long generateDate() {
         Calendar gc = new GregorianCalendar();
         gc.setTime(new Date());
         int year = randBetween(1975, 2010);
         gc.set(Calendar.YEAR, year);
         int dayOfYear = randBetween(1, gc.getActualMaximum(Calendar.DAY_OF_YEAR));
         gc.set(Calendar.DAY_OF_YEAR, dayOfYear);
-        return gc.getTime();
+        return gc.getTime().getTime();
     }
 
 
