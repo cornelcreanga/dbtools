@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class TableOperations {
 
+    //https://dev.mysql.com/doc/connector-j/en/connector-j-reference-type-conversions.html
     public static Object readValue(ResultSet rs, int pos, int type) throws Exception {
 
         switch (type) {

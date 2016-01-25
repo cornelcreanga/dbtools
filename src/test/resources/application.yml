@@ -1,0 +1,7 @@
+testDatasource:
+  user: root
+  passwdord: root
+  schema: test
+  server: jdbc:mysql://127.0.0.1:3306
+  db: MYSQL
+
