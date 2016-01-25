@@ -65,7 +65,7 @@ public class TestHelper {
 
     public static void insertTestData(Connection connection, int rows) {
 
-        long counter = 0;
+        long counter = 1;
         try(Statement stmt = connection.createStatement()) {
 
             for (int k = 0; k < rows; k++) {
@@ -77,8 +77,9 @@ public class TestHelper {
                         stmt.executeUpdate("INSERT INTO child(parent_id,name) VALUES("+id+",'"+name + " " + generator.compose(2)+"')",Statement.RETURN_GENERATED_KEYS);
                     }
                 }
-                if (counter++==10000)
+                if (counter%10000==0)
                     connection.commit();
+                counter++;
             }
         } catch (SQLException e) {
             throw new RuntimeSqlException(e);

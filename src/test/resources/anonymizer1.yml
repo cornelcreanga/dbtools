@@ -1,0 +1,43 @@
+---
+anonymize: yes
+data:
+  test_types:
+      - field: c_varchar
+        type: com.ccreanga.anonymizer.NameAnonymizer
+        values:
+          sylNumber: 3
+          rememberValues: true
+      - field: c_varbinary
+        type: com.ccreanga.anonymizer.ByteArrayAnonymizer
+        values:
+          count: 350
+      - field: c_time
+        type: com.ccreanga.anonymizer.TimeAnonymizer
+        values:
+          secondsNegDeviation: 10000
+          secondsPosDeviation: 10000
+      - field: c_timestamp
+        type: com.ccreanga.anonymizer.TimestampAnonymizer
+      - field: c_date
+        type: com.ccreanga.anonymizer.DateAnonymizer
+      - field: c_datetime
+        type: com.ccreanga.anonymizer.TimestampAnonymizer
+      - field: c_tiny
+        type: com.ccreanga.anonymizer.LongAnonymizer
+        values:
+          rangeMin: 0
+          rangeMax: 100
+  parent:
+      - field: name
+        type: com.ccreanga.anonymizer.NameAnonymizer
+        values:
+          sylNumber: 3
+          rememberValues: true
+  child:
+      - field: name
+        type: com.ccreanga.anonymizer.NameAnonymizer
+        values:
+          sylNumber: 3
+          rememberValues: true
+...
+

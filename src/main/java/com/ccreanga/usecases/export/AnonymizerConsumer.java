@@ -32,7 +32,8 @@ public class AnonymizerConsumer implements Consumer<List<Object>> {
                 if (optional.isPresent()){
                     Anonymizer anonymizer = optional.get();
                     Object original = objects.get(index);
-                    objects.set(index,anonymizer.anonymize(original));
+                    if (original!=null)
+                        objects.set(index,anonymizer.anonymize(original));
                 }
             }
 

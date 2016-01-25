@@ -51,4 +51,16 @@ public class NameAnonymizer implements Anonymizer{
     public void setWordNumber(int wordNumber) {
         this.wordNumber = wordNumber;
     }
+
+    public int getSylNumber() {
+        return sylNumber;
+    }
+
+    public int getWordNumber() {
+        return wordNumber;
+    }
+
+    public boolean isRememberValues() {
+        return rememberValues;
+    }
 }

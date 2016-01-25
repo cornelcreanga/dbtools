@@ -20,14 +20,19 @@ public class DataAnonymizer{
 
     public DataAnonymizer(String rules){
         InputStream input = null;
+        File ruleFile = new File(rules);
+        if (!ruleFile.exists()){
+            throw new RuntimeException("cannot find the file:"+rules);
+        }
         try {
             input = new FileInputStream(new File(rules));
         } catch (FileNotFoundException e) {
             System.out.println("cannot found file:"+rules);
         }
-        Yaml yaml = new Yaml();
 
+        Yaml yaml = new Yaml();
         Map<String, Object> data = (Map<String, Object>) yaml.load(input);
+        anonymize = (Boolean)data.get("anonymize");
         HashMap<String,List<HashMap>> tables = (HashMap) data.get("data");
 
         Set<String> tableKeys = tables.keySet();
@@ -48,9 +53,11 @@ public class DataAnonymizer{
                 Anonymizer processor = null;
                 try {
                     processor = (Anonymizer) clazz.newInstance();
-                    Set<String> keys = values.keySet();
-                    for (String next : keys) {
-                        BeanUtils.setProperty(processor,next,values.get(next));
+                    if (values!=null) {
+                        Set<String> keys = values.keySet();
+                        for (String next : keys) {
+                            BeanUtils.setProperty(processor, next, values.get(next));
+                        }
                     }
 
                 } catch (InstantiationException  | IllegalAccessException | InvocationTargetException e) {
