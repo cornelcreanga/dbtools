@@ -41,11 +41,20 @@ public class DbtoolsApplication {
 
         Option exportOption = Option.builder("e")
                 .valueSeparator(' ')
-                .numberOfArgs(4)
-                .argName("pattern>  <folder> <overwrite> <anonymize")
+                .numberOfArgs(3)
+                .argName("pattern>  <folder> <overwrite")
                 .longOpt("export")
                 .desc("Exports the table matching the specified pattern. ")
                 .build();
+
+        Option anonymizeOption = Option.builder("an")
+                .valueSeparator(' ')
+                .numberOfArgs(1)
+                .argName("<anonymize_rules>")
+                .longOpt("an")
+                .desc("File containing anonymization rules. It makes sense only on the export context")
+                .build();
+
 
 
         Options options = new Options();
@@ -74,7 +83,7 @@ public class DbtoolsApplication {
                     System.exit(1);
                 }
             }
-            password = "root".toCharArray();//todo
+            password = "c0rn3lic@".toCharArray();//todo
             //todo - for the moment only MYSQL
             try {
                 Class.forName("com.mysql.jdbc.Driver");
@@ -95,7 +104,7 @@ public class DbtoolsApplication {
 
         if (cmd.hasOption("e")){
             String[] exportArgs = cmd.getOptionValues("e");
-            if ((exportArgs==null) || (exportArgs.length!=4)){
+            if ((exportArgs==null) || (exportArgs.length!=3)){
                 System.out.println("export parameters are mandatory");
                 formatter.printHelp( "dbtools", options );
                 System.exit(1);
@@ -104,12 +113,14 @@ public class DbtoolsApplication {
             String pattern = exportArgs[0];
             String folder = exportArgs[1];
             String overwrite = exportArgs[2];
-            String anonymizationRules = exportArgs[3];
+
             DataAnonymizer dataAnonymizer = null;
+            if (cmd.hasOption("an")) {
 
-
-            if (anonymizationRules!=null){
-                dataAnonymizer = new DataAnonymizer(anonymizationRules);
+                String anonymizationRules = exportArgs[0];
+                if (anonymizationRules != null) {
+                    dataAnonymizer = new DataAnonymizer(anonymizationRules);
+                }
             }
 
             MySqlTablesExport mySqlTablesExport = dataAnonymizer==null?

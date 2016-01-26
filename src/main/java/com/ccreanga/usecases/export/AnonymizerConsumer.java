@@ -23,7 +23,7 @@ public class AnonymizerConsumer implements Consumer<List<Object>> {
 
     @Override
     public void accept(List<Object> objects) {
-        if (dataAnonymizer.shouldAnonymize()){
+        if (dataAnonymizer!=null && dataAnonymizer.shouldAnonymize()){
             List<Column> columns = table.getColumns();
 
             int index = 0;

@@ -37,13 +37,14 @@ public class MySqlTablesExport {
         }
 
         List<Table> tables = model.getTables(connection, schema.getName());
+        System.out.println("Found "+tables.size()+" tables.");
         tables.stream().filter(t -> t.getName().matches(tablePattern)).forEach(t -> {
-
+                    System.out.println("\nProcessing table:"+t.getName());
                     File dumpFile = new File(folder.getAbsolutePath() + File.separator + t.getName() + ".txt");
                     if (dumpFile.exists()) {
                         if (!override)
                             return;
-                        System.out.println("overriding file:" + dumpFile.getName());
+                        System.out.println("Overriding file:" + dumpFile.getName());
                     }
                     TableOperations tableOperations = new TableOperations();
 
