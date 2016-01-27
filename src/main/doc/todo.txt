@@ -1,0 +1,13 @@
+first tools
+
+authenticate 3(2) params: user, passwd, host , schema
+export (optional): table patterns, folder, overwrite existing data
+anonymize (optional): anonymize rules.
+  if combined with export will produce anonym files
+  if not it will process directly the database (asking in advance)
+
+
+have it like the second tool
+compare data/structure (user, passwd, host schema table pattern)
+        (user, passwd, host schema table pattern)
+
