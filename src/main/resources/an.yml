@@ -7,7 +7,7 @@ data:
         values:
           syl: 3
           rememberValues: true
-      - field: c_tiny
+      - field: c_tinyint
         type: com.ccreanga.anonymizer.LongAnonymizer
         values:
           rangeMin: 0

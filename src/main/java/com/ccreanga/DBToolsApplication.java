@@ -4,6 +4,7 @@ import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
 import com.ccreanga.usecases.export.DataAnonymizer;
+import com.ccreanga.usecases.export.MySqlTablesAnonymizer;
 import com.ccreanga.usecases.export.MySqlTablesExport;
 import com.ccreanga.util.ConsoleUtil;
 import org.apache.commons.cli.*;
@@ -129,8 +130,9 @@ public class DBToolsApplication {
 
         //anonymize database
         if (cmd.hasOption(AN) && !cmd.hasOption(EXPORT)) {
-            DbConnection connection =connection(host,schema,user,password);
-            anonymizeDatabase(connection,schema,new DataAnonymizer(cmd.getOptionValue(AN)));
+            DbConnection connection1 = connection(host,schema,user,password);
+            DbConnection connection2 = connection(host,schema,user,password);
+            anonymizeDatabase(connection1,connection2,schema,new DataAnonymizer(cmd.getOptionValue(AN)));
             return;
         }
 
@@ -144,13 +146,18 @@ public class DBToolsApplication {
             DbConnection connection =connection(host,schema,user,password);
 
             exportDatabase(connection,schema,export[0],export[1],export[2].equalsIgnoreCase("y"),dataAnonymizer);
-            return;
         }
 
     }
 
-    private static void anonymizeDatabase(DbConnection connection,String schema, DataAnonymizer dataAnonymizer) {
-        throw new UnsupportedOperationException("not yet implemented");
+    private static void anonymizeDatabase(DbConnection readConnection,DbConnection writeConnection,String schema, DataAnonymizer dataAnonymizer) {
+        MySqlTablesAnonymizer mySqlTablesAnonymizer = new MySqlTablesAnonymizer(dataAnonymizer);
+
+        long t1 = System.currentTimeMillis();
+        mySqlTablesAnonymizer.anonymizeTables(readConnection,writeConnection,new Schema(schema));
+        long t2 = System.currentTimeMillis();
+        System.out.println((t2 - t1) / 1000);
+
     }
 
     private static void exportDatabase(DbConnection connection,String schema,String pattern,String folder, boolean overwrite, DataAnonymizer dataAnonymizer) {
@@ -168,6 +175,7 @@ public class DBToolsApplication {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password) + "&zeroDateTimeBehavior=convertToNull");
+            connection.setAutoCommit(false);
             return new DbConnection(connection, Dialect.MYSQL);
         } catch (SQLException e) {
             System.out.println("cannot connect to mysql server:" + e.getMessage());

@@ -80,4 +80,30 @@ public class DataAnonymizer{
         return Optional.of(anonymizer);
     }
 
+    public Set<String> getTablesToAnonymize(){
+        Set<String> tables = new HashSet<>();
+        Set<String> keys = anonymizers.keySet();
+        for (String next : keys) {
+            int index = next.indexOf('.');
+            tables.add(next.substring(0,index));
+
+        }
+        return tables;
+    }
+
+    public Set<String> getTableColumnsToAnonymize(String table){
+        Set<String> columns = new HashSet<>();
+        Set<String> keys = anonymizers.keySet();
+        for (String next : keys) {
+            int index = next.indexOf('.');
+            if (table.equals(next.substring(0,index))){
+                columns.add(next.substring(index+1));
+            }
+        }
+        return columns;
+    }
+
+
+
+
 }

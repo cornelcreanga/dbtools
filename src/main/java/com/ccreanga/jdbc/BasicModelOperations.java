@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class BasicModelOperations {
 
@@ -23,9 +24,20 @@ public class BasicModelOperations {
         return schemas;
     }
 
+    public Optional<Table> getTable(DbConnection connection, String schema, String table) {
+        List<Table> list = getTables(connection,schema,table);
+        if (list.size()==0)
+            return Optional.empty();
+        return Optional.of(list.get(0));
+    }
+
     public List<Table> getTables(DbConnection connection, String schema) {
+        return getTables(connection,schema,"%");
+    }
+
+    public List<Table> getTables(DbConnection connection, String schema,String tablePattern) {
         List<Table> tables = new ArrayList<>(16);
-        try (ResultSet rs = connection.meta().getTables(schema, "%", "%", new String[]{"TABLE"})) {
+        try (ResultSet rs = connection.meta().getTables(schema, "%", tablePattern, new String[]{"TABLE"})) {
             while(rs.next()) {
                 String tableName = rs.getString(3);
                 Table table = new Table(
