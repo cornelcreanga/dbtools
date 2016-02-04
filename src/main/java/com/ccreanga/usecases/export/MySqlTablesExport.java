@@ -7,11 +7,11 @@ import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
 import com.ccreanga.jdbc.model.Table;
-import com.mysql.fabric.xmlrpc.base.Data;
 
 import java.io.*;
 import java.sql.Types;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MySqlTablesExport {
 
@@ -29,58 +29,47 @@ public class MySqlTablesExport {
         File folder = createFolder(folderName);
         File operations = createOperationsFile(folder);
 
-        final Writer opWriter;
-        try {
-            opWriter = new BufferedWriter(new FileWriter(operations));
+        try (Writer opWriter = new BufferedWriter(new FileWriter(operations))) {
+            List<Table> tables = model.getTables(connection, schema.getName());
+            System.out.println("Found " + tables.size() + " tables before filtering.");
+            tables.stream().filter(t -> t.getName().matches(tablePattern)).forEach(t -> {
+                        System.out.println("\nProcessing table:" + t.getName());
+                        File dumpFile = new File(folder.getAbsolutePath() + File.separator + t.getName() + ".txt");
+                        if (dumpFile.exists()) {
+                            if (!override)
+                                return;
+                            System.out.println("Overriding file:" + dumpFile.getName());
+                        }
+                        TableOperations tableOperations = new TableOperations();
+
+                        try (MySQLCSVWriterConsumer mySQLCSVWriter = new MySQLCSVWriterConsumer(dumpFile)) {
+                            Consumer<List<Object>> consumer = anonymizer == null ?
+                                    mySQLCSVWriter :
+                                    new AnonymizerConsumer(anonymizer, t).andThen(mySQLCSVWriter);
+
+                            tableOperations.processTableRows(connection, t, consumer);
+                        } catch (IOException e) {
+                            if (!dumpFile.delete())
+                                System.out.println("exception occured, trying to clean the dump file but failed");
+                            throw new GenericException(e);
+                        }
+                        try {
+                            opWriter.write(loadInline(t) + "\n");
+                        } catch (Exception e) {
+                            throw new GenericException(e);
+                        }
+                    }
+
+            );
         } catch (IOException e) {
             throw new GenericException(e);
-        }
-
-        List<Table> tables = model.getTables(connection, schema.getName());
-        System.out.println("Found "+tables.size()+" tables.");
-        tables.stream().filter(t -> t.getName().matches(tablePattern)).forEach(t -> {
-                    System.out.println("\nProcessing table:"+t.getName());
-                    File dumpFile = new File(folder.getAbsolutePath() + File.separator + t.getName() + ".txt");
-                    if (dumpFile.exists()) {
-                        if (!override)
-                            return;
-                        System.out.println("Overriding file:" + dumpFile.getName());
-                    }
-                    TableOperations tableOperations = new TableOperations();
-
-                    MySQLCSVWriterConsumer mySQLCSVWriter = null;
-                    AnonymizerConsumer anonymizerConsumer = new AnonymizerConsumer(anonymizer,t);
-                    try {
-
-                        mySQLCSVWriter = new MySQLCSVWriterConsumer(dumpFile);
-                        tableOperations.processTableRows(connection, t, anonymizerConsumer.andThen(mySQLCSVWriter));
-                    } catch (IOException e) {
-                        if (!dumpFile.delete())
-                            System.out.println("exception occured, trying to clean the dump file but failed");
-                        throw new GenericException(e);
-                    } finally {
-                        if (mySQLCSVWriter != null)
-                            mySQLCSVWriter.close();
-                    }
-                    try {
-                        opWriter.write(loadInline(t)+"\n");
-                    } catch (Exception e) {
-                        throw new GenericException(e);
-                    }
-                }
-
-        );
-        try {
-            opWriter.close();
-        } catch (IOException e) {
-            //ignore
         }
 
     }
 
 
     private String loadInline(Table table) {
-        StringBuilder sb = new StringBuilder("LOAD DATA INFILE " + table.getName() +".txt"+ " INTO TABLE `"+table.getName()+"` (");
+        StringBuilder sb = new StringBuilder("LOAD DATA INFILE " + table.getName() + ".txt" + " INTO TABLE `" + table.getName() + "` (");
 
         boolean found = false;
         List<Column> columns = table.getColumns();
@@ -91,7 +80,7 @@ public class MySqlTablesExport {
             }
             sb.append(c.getName()).append(",");
         }
-        sb.deleteCharAt(sb.length()-1);
+        sb.deleteCharAt(sb.length() - 1);
 
         sb.append(")");
         if (found) {
