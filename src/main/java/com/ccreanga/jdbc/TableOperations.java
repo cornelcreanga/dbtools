@@ -55,6 +55,8 @@ public class TableOperations {
                 }
                 counter++;
             }
+            if (counter==1)
+                System.out.print("\rno rows found");
 
 
         } catch (Exception e) {

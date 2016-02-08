@@ -30,6 +30,7 @@ public class MySqlTablesExport {
         File operations = createOperationsFile(folder);
 
         try (Writer opWriter = new BufferedWriter(new FileWriter(operations))) {
+            System.out.println("Fetching metadata...");
             List<Table> tables = model.getTables(connection, schema.getName());
             System.out.println("Found " + tables.size() + " tables before filtering.");
             tables.stream().filter(t -> t.getName().matches(tablePattern)).forEach(t -> {
