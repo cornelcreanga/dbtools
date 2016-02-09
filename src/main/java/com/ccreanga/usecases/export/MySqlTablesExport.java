@@ -34,12 +34,12 @@ public class MySqlTablesExport {
             List<Table> tables = model.getTables(connection, schema.getName());
             System.out.println("Found " + tables.size() + " tables before filtering.");
             tables.stream().filter(t -> t.getName().matches(tablePattern)).forEach(t -> {
-                        System.out.println("\nProcessing table:" + t.getName());
+
+                System.out.println("\nProcessing table:" + t.getName());
                         File dumpFile = new File(folder.getAbsolutePath() + File.separator + t.getName() + ".txt");
                         if (dumpFile.exists()) {
                             if (!override)
                                 return;
-                            System.out.println("Overriding file:" + dumpFile.getName());
                         }
                         TableOperations tableOperations = new TableOperations();
 
@@ -55,7 +55,7 @@ public class MySqlTablesExport {
                             throw new GenericException(e);
                         }
                         try {
-                            opWriter.write(loadInline(t) + "\n");
+                            opWriter.write(loadInline(t,folderName) + "\n");
                         } catch (Exception e) {
                             throw new GenericException(e);
                         }
@@ -69,8 +69,8 @@ public class MySqlTablesExport {
     }
 
 
-    private String loadInline(Table table) {
-        StringBuilder sb = new StringBuilder("LOAD DATA INFILE " + table.getName() + ".txt" + " INTO TABLE `" + table.getName() + "` (");
+    private String loadInline(Table table,String folderName) {
+        StringBuilder sb = new StringBuilder("LOAD DATA LOCAL INFILE '" + folderName + File.separator+table.getName() + ".txt'" + " INTO TABLE `" + table.getName() + "` (");
 
         boolean found = false;
         List<Column> columns = table.getColumns();

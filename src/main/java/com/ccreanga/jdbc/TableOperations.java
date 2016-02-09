@@ -56,7 +56,11 @@ public class TableOperations {
                 counter++;
             }
             if (counter==1)
-                System.out.print("\rno rows found");
+                System.out.print("\rNo rows found");
+            else{
+                totalTime = System.currentTimeMillis() - startTime;
+                System.out.print("\rExported "+counter+" rows in "+df.format((double)totalTime/1000)+" seconds.");
+            }
 
 
         } catch (Exception e) {

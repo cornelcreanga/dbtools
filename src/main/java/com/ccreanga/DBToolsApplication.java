@@ -15,8 +15,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
-  -host 127.0.0.1:3306 -schema test -user root -password root -export ^test.*  /tmp/exp y -an /home/cornel/projects/dbtools/src/main/resources/an.yml
- *
+ * -a caldb-qa.vdlan.cinetic.de:3306 begenda_qa ccreanga c0rn3lic@  -e .* /tmp/begenda_qa y
+  -host caldb-qa.vdlan.cinetic.de:3306 -schema begenda_qa -user ccreanga -password c0rn3lic@ -export ^test.*  //media/corneliu/Seagate/begenda_qa_export y
+
+ -host popp-dbtest.server.lan:3306 -schema begenda -user teste -password testesirecuperare -export ^test.*  //media/corneliu/Seagate/begenda_qa_export y
+ -host caldb-qa.vdlan.cinetic.de:3306 -schema begenda_qa -user ccreanga -password c0rn3lic@ -export ^test.*  //media/corneliu/Seagate/begenda_qa_export y
  */
 
 @SpringBootApplication
@@ -130,8 +133,8 @@ public class DBToolsApplication {
 
         //anonymize database
         if (cmd.hasOption(AN) && !cmd.hasOption(EXPORT)) {
-            DbConnection connection1 = connection(host,schema,user,password);
-            DbConnection connection2 = connection(host,schema,user,password);
+            DbConnection connection1 = connection(host,schema,user,password,true);
+            DbConnection connection2 = connection(host,schema,user,password,false);
             anonymizeDatabase(connection1,connection2,schema,new DataAnonymizer(cmd.getOptionValue(AN)));
             return;
         }
@@ -143,7 +146,7 @@ public class DBToolsApplication {
                 dataAnonymizer = new DataAnonymizer(cmd.getOptionValue(AN));
             }
             String[] export = cmd.getOptionValues(EXPORT);
-            DbConnection connection =connection(host,schema,user,password);
+            DbConnection connection =connection(host,schema,user,password,true);
 
             exportDatabase(connection,schema,export[0],export[1],export[2].equalsIgnoreCase("y"),dataAnonymizer);
         }
@@ -171,11 +174,12 @@ public class DBToolsApplication {
         System.out.println((t2 - t1) / 1000);
     }
 
-    private static DbConnection connection(String host, String schema, String user, char[] password) {
+    private static DbConnection connection(String host, String schema, String user, char[] password,boolean readOnly) {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection connection = DriverManager.getConnection("jdbc:mysql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password) + "&zeroDateTimeBehavior=convertToNull");
             connection.setAutoCommit(false);
+            connection.setReadOnly(readOnly);
             return new DbConnection(connection, Dialect.MYSQL);
         } catch (SQLException e) {
             System.out.println("cannot connect to mysql server:" + e.getMessage());
