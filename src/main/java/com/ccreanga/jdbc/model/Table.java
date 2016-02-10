@@ -13,10 +13,4 @@ public class Table {
     private final String tableType;
     private final String comments;
 
-    private final List<Key> primaryKeys;
-    private final List<Column> columns;
-    private final List<Relation> importedKeys;
-    private final List<Relation> exportedKeys;
-    private final List<Index> indexes;
-
 }

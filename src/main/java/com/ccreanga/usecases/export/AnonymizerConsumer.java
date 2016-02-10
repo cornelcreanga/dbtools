@@ -15,19 +15,19 @@ public class AnonymizerConsumer implements Consumer<List<Object>> {
 
     private DataAnonymizer dataAnonymizer;
     private Table table;
+    private List<Column> tableColumns;
 
-    public AnonymizerConsumer(DataAnonymizer dataAnonymizer, Table table) {
+    public AnonymizerConsumer(DataAnonymizer dataAnonymizer, Table table,List<Column> tableColumns) {
         this.dataAnonymizer = dataAnonymizer;
         this.table = table;
+        this.tableColumns = tableColumns;
     }
 
     @Override
     public void accept(List<Object> objects) {
         if (dataAnonymizer!=null && dataAnonymizer.shouldAnonymize()){
-            List<Column> columns = table.getColumns();
-
             int index = 0;
-            for (Column column : columns) {
+            for (Column column : tableColumns) {
                 Optional<Anonymizer> optional = dataAnonymizer.getAnonymizer(table.getName(),column.getName());
                 if (optional.isPresent()){
                     Anonymizer anonymizer = optional.get();

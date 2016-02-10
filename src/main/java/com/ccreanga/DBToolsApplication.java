@@ -32,6 +32,7 @@ public class DBToolsApplication {
     public static final String SCHEMA = "schema";
     public static final String EXPORT = "export";
     public static final String AN = "an";
+    public static final String DIALECT = "dialect";
 
     public static void main(String[] args) throws ParseException {
 
@@ -51,6 +52,14 @@ public class DBToolsApplication {
                 .longOpt(HOST)
                 .desc("Host (server:port)")
                 .build();
+        Option dialectOption = Option.builder(DIALECT)
+                .valueSeparator(' ')
+                .numberOfArgs(1)
+                .argName("Dialect (MYSQL or POSTGRESQL")
+                .longOpt(DIALECT)
+                .desc("Dialect (MYSQL or POSTGRESQL")
+                .build();
+
         Option userOption = Option.builder(USER)
                 .valueSeparator(' ')
                 .numberOfArgs(1)
@@ -102,6 +111,18 @@ public class DBToolsApplication {
 
         DefaultParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args, false);
+        Dialect dialect = Dialect.MYSQL;
+
+        if (cmd.hasOption(DIALECT)){
+            try {
+                dialect = Dialect.valueOf(cmd.getOptionValue(DIALECT));
+            }catch (IllegalArgumentException e){
+                formatter.printHelp("dbtools", options);
+                System.exit(1);
+            }
+        }else{
+            System.out.println("No dialect specified - using by default "+dialect);
+        }
 
         if (!cmd.hasOption(HOST)) {
             System.out.println("host is mandatory");
@@ -133,8 +154,8 @@ public class DBToolsApplication {
 
         //anonymize database
         if (cmd.hasOption(AN) && !cmd.hasOption(EXPORT)) {
-            DbConnection connection1 = connection(host,schema,user,password,true);
-            DbConnection connection2 = connection(host,schema,user,password,false);
+            DbConnection connection1 = connection(dialect,host,schema,user,password,true);
+            DbConnection connection2 = connection(dialect,host,schema,user,password,false);
             anonymizeDatabase(connection1,connection2,schema,new DataAnonymizer(cmd.getOptionValue(AN)));
             return;
         }
@@ -146,7 +167,7 @@ public class DBToolsApplication {
                 dataAnonymizer = new DataAnonymizer(cmd.getOptionValue(AN));
             }
             String[] export = cmd.getOptionValues(EXPORT);
-            DbConnection connection =connection(host,schema,user,password,true);
+            DbConnection connection =connection(dialect,host,schema,user,password,true);
 
             exportDatabase(connection,schema,export[0],export[1],export[2].equalsIgnoreCase("y"),dataAnonymizer);
         }
@@ -174,18 +195,27 @@ public class DBToolsApplication {
         System.out.println((t2 - t1) / 1000);
     }
 
-    private static DbConnection connection(String host, String schema, String user, char[] password,boolean readOnly) {
+    private static DbConnection connection(Dialect dialect,String host, String schema, String user, char[] password,boolean readOnly) {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection connection = DriverManager.getConnection("jdbc:mysql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password) + "&zeroDateTimeBehavior=convertToNull");
+            Connection connection;
+            if (dialect==Dialect.MYSQL) {
+                Class.forName("com.mysql.jdbc.Driver");
+                connection = DriverManager.getConnection("jdbc:mysql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password) + "&zeroDateTimeBehavior=convertToNull");
+            }else if (dialect==Dialect.POSTGRESQL) {
+                Class.forName("org.postgresql.Driver");
+                connection = DriverManager.getConnection("jdbc:jdbc:postgresql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password));
+            }else{
+                throw new IllegalArgumentException("unknown dialect:"+dialect);
+            }
+
             connection.setAutoCommit(false);
             connection.setReadOnly(readOnly);
             return new DbConnection(connection, Dialect.MYSQL);
         } catch (SQLException e) {
-            System.out.println("cannot connect to mysql server:" + e.getMessage());
+            System.out.println("cannot connect to server:" + e.getMessage());
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
-            System.out.println("cannot find mysql driver:" + e.getMessage());
+            System.out.println("cannot find the driver:" + e.getMessage());
             throw new RuntimeException(e);
         }
     }

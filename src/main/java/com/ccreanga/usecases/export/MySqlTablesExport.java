@@ -30,12 +30,11 @@ public class MySqlTablesExport {
         File operations = createOperationsFile(folder);
 
         try (Writer opWriter = new BufferedWriter(new FileWriter(operations))) {
-            System.out.println("Fetching metadata...");
             List<Table> tables = model.getTables(connection, schema.getName());
-            System.out.println("Found " + tables.size() + " tables before filtering.");
             tables.stream().filter(t -> t.getName().matches(tablePattern)).forEach(t -> {
 
                 System.out.println("\nProcessing table:" + t.getName());
+                List<Column> columns = model.getColumns(connection,schema.getName(),t.getName());
                         File dumpFile = new File(folder.getAbsolutePath() + File.separator + t.getName() + ".txt");
                         if (dumpFile.exists()) {
                             if (!override)
@@ -46,16 +45,16 @@ public class MySqlTablesExport {
                         try (MySQLCSVWriterConsumer mySQLCSVWriter = new MySQLCSVWriterConsumer(dumpFile)) {
                             Consumer<List<Object>> consumer = anonymizer == null ?
                                     mySQLCSVWriter :
-                                    new AnonymizerConsumer(anonymizer, t).andThen(mySQLCSVWriter);
+                                    new AnonymizerConsumer(anonymizer, t, columns).andThen(mySQLCSVWriter);
 
-                            tableOperations.processTableRows(connection, t, consumer);
+                            tableOperations.processTableRows(connection, t,columns, consumer);
                         } catch (IOException e) {
                             if (!dumpFile.delete())
                                 System.out.println("exception occured, trying to clean the dump file but failed");
                             throw new GenericException(e);
                         }
                         try {
-                            opWriter.write(loadInline(t,folderName) + "\n");
+                            opWriter.write(loadInline(t,columns,folderName) + "\n");
                         } catch (Exception e) {
                             throw new GenericException(e);
                         }
@@ -69,11 +68,10 @@ public class MySqlTablesExport {
     }
 
 
-    private String loadInline(Table table,String folderName) {
+    private String loadInline(Table table,List<Column> columns,String folderName) {
         StringBuilder sb = new StringBuilder("LOAD DATA LOCAL INFILE '" + folderName + File.separator+table.getName() + ".txt'" + " INTO TABLE `" + table.getName() + "` (");
 
         boolean found = false;
-        List<Column> columns = table.getColumns();
         for (Column c : columns) {
             if (binaryType(c)) {
                 sb.append("@");

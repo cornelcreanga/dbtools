@@ -3,6 +3,7 @@ package com.ccreanga.jdbc;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Table;
+import com.ccreanga.util.FormatUtil;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -15,16 +16,11 @@ import java.util.stream.Collectors;
 
 public class TableOperations {
 
-    public void processTableRows(DbConnection connection, Table table, Consumer<List<Object>> consumer) {
+    public void processTableRows(DbConnection connection, Table table,List<Column> columns, Consumer<List<Object>> consumer) {
 
-        String selectData = "select " + String.join(",", table.getColumns().stream().map(Column::getName).collect(Collectors.toList())) + " from " + table.getName();
-        //selectData +=" where id=12";
-        long t1 = System.currentTimeMillis();
-        long totalTime = 0, startTime = t1;
-
-        DecimalFormat df = new DecimalFormat("###.###");
-        df.setGroupingUsed(true);
-        df.setGroupingSize(3);
+        String selectData = "select " + String.join(",", columns.stream().map(Column::getName).collect(Collectors.toList())) + " from " + table.getName();
+        long totalTime = 0,t1 = System.currentTimeMillis(), startTime = t1;
+        DecimalFormat df = FormatUtil.decimalFormatter();
 
 
         try (Statement st = connection.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {

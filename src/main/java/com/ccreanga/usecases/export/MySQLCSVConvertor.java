@@ -20,10 +20,10 @@ public class MySQLCSVConvertor {
             return ((BigDecimal)value).toPlainString();
         }
         if ((value instanceof Float) || (value instanceof Double)) {
-            return ((Number)value).toString();
+            return value.toString();
         }
         if (value instanceof Number) {
-            return ((Number)value).toString();
+            return value.toString();
         }
         if (value instanceof java.sql.Date) {
             return dateFormatter.format(((java.sql.Date)value).toLocalDate());

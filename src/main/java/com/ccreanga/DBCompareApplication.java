@@ -12,12 +12,14 @@ public class DBCompareApplication {
     public static final String PASSWORD1 = "password1";
     public static final String SCHEMA1 = "schema1";
     public static final String TABLE1 = "table1";
+    public static final String DIALECT1 = "dialect1";
 
     public static final String HOST2 = "host2";
     public static final String USER2 = "user2";
     public static final String PASSWORD2 = "password2";
     public static final String SCHEMA2 = "schema2";
     public static final String TABLE2 = "table2";
+    public static final String DIALECT2 = "dialect2";
 
 
     public static void main(String[] args) throws ParseException {
@@ -56,6 +58,13 @@ public class DBCompareApplication {
                 .longOpt(TABLE1)
                 .desc("Table")
                 .build();
+        Option dialect1 = Option.builder(DIALECT1)
+                .valueSeparator(' ')
+                .numberOfArgs(1)
+                .argName("Dialect (MYSQL or POSTGRESQL")
+                .longOpt(DIALECT1)
+                .desc("Dialect (MYSQL or POSTGRESQL")
+                .build();
 
 
         Option hostOption2 = Option.builder(HOST2)
@@ -93,6 +102,15 @@ public class DBCompareApplication {
                 .longOpt(TABLE2)
                 .desc("Table")
                 .build();
+
+        Option dialect2 = Option.builder(DIALECT2)
+                .valueSeparator(' ')
+                .numberOfArgs(1)
+                .argName("Dialect (MYSQL or POSTGRESQL")
+                .longOpt(DIALECT2)
+                .desc("Dialect (MYSQL or POSTGRESQL")
+                .build();
+
     }
 
 }

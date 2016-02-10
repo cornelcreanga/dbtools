@@ -44,12 +44,7 @@ public class BasicModelOperations {
                         rs.getString(1),
                         tableName,
                         rs.getString(4),
-                        rs.getString(5),
-                        getTablePrimaryKeys(connection, schema, tableName),
-                        getColumns(connection, schema, tableName),
-                        getTableImportedKeys(connection, schema, tableName),
-                        getTableExportedKeys(connection, schema, tableName),
-                        null
+                        rs.getString(5)
                 );
                 tables.add(table);
             }
@@ -94,7 +89,7 @@ public class BasicModelOperations {
         return columns;
     }
 
-    private List<Key> getTablePrimaryKeys(DbConnection connection, String schema, String table) {
+    public List<Key> getTablePrimaryKeys(DbConnection connection, String schema, String table) {
         List<Key> keys = new ArrayList<>(16);
         try (ResultSet rs = connection.meta().getPrimaryKeys(schema, "%", table)) {
             while (rs.next()) {
@@ -116,8 +111,8 @@ public class BasicModelOperations {
         }
         return relations;
     }
-    
-    private List<Relation> getTableImportedKeys(DbConnection connection, String schema, String table) {
+
+    public List<Relation> getTableImportedKeys(DbConnection connection, String schema, String table) {
         try (ResultSet rs = connection.meta().getImportedKeys(schema, "%", table)) {
             return buildRelations(rs);
         } catch (Exception e) {
@@ -125,7 +120,7 @@ public class BasicModelOperations {
         }
     }
 
-    private List<Relation> getTableExportedKeys(DbConnection connection, String schema, String table) {
+    public List<Relation> getTableExportedKeys(DbConnection connection, String schema, String table) {
         try (ResultSet rs = connection.meta().getExportedKeys(schema, "%", table)) {
             return buildRelations(rs);
         } catch (Exception e) {
