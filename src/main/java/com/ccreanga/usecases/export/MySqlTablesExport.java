@@ -7,6 +7,7 @@ import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
 import com.ccreanga.jdbc.model.Table;
+import com.ccreanga.util.Wildcard;
 
 import java.io.*;
 import java.sql.Types;
@@ -31,7 +32,7 @@ public class MySqlTablesExport {
 
         try (Writer opWriter = new BufferedWriter(new FileWriter(operations))) {
             List<Table> tables = model.getTables(connection, schema.getName());
-            tables.stream().filter(t -> t.getName().matches(tablePattern)).forEach(t -> {
+            tables.stream().filter(t -> Wildcard.matches(t.getName(),tablePattern)).forEach(t -> {
 
                 System.out.println("\nProcessing table:" + t.getName());
                 List<Column> columns = model.getColumns(connection,schema.getName(),t.getName());
