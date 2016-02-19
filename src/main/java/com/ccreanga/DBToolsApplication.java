@@ -14,13 +14,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-/**
- * -a caldb-qa.vdlan.cinetic.de:3306 begenda_qa ccreanga c0rn3lic@  -e .* /tmp/begenda_qa y
-  -host caldb-qa.vdlan.cinetic.de:3306 -schema begenda_qa -user ccreanga -password c0rn3lic@ -export ^test.*  //media/corneliu/Seagate/begenda_qa_export y
-
- -host popp-dbtest.server.lan:3306 -schema begenda -user teste -password testesirecuperare -export ^test.*  //media/corneliu/Seagate/begenda_qa_export y
- -host caldb-qa.vdlan.cinetic.de:3306 -schema begenda_qa -user ccreanga -password c0rn3lic@ -export ^test.*  //media/corneliu/Seagate/begenda_qa_export y
- */
 
 @SpringBootApplication
 public class DBToolsApplication {
@@ -36,8 +29,6 @@ public class DBToolsApplication {
 
     public static void main(String[] args) throws ParseException {
 
-        DbConnection dbConnection = null;
-        String[] authArgs = null;
         HelpFormatter formatter = new HelpFormatter();
         formatter.setWidth(120);
         String host=null,user=null,schema=null;
@@ -102,6 +93,7 @@ public class DBToolsApplication {
 
         Options options = new Options();
         options.addOption(hostOption);
+        options.addOption(dialectOption);
         options.addOption(userOption);
         options.addOption(passwdOption);
         options.addOption(schemaOption);
