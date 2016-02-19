@@ -24,7 +24,8 @@ public class TableOperations {
 
 
         try (Statement st = connection.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
-            st.setFetchSize(Integer.MIN_VALUE);//todo - this is just for mysql!
+            if (connection.getDialect()==Dialect.MYSQL)
+                st.setFetchSize(Integer.MIN_VALUE);//todo - this is just for mysql!
             ResultSet rs = st.executeQuery(selectData);
             int colCount = rs.getMetaData().getColumnCount();
             int types[] = new int[colCount];

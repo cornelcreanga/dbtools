@@ -32,10 +32,10 @@ public class MySqlTablesExport {
 
         try (Writer opWriter = new BufferedWriter(new FileWriter(operations))) {
             List<Table> tables = model.getTables(connection, schema.getName());
-            tables.stream().filter(t -> Wildcard.matches(t.getName(),tablePattern)).forEach(t -> {
+            tables.stream().filter(t -> Wildcard.matches(t.getName(), tablePattern)).forEach(t -> {
 
-                System.out.println("\nProcessing table:" + t.getName());
-                List<Column> columns = model.getColumns(connection,schema.getName(),t.getName());
+                        System.out.println("\nProcessing table:" + t.getName());
+                        List<Column> columns = model.getColumns(connection, schema.getName(), t.getName());
                         File dumpFile = new File(folder.getAbsolutePath() + File.separator + t.getName() + ".txt");
                         if (dumpFile.exists()) {
                             if (!override)
@@ -48,20 +48,22 @@ public class MySqlTablesExport {
                                     mySQLCSVWriter :
                                     new AnonymizerConsumer(anonymizer, t, columns).andThen(mySQLCSVWriter);
 
-                            tableOperations.processTableRows(connection, t,columns, consumer);
+                            tableOperations.processTableRows(connection, t, columns, consumer);
                         } catch (IOException e) {
                             if (!dumpFile.delete())
                                 System.out.println("exception occured, trying to clean the dump file but failed");
                             throw new GenericException(e);
                         }
                         try {
-                            opWriter.write(loadInline(t,columns,folderName) + "\n");
+                            opWriter.write(loadInline(t, columns, folderName) + "\n");
                         } catch (Exception e) {
                             throw new GenericException(e);
                         }
                     }
 
+
             );
+            System.out.println();
         } catch (IOException e) {
             throw new GenericException(e);
         }
@@ -69,8 +71,8 @@ public class MySqlTablesExport {
     }
 
 
-    private String loadInline(Table table,List<Column> columns,String folderName) {
-        StringBuilder sb = new StringBuilder("LOAD DATA LOCAL INFILE '" + folderName + File.separator+table.getName() + ".txt'" + " INTO TABLE `" + table.getName() + "` (");
+    private String loadInline(Table table, List<Column> columns, String folderName) {
+        StringBuilder sb = new StringBuilder("LOAD DATA LOCAL INFILE '" + folderName + File.separator + table.getName() + ".txt'" + " INTO TABLE `" + table.getName() + "` (");
 
         boolean found = false;
         for (Column c : columns) {

@@ -1,33 +1,25 @@
 package com.ccreanga.anonymizer;
 
 
+import com.ccreanga.random.Language;
 import com.ccreanga.random.RandomNameGenerator;
+import com.ccreanga.random.RandomNameGeneratorFactory;
 
 import java.io.IOException;
 import java.net.URL;
 
 public class NameAnonymizer implements Anonymizer{
 
-    private static RandomNameGenerator generator;
-
-    static{
-        try {
-            URL url = Thread.currentThread().getContextClassLoader().getResource("fantasy.txt");
-            if (url==null)
-                throw new RuntimeException("can't locate the file fantasy.txt in the classpath");
-            generator = new RandomNameGenerator(url.getFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    private RandomNameGenerator generator = RandomNameGeneratorFactory.generator(Language.FANTASY);
 
     private int sylNumber = 2;
     private int wordNumber = 1;
     private boolean rememberValues;
 
     public Object anonymize(Object original){
-        if (wordNumber==1)//optimization
+        if (wordNumber==1)
             return generator.compose(sylNumber);
+        //compose the text from multiple words
         StringBuilder sb = new StringBuilder();
         for(int i= 0;i<wordNumber;i++){
             sb.append(generator.compose(sylNumber));

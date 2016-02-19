@@ -100,6 +100,10 @@ public class ResultSetOperations {
                 BigDecimal b = rs.getBigDecimal(pos);
                 return rs.wasNull() ? null : b;
             }
+            case Types.SQLXML:{
+                SQLXML sqlxml = rs.getSQLXML(pos);
+                return rs.wasNull() ? null : sqlxml.getString();
+            }
             default:
                 throw new RuntimeException("cannot read value;unknown type:" + type);
         }

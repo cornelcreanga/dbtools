@@ -1,7 +1,9 @@
 package com.ccreanga;
 
 import com.ccreanga.jdbc.RuntimeSqlException;
+import com.ccreanga.random.Language;
 import com.ccreanga.random.RandomNameGenerator;
+import com.ccreanga.random.RandomNameGeneratorFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
@@ -25,19 +27,7 @@ import java.util.Random;
 
 public class TestHelper {
 
-    private static RandomNameGenerator generator;
-
-    static {
-        try {
-            URL url = Thread.currentThread().getContextClassLoader().getResource("fantasy.txt");
-            if (url == null)
-                throw new RuntimeException("can't locate the file fantasy.txt in the classpath");
-            generator = new RandomNameGenerator(url.getFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    private static RandomNameGenerator generator = RandomNameGeneratorFactory.generator(Language.FANTASY);
 
     public static void dropTables(Connection connection) {
         ScriptRunner scriptRunner = new ScriptRunner(connection);

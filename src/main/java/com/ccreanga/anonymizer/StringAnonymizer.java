@@ -4,11 +4,12 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public class StringAnonymizer implements Anonymizer{
 
-    private int count;
+    private int count=-1;
 
     @Override
     public Object anonymize(Object original) {
-        return RandomStringUtils.randomAlphabetic(count);
+        int len = count==-1?((String)original).length():count;
+        return RandomStringUtils.randomAlphabetic(len);
     }
 
     public void setCount(int count) {

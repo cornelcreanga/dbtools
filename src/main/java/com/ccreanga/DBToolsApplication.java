@@ -7,12 +7,14 @@ import com.ccreanga.usecases.export.DataAnonymizer;
 import com.ccreanga.usecases.export.MySqlTablesAnonymizer;
 import com.ccreanga.usecases.export.MySqlTablesExport;
 import com.ccreanga.util.ConsoleUtil;
+import com.ccreanga.util.FormatUtil;
 import org.apache.commons.cli.*;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 
 
 @SpringBootApplication
@@ -109,6 +111,7 @@ public class DBToolsApplication {
             try {
                 dialect = Dialect.valueOf(cmd.getOptionValue(DIALECT));
             }catch (IllegalArgumentException e){
+                System.out.println("Don't understand dialect "+cmd.getOptionValue(DIALECT));
                 formatter.printHelp("dbtools", options);
                 System.exit(1);
             }
@@ -184,7 +187,8 @@ public class DBToolsApplication {
         long t1 = System.currentTimeMillis();
         mySqlTablesExport.exportTables(connection, new Schema(schema), pattern, folder, overwrite);
         long t2 = System.currentTimeMillis();
-        System.out.println((t2 - t1) / 1000);
+        DecimalFormat df = FormatUtil.decimalFormatter();
+        System.out.println("Export finished in "+df.format((double)(t2 - t1) / 1000)+" seconds.");
     }
 
     private static DbConnection connection(Dialect dialect,String host, String schema, String user, char[] password,boolean readOnly) {
@@ -195,14 +199,14 @@ public class DBToolsApplication {
                 connection = DriverManager.getConnection("jdbc:mysql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password) + "&zeroDateTimeBehavior=convertToNull");
             }else if (dialect==Dialect.POSTGRESQL) {
                 Class.forName("org.postgresql.Driver");
-                connection = DriverManager.getConnection("jdbc:jdbc:postgresql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password));
+                connection = DriverManager.getConnection("jdbc:postgresql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password));
             }else{
                 throw new IllegalArgumentException("unknown dialect:"+dialect);
             }
 
             connection.setAutoCommit(false);
             connection.setReadOnly(readOnly);
-            return new DbConnection(connection, Dialect.MYSQL);
+            return new DbConnection(connection, dialect);
         } catch (SQLException e) {
             System.out.println("cannot connect to server:" + e.getMessage());
             throw new RuntimeException(e);
