@@ -31,7 +31,7 @@ public class TestHelper {
 
     public static void dropTables(Connection connection) {
         ScriptRunner scriptRunner = new ScriptRunner(connection);
-        URL file = Thread.currentThread().getContextClassLoader().getResource("drop.sql");
+        URL file = Thread.currentThread().getContextClassLoader().getResource("drop_pgres.sql");
         if (file == null)
             throw new RuntimeException("cannot find drop.sql");
         try {
@@ -43,7 +43,7 @@ public class TestHelper {
 
     public static void createTables(Connection connection) {
         ScriptRunner scriptRunner = new ScriptRunner(connection);
-        URL file = Thread.currentThread().getContextClassLoader().getResource("create.sql");
+        URL file = Thread.currentThread().getContextClassLoader().getResource("create_pgres.sql");
         if (file == null)
             throw new RuntimeException("cannot find create.sql");
         try {

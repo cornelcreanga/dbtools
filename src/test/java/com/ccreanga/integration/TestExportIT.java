@@ -35,8 +35,11 @@ public class TestExportIT {
     @Before
     public void staticSetup() throws Exception {
 
-        Class.forName("com.mysql.jdbc.Driver");
-        connection = DriverManager.getConnection(server+"/"+schema+"?user="+user+"&password="+passwdord+"&zeroDateTimeBehavior=convertToNull");
+        //Class.forName("com.mysql.jdbc.Driver");
+        Class.forName("org.postgresql.Driver");
+        connection = DriverManager.getConnection(server+"/"+schema+"?user="+user+"&password="+passwdord);
+
+        //connection = DriverManager.getConnection(server+"/"+schema+"?user="+user+"&password="+passwdord+"&zeroDateTimeBehavior=convertToNull");
         connection.setAutoCommit(false);
 
         TestHelper.dropTables(connection);
