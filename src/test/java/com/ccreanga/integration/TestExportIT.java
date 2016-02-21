@@ -2,6 +2,7 @@ package com.ccreanga.integration;
 
 import com.ccreanga.DBToolsApplication;
 import com.ccreanga.TestHelper;
+import com.ccreanga.jdbc.RuntimeSqlException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = DBToolsApplication.class)
@@ -42,9 +44,17 @@ public class TestExportIT {
         //connection = DriverManager.getConnection(server+"/"+schema+"?user="+user+"&password="+passwdord+"&zeroDateTimeBehavior=convertToNull");
         connection.setAutoCommit(false);
 
-        TestHelper.dropTables(connection);
-        TestHelper.createTables(connection);
-        TestHelper.insertTestData(connection,1_000_000);
+        try {
+            TestHelper.dropTables(connection);
+            TestHelper.createTables(connection);
+            TestHelper.insertTestData(connection, 1_000_000);
+        }catch (RuntimeSqlException e){
+            SQLException exception = (SQLException) e.getCause();
+            while(exception!=null){
+                exception.printStackTrace();
+                exception = exception.getNextException();
+            }
+        }
 
     }
 

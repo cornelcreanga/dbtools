@@ -97,7 +97,7 @@ public class TestHelper {
                 if (random.nextInt(100) == 0)
                     ps.setNull(3, Types.LONGVARCHAR);
                 else
-                    ps.setCharacterStream(3, new StringReader(generateString(300 + random.nextInt(1000))));
+                    ps.setString(3, generateString(300 + random.nextInt(1000)));
                 if (random.nextInt(100) == 0)
                     ps.setNull(4, Types.LONGVARBINARY);
                 else

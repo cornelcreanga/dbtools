@@ -202,7 +202,8 @@ public class StatementOperations {
 
     public static void writeCharacterStream(PreparedStatement ps, int index, String data) throws SQLException {
         StringReader reader = new StringReader(data);
-        ps.setCharacterStream(index, reader, data.length());
+        //ps.setCharacterStream(index, reader, data.length()); - not supported by some jdbc drivers
+        ps.setString(index,data);
     }
 
     public static void writeBinary(PreparedStatement ps, int index, byte[] bytes) throws SQLException {
