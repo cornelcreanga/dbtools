@@ -8,8 +8,6 @@ import com.ccreanga.random.RandomNameGeneratorFactory;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.StringReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Connection;
@@ -29,23 +27,11 @@ public class TestHelper {
 
     private static RandomNameGenerator generator = RandomNameGeneratorFactory.generator(Language.FANTASY);
 
-    public static void dropTables(Connection connection) {
+    public static void runSqlFile(Connection connection,String fileName) {
         ScriptRunner scriptRunner = new ScriptRunner(connection);
-        URL file = Thread.currentThread().getContextClassLoader().getResource("drop_pgres.sql");
+        URL file = Thread.currentThread().getContextClassLoader().getResource(fileName);
         if (file == null)
-            throw new RuntimeException("cannot find drop.sql");
-        try {
-            scriptRunner.runScript(new FileReader(file.getFile()));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void createTables(Connection connection) {
-        ScriptRunner scriptRunner = new ScriptRunner(connection);
-        URL file = Thread.currentThread().getContextClassLoader().getResource("create_pgres.sql");
-        if (file == null)
-            throw new RuntimeException("cannot find create.sql");
+            throw new RuntimeException("cannot find "+fileName);
         try {
             scriptRunner.runScript(new FileReader(file.getFile()));
         } catch (FileNotFoundException e) {
@@ -202,6 +188,15 @@ public class TestHelper {
         int dayOfYear = randBetween(1, gc.getActualMaximum(Calendar.DAY_OF_YEAR));
         gc.set(Calendar.DAY_OF_YEAR, dayOfYear);
         return gc.getTime().getTime();
+    }
+
+    public static void handleSqlException(Exception e){
+        SQLException exception = (SQLException) e.getCause();
+        while(exception!=null){
+            exception.printStackTrace();
+            exception = exception.getNextException();
+        }
+
     }
 
 

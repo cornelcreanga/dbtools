@@ -1,12 +1,12 @@
-#testDatasource:
-#  user: root
-#  passwdord: root
-#  schema: test
-#  server: jdbc:mysql://127.0.0.1:3306
-#  db: MYSQL
-testDatasource:
+mySqlDatasource:
+  user: root
+  password: root
+  schema: test
+  server: jdbc:mysql://127.0.0.1:3306
+  db: MYSQL
+postgreSqlDatasource:
   user: test
-  passwdord: test
+  password: test
   schema: test
   server: jdbc:postgresql://127.0.0.1:5432
   db: POSTGRES
