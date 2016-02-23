@@ -151,7 +151,14 @@ public class DBToolsApplication {
         if (cmd.hasOption(AN) && !cmd.hasOption(EXPORT)) {
             DbConnection connection1 = connection(dialect,host,schema,user,password,true);
             DbConnection connection2 = connection(dialect,host,schema,user,password,false);
-            anonymizeDatabase(connection1,connection2,schema,new DataAnonymizer(cmd.getOptionValue(AN)));
+            try {
+                anonymizeDatabase(connection1, connection2, schema, new DataAnonymizer(cmd.getOptionValue(AN)));
+            }catch (Exception e){
+                System.out.println("An exception occured during the anonymization process, the full stracktrace is");
+                e.printStackTrace();
+            }
+            connection1.close();
+            connection2.close();
             return;
         }
 
@@ -163,8 +170,14 @@ public class DBToolsApplication {
             }
             String[] export = cmd.getOptionValues(EXPORT);
             DbConnection connection =connection(dialect,host,schema,user,password,true);
+            try {
+                exportDatabase(connection,schema,export[0],export[1],export[2].equalsIgnoreCase("y"),dataAnonymizer);
+            }catch (Exception e){
+                System.out.println("An exception occured during the export process, the full stracktrace is");
+                e.printStackTrace();
+            }
 
-            exportDatabase(connection,schema,export[0],export[1],export[2].equalsIgnoreCase("y"),dataAnonymizer);
+            connection.close();
         }
 
     }

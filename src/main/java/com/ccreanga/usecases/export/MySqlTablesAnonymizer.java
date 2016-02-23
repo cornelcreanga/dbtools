@@ -4,20 +4,14 @@ import com.ccreanga.jdbc.BasicModelOperations;
 import com.ccreanga.jdbc.DatabaseException;
 import com.ccreanga.jdbc.ResultSetOperations;
 import com.ccreanga.jdbc.StatementOperations;
-import com.ccreanga.jdbc.model.DbConnection;
-import com.ccreanga.jdbc.model.Key;
-import com.ccreanga.jdbc.model.Schema;
-import com.ccreanga.jdbc.model.Table;
+import com.ccreanga.jdbc.model.*;
 import com.ccreanga.util.FormatUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MySqlTablesAnonymizer {
@@ -35,10 +29,32 @@ public class MySqlTablesAnonymizer {
         BasicModelOperations model = new BasicModelOperations();
 
         for (String tableName : tables) {
-            Table table = model.getTable(readConnection, schema.getName(), tableName).get();//todo - check for present
+            Optional<Table> optTable = model.getTable(readConnection, schema.getName(), tableName);
+            if (!optTable.isPresent()){
+                System.out.println("Cannot find the table "+tableName+" in schema "+schema.getName());
+                continue;
+            }
+            Table table = optTable.get();
+
+
             Set<String> columns = anonymizer.getTableColumnsToAnonymize(tableName);
+            Set<String> tableColumns = model.getColumns(readConnection,schema.getName(),tableName).
+                    stream().
+                    map(Column::getName).
+                    collect(Collectors.toSet());
+            boolean skip = false;
+            for (String columnToAnonymize : columns) {
+                if (!tableColumns.contains(columnToAnonymize)) {
+                    System.out.println("table " + tableName + " does not have the column " + columnToAnonymize + "; the anonymizatio on this table was skipped");
+                    skip = true;
+                    break;
+                }
+            }
+            if (skip)
+                continue;
 
             List<Key> primaryKeys = model.getTablePrimaryKeys(readConnection,schema.getName(),tableName);
+
 
             String selectData = "select " +
                     String.join(",", columns.stream().collect(Collectors.toList())) +

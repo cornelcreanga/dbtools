@@ -1,8 +1,10 @@
 package com.ccreanga.usecases.export;
 
+import com.ccreanga.AnonymizerException;
 import com.ccreanga.anonymizer.Anonymizer;
 import org.apache.commons.beanutils.BeanUtils;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +33,13 @@ public class DataAnonymizer{
         }
 
         Yaml yaml = new Yaml();
-        Map<String, Object> data = (Map<String, Object>) yaml.load(input);
+        Map<String, Object> data = null;
+        try {
+            data = (Map<String, Object>) yaml.load(input);
+        }catch (YAMLException e){
+            System.out.println("cannot load file:"+rules + " as a valid yaml file, error is:"+e.getMessage());
+            throw new AnonymizerException(e);
+        }
         anonymize = (Boolean)data.get("anonymize");
         HashMap<String,List<HashMap>> tables = (HashMap) data.get("data");
 
@@ -48,6 +56,7 @@ public class DataAnonymizer{
                     clazz = Class.forName(type);
                 } catch (ClassNotFoundException e) {
                     System.out.println("cannot found class:"+type);
+                    throw new AnonymizerException(e);
                 }
 
                 Anonymizer processor = null;
@@ -62,6 +71,7 @@ public class DataAnonymizer{
 
                 } catch (InstantiationException  | IllegalAccessException | InvocationTargetException e) {
                     System.out.println("exception during anonmyzer setup:"+e.getMessage());
+                    throw new AnonymizerException(e);
                 }
 
                 anonymizers.put(tableName+"."+columnName,processor);
