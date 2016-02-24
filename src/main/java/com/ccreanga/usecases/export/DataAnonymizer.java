@@ -102,7 +102,7 @@ public class DataAnonymizer{
     }
 
     public Set<String> getTableColumnsToAnonymize(String table){
-        Set<String> columns = new HashSet<>();
+        Set<String> columns = new LinkedHashSet<>();
         Set<String> keys = anonymizers.keySet();
         for (String next : keys) {
             int index = next.indexOf('.');

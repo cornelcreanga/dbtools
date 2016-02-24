@@ -1,5 +1,6 @@
 package com.ccreanga.usecases.export;
 
+import com.ccreanga.anonymizer.Anonymizer;
 import com.ccreanga.jdbc.BasicModelOperations;
 import com.ccreanga.jdbc.DatabaseException;
 import com.ccreanga.jdbc.Operations;
@@ -85,12 +86,18 @@ public class MySqlTablesAnonymizer {
                 long t1 = System.currentTimeMillis();
                 long totalTime = 0, startTime = t1;
 
-
                 while (rs.next()) {
                     for (int i = 0; i < columnsNo; i++) {
                         try {
                             Object value = ResultSetOperations.readValue(rs, i + 1, types[i]);
-                            StatementOperations.setValue(ps,i+1,types[i],value);
+                            Object valueToWrite = value;
+                            if (value!=null){
+                                Optional<Anonymizer> optional = anonymizer.getAnonymizer(table.getName(),rs.getMetaData().getColumnName(i+1));
+                                if (optional.isPresent()){
+                                    valueToWrite = optional.get().anonymize(value);
+                                }
+                            }
+                            StatementOperations.setValue(ps,i+1,types[i],valueToWrite);
                         } catch (Exception e) {
                             throw new DatabaseException(e);
                         }

@@ -35,6 +35,7 @@ public class AnonymizerConsumer implements Consumer<List<Object>> {
                     if (original!=null)
                         objects.set(index,anonymizer.anonymize(original));
                 }
+                index++;
             }
 
         }
