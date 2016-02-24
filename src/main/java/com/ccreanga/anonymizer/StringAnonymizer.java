@@ -1,6 +1,7 @@
 package com.ccreanga.anonymizer;
 
-import org.apache.commons.lang3.RandomStringUtils;
+
+import com.ccreanga.RandomStringUtils;
 
 public class StringAnonymizer implements Anonymizer{
 

@@ -1,6 +1,7 @@
 package com.ccreanga.usecases.export;
 
-import org.apache.commons.codec.binary.Hex;
+import com.ccreanga.util.Encoding;
+
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 
@@ -42,7 +43,7 @@ public class MySQLCSVConvertor {
         }
 
         if (value instanceof byte[]) {
-            return Hex.encodeHexString((byte[])value);
+            return Encoding.encodeHexString((byte[])value);
         }
         throw new RuntimeException("cannot convert value;unknown type:" + value.getClass());
     }
