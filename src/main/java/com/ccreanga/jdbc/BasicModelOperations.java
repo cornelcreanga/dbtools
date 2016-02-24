@@ -5,11 +5,12 @@ import com.ccreanga.jdbc.model.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BasicModelOperations {
+public abstract class BasicModelOperations implements Operations {
 
     //SELECT reltuples AS approximate_row_count FROM pg_class WHERE relname = 'test_types';Postgresql
     //SELECT pg_relation_size(oid)  FROM pg_class where relname = 'test_types';
@@ -17,6 +18,7 @@ public class BasicModelOperations {
     //select DATA_LENGTH/AVG_ROW_LENGTH from INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'test_types';
     //SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'test_types';
 
+    @Override
     public List<Schema> getSchemas(DbConnection connection) {
         List<Schema> schemas = new ArrayList<>(16);
         try (ResultSet rs = connection.meta().getCatalogs()) {
@@ -29,6 +31,7 @@ public class BasicModelOperations {
         return schemas;
     }
 
+    @Override
     public Optional<Table> getTable(DbConnection connection, String schema, String table) {
         List<Table> list = getTables(connection,schema,table);
         if (list.size()==0)
@@ -36,11 +39,13 @@ public class BasicModelOperations {
         return Optional.of(list.get(0));
     }
 
-    public List<Table> getTables(DbConnection connection, String schema) {
+    @Override
+    public List<Table> getAllTables(DbConnection connection, String schema) {
         return getTables(connection,schema,"%");
     }
 
-    public List<Table> getTables(DbConnection connection, String schema,String tablePattern) {
+    @Override
+    public List<Table> getTables(DbConnection connection, String schema, String tablePattern) {
         List<Table> tables = new ArrayList<>(16);
         try (ResultSet rs = connection.meta().getTables(schema, "%", tablePattern, new String[]{"TABLE"})) {
             while(rs.next()) {
@@ -66,6 +71,7 @@ public class BasicModelOperations {
         throw new IllegalArgumentException("unhandled dialect " + connection.getDialect());
     }
 
+    @Override
     public List<Column> getColumns(DbConnection connection, String schema, String table) {
 
         List<Column> columns = new ArrayList<>(16);
@@ -94,6 +100,7 @@ public class BasicModelOperations {
         return columns;
     }
 
+    @Override
     public List<Key> getTablePrimaryKeys(DbConnection connection, String schema, String table) {
         List<Key> keys = new ArrayList<>(16);
         try (ResultSet rs = connection.meta().getPrimaryKeys(schema, "%", table)) {
@@ -117,6 +124,7 @@ public class BasicModelOperations {
         return relations;
     }
 
+    @Override
     public List<Relation> getTableImportedKeys(DbConnection connection, String schema, String table) {
         try (ResultSet rs = connection.meta().getImportedKeys(schema, "%", table)) {
             return buildRelations(rs);
@@ -125,6 +133,7 @@ public class BasicModelOperations {
         }
     }
 
+    @Override
     public List<Relation> getTableExportedKeys(DbConnection connection, String schema, String table) {
         try (ResultSet rs = connection.meta().getExportedKeys(schema, "%", table)) {
             return buildRelations(rs);
@@ -134,22 +143,15 @@ public class BasicModelOperations {
     }
 
 
-//    public static void main(String[] args) throws Exception {
-////        Class.forName("com.mysql.jdbc.Driver");
-////        Connection connectionIn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/test?user=root&password=root");
-////        _tmpExporter exporter = new _tmpExporter();
-////
-////        MySQLCSVWriterConsumer mySQLCSVWriter = new MySQLCSVWriterConsumer("/tmp/test2.txt");
-////        exporter.exportData(connectionIn, Dialect.MYSQL, new BasicModelOperations().getTables(connectionIn, "test", Dialect.MYSQL), mySQLCSVWriter);
-////        mySQLCSVWriter.close();
-////        Connection connectionIn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/web_vbp_prod", "cornel", "cornel");
-////        connectionIn.setAutoCommit(false);
-////        Connection connectionOut = DriverManager.getConnection("jdbc:postgresql://localhost:5432/web_vbp_dev", "cornel", "cornel");
-////        connectionOut.setAutoCommit(false);
-//
-//
-////        Connection connectionIn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/test?user=root&password=root");
-////        Database db  = new Database(connectionIn);
-////        System.out.println(db);
-//    }
+    protected Object singleResultQuery(DbConnection connection,String query){
+        try(Statement st = connection.getConnection().createStatement()){
+            ResultSet rs = st.executeQuery(query);
+            if (rs.next()){
+                return rs.getObject(1);
+            }
+            return null;
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+    }
 }

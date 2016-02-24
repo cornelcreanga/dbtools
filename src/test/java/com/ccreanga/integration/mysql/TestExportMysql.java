@@ -1,6 +1,10 @@
 package com.ccreanga.integration.mysql;
 
 import com.ccreanga.DBToolsApplication;
+import com.ccreanga.jdbc.Dialect;
+import com.ccreanga.jdbc.MySqlOperations;
+import com.ccreanga.jdbc.Operations;
+import com.ccreanga.jdbc.model.DbConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +43,11 @@ public class TestExportMysql {
 
     @Test
     public void testExport(){
-
+        Operations operations = new MySqlOperations();
+        DbConnection dbConnection = new DbConnection(setup.getConnection(), Dialect.MYSQL);
+        System.out.println(operations.getNoOfRows(dbConnection,schema,"test_types"));
+        System.out.println(operations.getAvgRowSize(dbConnection,schema,"test_types"));
+        System.out.println(operations.getTableSize(dbConnection,schema,"test_types"));
     }
 
     public void setUser(String user) {

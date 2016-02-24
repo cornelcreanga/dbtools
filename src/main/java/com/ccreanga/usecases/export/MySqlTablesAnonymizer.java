@@ -2,6 +2,8 @@ package com.ccreanga.usecases.export;
 
 import com.ccreanga.jdbc.BasicModelOperations;
 import com.ccreanga.jdbc.DatabaseException;
+import com.ccreanga.jdbc.Operations;
+import com.ccreanga.jdbc.OperationsFactory;
 import com.ccreanga.jdbc.ResultSetOperations;
 import com.ccreanga.jdbc.StatementOperations;
 import com.ccreanga.jdbc.model.*;
@@ -26,7 +28,7 @@ public class MySqlTablesAnonymizer {
         Set<String> tables = anonymizer.getTablesToAnonymize();
         DecimalFormat df = FormatUtil.decimalFormatter();
 
-        BasicModelOperations model = new BasicModelOperations();
+        Operations model = OperationsFactory.createOperations(readConnection.getDialect());
 
         for (String tableName : tables) {
             Optional<Table> optTable = model.getTable(readConnection, schema.getName(), tableName);

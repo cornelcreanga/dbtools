@@ -2,6 +2,11 @@ package com.ccreanga.integration.postgresql;
 
 import com.ccreanga.DBToolsApplication;
 import com.ccreanga.integration.mysql.MySqlDbSetup;
+import com.ccreanga.jdbc.Dialect;
+import com.ccreanga.jdbc.MySqlOperations;
+import com.ccreanga.jdbc.Operations;
+import com.ccreanga.jdbc.PostgreSqlOperations;
+import com.ccreanga.jdbc.model.DbConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +46,11 @@ public class TestExportPostgreSql {
 
     @Test
     public void testExport(){
+        Operations operations = new PostgreSqlOperations();
+        DbConnection dbConnection = new DbConnection(setup.getConnection(), Dialect.POSTGRESQL);
+        System.out.println(operations.getNoOfRows(dbConnection,schema,"test_types"));
+        System.out.println(operations.getAvgRowSize(dbConnection,schema,"test_types"));
+        System.out.println(operations.getTableSize(dbConnection,schema,"test_types"));
 
     }
 

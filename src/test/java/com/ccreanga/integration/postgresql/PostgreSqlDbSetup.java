@@ -31,5 +31,7 @@ public class PostgreSqlDbSetup implements DbSetup {
         connection.close();
     }
 
-
+    public Connection getConnection() {
+        return connection;
+    }
 }

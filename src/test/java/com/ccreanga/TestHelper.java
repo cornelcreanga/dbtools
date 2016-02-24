@@ -1,6 +1,10 @@
 package com.ccreanga;
 
+import com.ccreanga.jdbc.Dialect;
+import com.ccreanga.jdbc.MySqlOperations;
+import com.ccreanga.jdbc.Operations;
 import com.ccreanga.jdbc.RuntimeSqlException;
+import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.random.Language;
 import com.ccreanga.random.RandomNameGenerator;
 import com.ccreanga.random.RandomNameGeneratorFactory;
@@ -151,7 +155,6 @@ public class TestHelper {
             }
             ps.executeBatch();
             connection.commit();
-
         } catch (SQLException e) {
             throw new RuntimeSqlException(e);
         }

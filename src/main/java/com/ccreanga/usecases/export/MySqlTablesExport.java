@@ -2,6 +2,8 @@ package com.ccreanga.usecases.export;
 
 import com.ccreanga.jdbc.BasicModelOperations;
 import com.ccreanga.jdbc.GenericException;
+import com.ccreanga.jdbc.Operations;
+import com.ccreanga.jdbc.OperationsFactory;
 import com.ccreanga.jdbc.TableOperations;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.DbConnection;
@@ -26,12 +28,12 @@ public class MySqlTablesExport {
     }
 
     public void exportTables(DbConnection connection, Schema schema, String tablePattern, String folderName, boolean override) {
-        BasicModelOperations model = new BasicModelOperations();
+        Operations model = OperationsFactory.createOperations(connection.getDialect());
         File folder = createFolder(folderName);
         File operations = createOperationsFile(folder);
 
         try (Writer opWriter = new BufferedWriter(new FileWriter(operations))) {
-            List<Table> tables = model.getTables(connection, schema.getName());
+            List<Table> tables = model.getAllTables(connection, schema.getName());
             tables.stream().filter(t -> Wildcard.matches(t.getName(), tablePattern)).forEach(t -> {
 
                         System.out.println("\nProcessing table:" + t.getName());
