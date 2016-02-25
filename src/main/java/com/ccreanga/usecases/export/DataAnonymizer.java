@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.*;
 
 public class DataAnonymizer{
@@ -22,12 +23,19 @@ public class DataAnonymizer{
 
     public DataAnonymizer(String rules){
         InputStream input = null;
-        File ruleFile = new File(rules);
+
+
+        URL url = Thread.currentThread().getContextClassLoader().getResource(rules);
+        if (url==null)
+            throw new RuntimeException("can't locate the file "+rules+" in the classpath");
+        File ruleFile = new File(url.getFile());
+
+        //File ruleFile = new File(rules);
         if (!ruleFile.exists()){
             throw new RuntimeException("cannot find the file:"+rules);
         }
         try {
-            input = new FileInputStream(new File(rules));
+            input = new FileInputStream(ruleFile);
         } catch (FileNotFoundException e) {
             System.out.println("cannot found file:"+rules);
         }

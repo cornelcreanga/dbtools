@@ -33,7 +33,7 @@ public class DBToolsApplication {
 
         HelpFormatter formatter = new HelpFormatter();
         formatter.setWidth(120);
-        String host=null,user=null,schema=null;
+        String host = null, user = null, schema = null;
         char[] password = null;
 
         Option springAnsiEnabled = Option.builder("s").longOpt("spring.output.ansi.enabled").hasArgs().build();
@@ -107,30 +107,30 @@ public class DBToolsApplication {
         CommandLine cmd = parser.parse(options, args, false);
         Dialect dialect = Dialect.MYSQL;
 
-        if (cmd.hasOption(DIALECT)){
+        if (cmd.hasOption(DIALECT)) {
             try {
                 dialect = Dialect.valueOf(cmd.getOptionValue(DIALECT));
-            }catch (IllegalArgumentException e){
-                System.out.println("Don't understand dialect "+cmd.getOptionValue(DIALECT));
+            } catch (IllegalArgumentException e) {
+                System.out.println("Don't understand dialect " + cmd.getOptionValue(DIALECT));
                 formatter.printHelp("dbtools", options);
                 System.exit(1);
             }
-        }else{
-            System.out.println("No dialect specified - using by default "+dialect);
+        } else {
+            System.out.println("No dialect specified - using by default " + dialect);
         }
 
         if (!cmd.hasOption(HOST)) {
             System.out.println("host is mandatory");
             formatter.printHelp("dbtools", options);
             System.exit(1);
-        }else{
+        } else {
             host = cmd.getOptionValue(HOST);
         }
         if (!cmd.hasOption(USER)) {
             System.out.println("user is mandatory");
             formatter.printHelp("dbtools", options);
             System.exit(1);
-        }else{
+        } else {
             user = cmd.getOptionValue(USER);
         }
 
@@ -138,7 +138,7 @@ public class DBToolsApplication {
             System.out.println("schema is mandatory");
             formatter.printHelp("dbtools", options);
             System.exit(1);
-        }else{
+        } else {
             schema = cmd.getOptionValue(SCHEMA);
         }
         if (!cmd.hasOption(PASSWORD)) {
@@ -149,16 +149,15 @@ public class DBToolsApplication {
 
         //anonymize database
         if (cmd.hasOption(AN) && !cmd.hasOption(EXPORT)) {
-            DbConnection connection1 = connection(dialect,host,schema,user,password,true);
-            DbConnection connection2 = connection(dialect,host,schema,user,password,false);
-            try {
-                anonymizeDatabase(connection1, connection2, schema, new DataAnonymizer(cmd.getOptionValue(AN)));
-            }catch (Exception e){
+            try (
+                    DbConnection readConnection = connection(dialect, host, schema, user, password, true);
+                    DbConnection writeConnection = connection(dialect, host, schema, user, password, false);
+            ) {
+                anonymizeDatabase(readConnection, writeConnection, schema, new DataAnonymizer(cmd.getOptionValue(AN)));
+            } catch (Exception e) {
                 System.out.println("An exception occured during the anonymization process, the full stracktrace is");
                 e.printStackTrace();
             }
-            connection1.close();
-            connection2.close();
             return;
         }
 
@@ -169,30 +168,29 @@ public class DBToolsApplication {
                 dataAnonymizer = new DataAnonymizer(cmd.getOptionValue(AN));
             }
             String[] export = cmd.getOptionValues(EXPORT);
-            DbConnection connection =connection(dialect,host,schema,user,password,true);
-            try {
-                exportDatabase(connection,schema,export[0],export[1],export[2].equalsIgnoreCase("y"),dataAnonymizer);
-            }catch (Exception e){
+
+            try(DbConnection connection = connection(dialect, host, schema, user, password, true)) {
+                exportDatabase(connection, schema, export[0], export[1], export[2].equalsIgnoreCase("y"), dataAnonymizer);
+            } catch (Exception e) {
                 System.out.println("An exception occured during the export process, the full stracktrace is");
                 e.printStackTrace();
             }
 
-            connection.close();
         }
 
     }
 
-    private static void anonymizeDatabase(DbConnection readConnection,DbConnection writeConnection,String schema, DataAnonymizer dataAnonymizer) {
+    private static void anonymizeDatabase(DbConnection readConnection, DbConnection writeConnection, String schema, DataAnonymizer dataAnonymizer) {
         MySqlTablesAnonymizer mySqlTablesAnonymizer = new MySqlTablesAnonymizer(dataAnonymizer);
 
         long t1 = System.currentTimeMillis();
-        mySqlTablesAnonymizer.anonymizeTables(readConnection,writeConnection,new Schema(schema));
+        mySqlTablesAnonymizer.anonymizeTables(readConnection, writeConnection, new Schema(schema));
         long t2 = System.currentTimeMillis();
         System.out.println((t2 - t1) / 1000);
 
     }
 
-    private static void exportDatabase(DbConnection connection,String schema,String pattern,String folder, boolean overwrite, DataAnonymizer dataAnonymizer) {
+    private static void exportDatabase(DbConnection connection, String schema, String pattern, String folder, boolean overwrite, DataAnonymizer dataAnonymizer) {
         MySqlTablesExport mySqlTablesExport = dataAnonymizer == null ?
                 new MySqlTablesExport() :
                 new MySqlTablesExport(dataAnonymizer);
@@ -201,20 +199,20 @@ public class DBToolsApplication {
         mySqlTablesExport.exportTables(connection, new Schema(schema), pattern, folder, overwrite);
         long t2 = System.currentTimeMillis();
         DecimalFormat df = FormatUtil.decimalFormatter();
-        System.out.println("Export finished in "+df.format((double)(t2 - t1) / 1000)+" seconds.");
+        System.out.println("Export finished in " + df.format((double) (t2 - t1) / 1000) + " seconds.");
     }
 
-    private static DbConnection connection(Dialect dialect,String host, String schema, String user, char[] password,boolean readOnly) {
+    private static DbConnection connection(Dialect dialect, String host, String schema, String user, char[] password, boolean readOnly) {
         try {
             Connection connection;
-            if (dialect==Dialect.MYSQL) {
+            if (dialect == Dialect.MYSQL) {
                 Class.forName("com.mysql.jdbc.Driver");
                 connection = DriverManager.getConnection("jdbc:mysql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password) + "&zeroDateTimeBehavior=convertToNull");
-            }else if (dialect==Dialect.POSTGRESQL) {
+            } else if (dialect == Dialect.POSTGRESQL) {
                 Class.forName("org.postgresql.Driver");
                 connection = DriverManager.getConnection("jdbc:postgresql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password));
-            }else{
-                throw new IllegalArgumentException("unknown dialect:"+dialect);
+            } else {
+                throw new IllegalArgumentException("unknown dialect:" + dialect);
             }
 
             connection.setAutoCommit(false);

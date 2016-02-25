@@ -8,7 +8,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 @Data
-public class DbConnection {
+public class DbConnection implements AutoCloseable {
 
     private final Connection connection;
     private final Dialect dialect;

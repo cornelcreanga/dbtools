@@ -22,6 +22,12 @@ public class TableOperations {
         long totalTime = 0,t1 = System.currentTimeMillis(), startTime = t1;
         DecimalFormat df = FormatUtil.decimalFormatter();
 
+        //try to use statistics
+        Operations operations = OperationsFactory.createOperations(connection.getDialect());
+        long tableSize = operations.getTableSize(connection,table.getSchema(),table.getName());
+        long tableRows = operations.getNoOfRows(connection,table.getSchema(),table.getName());
+
+        System.out.println("Table size is "+FormatUtil.readableSize(tableSize)+", estimated number of rows is "+FormatUtil.readableSize(tableRows));
 
         try (Statement st = connection.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             if (connection.getDialect()==Dialect.MYSQL)
@@ -47,7 +53,7 @@ public class TableOperations {
                     long time = System.currentTimeMillis() - t1;
                     t1 = System.currentTimeMillis();
                     totalTime = System.currentTimeMillis() - startTime;
-                    String message =  "\rProcessing 10000 rows in " + df.format((double)time/1000) + " seconds, total processed lines="+df.format(counter)+", total time="+df.format((double)totalTime/1000);
+                    String message =  "\rProcessing 10000 rows in " + df.format((double)time/1000) + " seconds, total processed lines="+FormatUtil.readableSize(counter)+", total time="+df.format((double)totalTime/1000)+" seconds.";
                     System.out.print(message);
                 }
                 counter++;
@@ -56,7 +62,7 @@ public class TableOperations {
                 System.out.print("\rNo rows found");
             else{
                 totalTime = System.currentTimeMillis() - startTime;
-                System.out.print("\rExported "+counter+" rows in "+df.format((double)totalTime/1000)+" seconds.");
+                System.out.print("\rExported "+FormatUtil.readableSize(counter-1)+" rows in "+df.format((double)totalTime/1000)+" seconds.");
             }
 
 

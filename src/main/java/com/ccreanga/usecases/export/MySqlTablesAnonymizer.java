@@ -72,6 +72,14 @@ public class MySqlTablesAnonymizer {
 
             int columnsNo = columns.size()+primaryKeys.size();
 
+            Operations operations = OperationsFactory.createOperations(readConnection.getDialect());
+            long tableSize = operations.getTableSize(readConnection,table.getSchema(),table.getName());
+            long tableRows = operations.getNoOfRows(readConnection,table.getSchema(),table.getName());
+
+            System.out.println("Table size is "+FormatUtil.readableSize(tableSize)+", estimated number of rows is "+FormatUtil.readableSize(tableRows));
+
+
+
             try (Statement st = readConnection.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                  PreparedStatement ps = writeConnection.getConnection().prepareStatement(updateData)) {
                 st.setFetchSize(Integer.MIN_VALUE);//todo - this is just for mysql!
@@ -112,7 +120,7 @@ public class MySqlTablesAnonymizer {
                         long time = System.currentTimeMillis() - t1;
                         t1 = System.currentTimeMillis();
                         totalTime = System.currentTimeMillis() - startTime;
-                        String message =  "\rProcessing 10000 rows in " + df.format((double)time/1000) + " seconds, total processed lines="+df.format(counter)+", total time="+df.format((double)totalTime/1000);
+                        String message =  "\rAnonymizing 10000 rows in " + df.format((double)time/1000) + " seconds, total processed lines="+FormatUtil.readableSize(counter)+", total time="+df.format((double)totalTime/1000)+" seconds.";
                         System.out.print(message);
                     }
 
