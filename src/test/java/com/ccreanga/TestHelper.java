@@ -8,8 +8,10 @@ import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.random.Language;
 import com.ccreanga.random.RandomNameGenerator;
 import com.ccreanga.random.RandomNameGeneratorFactory;
+import com.ccreanga.util.FileUtil;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.math.BigDecimal;
@@ -33,11 +35,11 @@ public class TestHelper {
 
     public static void runSqlFile(Connection connection,String fileName) {
         ScriptRunner scriptRunner = new ScriptRunner(connection);
-        URL file = Thread.currentThread().getContextClassLoader().getResource(fileName);
+        File file = FileUtil.locateFile(fileName);
         if (file == null)
             throw new RuntimeException("cannot find "+fileName);
         try {
-            scriptRunner.runScript(new FileReader(file.getFile()));
+            scriptRunner.runScript(new FileReader(file));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

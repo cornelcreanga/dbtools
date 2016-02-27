@@ -1,6 +1,7 @@
 package com.ccreanga.random;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ public class RandomNameGenerator {
     final private static char[] VOWELS = {'a', 'e', 'i', 'o', 'u', 'ä', 'ö', 'õ', 'ü', 'y'};
     final private static char[] CONSONANTS = {'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y'};
 
-    private String fileName;
+    private File file;
 
     private class Sylabs {
         private String[] syl = null;
@@ -140,13 +141,13 @@ public class RandomNameGenerator {
     }
 
 
-    public RandomNameGenerator(String fileName) throws IOException {
-        this.fileName = fileName;
+    public RandomNameGenerator(File file) throws IOException {
+        this.file = file;
         refresh();
     }
 
     public void refresh() throws IOException {
-        try (FileReader input = new FileReader(fileName)) {
+        try (FileReader input = new FileReader(file)) {
             BufferedReader bufRead = new BufferedReader(input);
             String line = "";
             ArrayList<String> preList = new ArrayList<>();

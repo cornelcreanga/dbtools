@@ -2,6 +2,7 @@ package com.ccreanga.usecases.export;
 
 import com.ccreanga.AnonymizerException;
 import com.ccreanga.anonymizer.Anonymizer;
+import com.ccreanga.util.FileUtil;
 import org.apache.commons.beanutils.BeanUtils;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -23,15 +24,8 @@ public class DataAnonymizer {
 
     public DataAnonymizer(String rules) {
         InputStream input = null;
-
-
-        URL url = Thread.currentThread().getContextClassLoader().getResource(rules);
-        if (url == null)
-            throw new RuntimeException("can't locate the file " + rules + " in the classpath");
-        File ruleFile = new File(url.getFile());
-
-        //File ruleFile = new File(rules);
-        if (!ruleFile.exists()) {
+        File ruleFile = FileUtil.locateFile(rules);
+        if (ruleFile==null) {
             throw new RuntimeException("cannot find the file:" + rules);
         }
         try {
