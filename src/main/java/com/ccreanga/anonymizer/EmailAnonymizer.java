@@ -10,7 +10,7 @@ public class EmailAnonymizer implements Anonymizer {
 
     @Override
     public Object anonymize(Object original) {
-        return randomNameGenerator.compose(2)+"."+randomNameGenerator.compose(2)+"@domain.com";
+        return randomNameGenerator.compose(2) + "." + randomNameGenerator.compose(2) + "@domain.com";
     }
 
 }

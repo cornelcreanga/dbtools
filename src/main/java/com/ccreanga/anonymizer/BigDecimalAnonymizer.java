@@ -1,9 +1,8 @@
 package com.ccreanga.anonymizer;
 
 import java.math.BigDecimal;
-import java.util.Random;
 
-public class BigDecimalAnonymizer implements Anonymizer{
+public class BigDecimalAnonymizer implements Anonymizer {
 
     private BigDecimal rangeMin;
     private BigDecimal rangeMax;

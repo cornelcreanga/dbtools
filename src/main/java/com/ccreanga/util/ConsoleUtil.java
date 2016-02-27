@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 
 public class ConsoleUtil {
 
-    private static String readLine(String format, Object... args){
+    private static String readLine(String format, Object... args) {
         if (System.console() != null) {
             return System.console().readLine(format, args);
         }

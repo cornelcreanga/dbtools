@@ -21,10 +21,7 @@ public class DataAnonymizerTest {
 
     @Before
     public void staticSetup() throws Exception {
-        URL url = Thread.currentThread().getContextClassLoader().getResource("anonymizer1.yml");
-        if (url==null)
-            throw new RuntimeException("can't locate the file anonymizer1.yml in the classpath");
-        dataAnonymizer = new DataAnonymizer(url.getFile());
+        dataAnonymizer = new DataAnonymizer("anonymizer1.yml");
     }
 
 

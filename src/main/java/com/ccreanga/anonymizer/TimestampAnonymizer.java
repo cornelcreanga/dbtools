@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
-public class TimestampAnonymizer implements Anonymizer{
+public class TimestampAnonymizer implements Anonymizer {
 
     private int secondsNegDeviation = 1000;
     private int secondsPosDeviation = 1000;
@@ -14,10 +14,10 @@ public class TimestampAnonymizer implements Anonymizer{
     @Override
     public Object anonymize(Object original) {
         Random r = new Random();
-        int days = r.nextInt(secondsNegDeviation+secondsPosDeviation);
+        int days = r.nextInt(secondsNegDeviation + secondsPosDeviation);
         Calendar calendar = GregorianCalendar.getInstance();
-        calendar.setTime((Date)original);
-        calendar.add(Calendar.SECOND,days-secondsNegDeviation);
+        calendar.setTime((Date) original);
+        calendar.add(Calendar.SECOND, days - secondsNegDeviation);
         return new Timestamp(calendar.getTimeInMillis());
     }
 

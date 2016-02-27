@@ -18,7 +18,7 @@ public class MySQLCSVConvertor {
         if (value instanceof String)
             return (String) value;
         if (value instanceof BigDecimal) {
-            return ((BigDecimal)value).toPlainString();
+            return ((BigDecimal) value).toPlainString();
         }
         if ((value instanceof Float) || (value instanceof Double)) {
             return value.toString();
@@ -27,23 +27,23 @@ public class MySQLCSVConvertor {
             return value.toString();
         }
         if (value instanceof java.sql.Date) {
-            return dateFormatter.format(((java.sql.Date)value).toLocalDate());
+            return dateFormatter.format(((java.sql.Date) value).toLocalDate());
         }
         if (value instanceof java.sql.Time) {
-            return timeFormatter.format(((java.sql.Time)value).toLocalTime());
+            return timeFormatter.format(((java.sql.Time) value).toLocalTime());
         }
 
         if (value instanceof java.sql.Timestamp) {
-            return dateTimeFormatter.format(((java.sql.Timestamp)value).toLocalDateTime());
+            return dateTimeFormatter.format(((java.sql.Timestamp) value).toLocalDateTime());
         }
 
         if (value instanceof Boolean) {
-            Boolean b = (Boolean)value;
-            return b ?"1":"0";
+            Boolean b = (Boolean) value;
+            return b ? "1" : "0";
         }
 
         if (value instanceof byte[]) {
-            return Encoding.encodeHexString((byte[])value);
+            return Encoding.encodeHexString((byte[]) value);
         }
         throw new RuntimeException("cannot convert value;unknown type:" + value.getClass());
     }

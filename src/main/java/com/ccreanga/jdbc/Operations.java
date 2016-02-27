@@ -1,11 +1,6 @@
 package com.ccreanga.jdbc;
 
-import com.ccreanga.jdbc.model.Column;
-import com.ccreanga.jdbc.model.DbConnection;
-import com.ccreanga.jdbc.model.Key;
-import com.ccreanga.jdbc.model.Relation;
-import com.ccreanga.jdbc.model.Schema;
-import com.ccreanga.jdbc.model.Table;
+import com.ccreanga.jdbc.model.*;
 
 import java.util.List;
 import java.util.Optional;

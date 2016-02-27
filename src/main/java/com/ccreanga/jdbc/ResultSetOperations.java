@@ -28,47 +28,47 @@ public class ResultSetOperations {
             }
             case Types.VARCHAR: {
                 String s = rs.getString(pos);
-                return rs.wasNull()?null:s;
+                return rs.wasNull() ? null : s;
             }
             case Types.CHAR:
                 String s = rs.getString(pos);
-                return rs.wasNull()?null:s;
+                return rs.wasNull() ? null : s;
             case Types.DATE: {
                 Date d = rs.getDate(pos);
-                return rs.wasNull()?null:d;
+                return rs.wasNull() ? null : d;
             }
             case Types.TIME: {
                 Time t = rs.getTime(pos);
-                return rs.wasNull()?null:t;
+                return rs.wasNull() ? null : t;
             }
             case Types.TIMESTAMP: {
                 Timestamp t = rs.getTimestamp(pos);
-                return rs.wasNull()?null:t;
+                return rs.wasNull() ? null : t;
             }
             case Types.LONGVARCHAR: {
                 Clob clob = rs.getClob(pos);
-                return rs.wasNull()?null:readClob(clob);
+                return rs.wasNull() ? null : readClob(clob);
             }
             case Types.CLOB: {
                 Clob clob = rs.getClob(pos);
-                return rs.wasNull()?null:readClob(clob);
+                return rs.wasNull() ? null : readClob(clob);
             }
             case Types.BLOB: {
                 Blob blob = rs.getBlob(pos);
-                return rs.wasNull()?null:readBlob(blob);
+                return rs.wasNull() ? null : readBlob(blob);
             }
             case Types.LONGVARBINARY: {
                 InputStream reader = rs.getBinaryStream(pos);
-                return rs.wasNull()?null:readBinary(reader);
+                return rs.wasNull() ? null : readBinary(reader);
             }
             case Types.VARBINARY: {
                 InputStream reader = rs.getBinaryStream(pos);
-                return rs.wasNull()?null:readBinary(reader);
+                return rs.wasNull() ? null : readBinary(reader);
 
             }
             case Types.BINARY: {
                 InputStream reader = rs.getBinaryStream(pos);
-                return rs.wasNull()?null:readBinary(reader);
+                return rs.wasNull() ? null : readBinary(reader);
 
             }
             case Types.DECIMAL: {
@@ -100,7 +100,7 @@ public class ResultSetOperations {
                 BigDecimal b = rs.getBigDecimal(pos);
                 return rs.wasNull() ? null : b;
             }
-            case Types.SQLXML:{
+            case Types.SQLXML: {
                 SQLXML sqlxml = rs.getSQLXML(pos);
                 return rs.wasNull() ? null : sqlxml.getString();
             }
@@ -133,7 +133,7 @@ public class ResultSetOperations {
 
     public static String readClob(Clob clob) throws Exception {
         StringWriter writer = new StringWriter();
-        readClob(clob,writer);
+        readClob(clob, writer);
         return writer.toString();
     }
 
@@ -143,7 +143,7 @@ public class ResultSetOperations {
         return writer.toString();
     }
 
-    public static void readBlob(Blob blob ,OutputStream out) throws Exception {
+    public static void readBlob(Blob blob, OutputStream out) throws Exception {
         byte[] buffer = new byte[4 * 1024];
         int count;
         InputStream reader = blob.getBinaryStream();

@@ -1,6 +1,5 @@
 package com.ccreanga.usecases.export;
 
-import com.ccreanga.jdbc.BasicModelOperations;
 import com.ccreanga.jdbc.GenericException;
 import com.ccreanga.jdbc.Operations;
 import com.ccreanga.jdbc.OperationsFactory;

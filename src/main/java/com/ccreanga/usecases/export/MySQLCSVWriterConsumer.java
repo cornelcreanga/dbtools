@@ -14,7 +14,7 @@ public class MySQLCSVWriterConsumer implements Consumer<List<Object>>, Closeable
     MySQLCSVConvertor mySQLCSVConvertor = new MySQLCSVConvertor();
 
     public MySQLCSVWriterConsumer(File file) throws IOException {
-        printer = new CSVPrinter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"),1024*1024), CSVFormat.MYSQL);
+        printer = new CSVPrinter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"), 1024 * 1024), CSVFormat.MYSQL);
     }
 
     @Override

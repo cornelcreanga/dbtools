@@ -22,7 +22,7 @@ public abstract class BasicModelOperations implements Operations {
     public List<Schema> getSchemas(DbConnection connection) {
         List<Schema> schemas = new ArrayList<>(16);
         try (ResultSet rs = connection.meta().getCatalogs()) {
-            while(rs.next()) {
+            while (rs.next()) {
                 schemas.add(new Schema(rs.getString(1)));
             }
         } catch (Exception e) {
@@ -33,22 +33,22 @@ public abstract class BasicModelOperations implements Operations {
 
     @Override
     public Optional<Table> getTable(DbConnection connection, String schema, String table) {
-        List<Table> list = getTables(connection,schema,table);
-        if (list.size()==0)
+        List<Table> list = getTables(connection, schema, table);
+        if (list.size() == 0)
             return Optional.empty();
         return Optional.of(list.get(0));
     }
 
     @Override
     public List<Table> getAllTables(DbConnection connection, String schema) {
-        return getTables(connection,schema,"%");
+        return getTables(connection, schema, "%");
     }
 
     @Override
     public List<Table> getTables(DbConnection connection, String schema, String tablePattern) {
         List<Table> tables = new ArrayList<>(16);
         try (ResultSet rs = connection.meta().getTables(schema, "%", tablePattern, new String[]{"TABLE"})) {
-            while(rs.next()) {
+            while (rs.next()) {
                 String tableName = rs.getString(3);
                 Table table = new Table(
                         rs.getString(1),
@@ -143,10 +143,10 @@ public abstract class BasicModelOperations implements Operations {
     }
 
 
-    protected Object singleResultQuery(DbConnection connection,String query){
-        try(Statement st = connection.getConnection().createStatement()){
+    protected Object singleResultQuery(DbConnection connection, String query) {
+        try (Statement st = connection.getConnection().createStatement()) {
             ResultSet rs = st.executeQuery(query);
-            if (rs.next()){
+            if (rs.next()) {
                 return rs.getObject(1);
             }
             return null;

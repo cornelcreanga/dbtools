@@ -104,7 +104,15 @@ public class DBToolsApplication {
         options.addOption(springAnsiEnabled);
 
         DefaultParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse(options, args, false);
+        CommandLine cmd = null;
+        try {
+            cmd = parser.parse(options, args, false);
+        } catch (UnrecognizedOptionException e) {
+            System.out.println(e.getMessage());
+            formatter.printHelp("dbtools", options);
+            System.exit(1);
+        }
+
         Dialect dialect = Dialect.MYSQL;
 
         if (cmd.hasOption(DIALECT)) {
@@ -169,7 +177,7 @@ public class DBToolsApplication {
             }
             String[] export = cmd.getOptionValues(EXPORT);
 
-            try(DbConnection connection = connection(dialect, host, schema, user, password, true)) {
+            try (DbConnection connection = connection(dialect, host, schema, user, password, true)) {
                 exportDatabase(connection, schema, export[0], export[1], export[2].equalsIgnoreCase("y"), dataAnonymizer);
             } catch (Exception e) {
                 System.out.println("An exception occured during the export process, the full stracktrace is");
@@ -217,6 +225,8 @@ public class DBToolsApplication {
 
             connection.setAutoCommit(false);
             connection.setReadOnly(readOnly);
+            if (readOnly)
+                connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             return new DbConnection(connection, dialect);
         } catch (SQLException e) {
             System.out.println("cannot connect to server:" + e.getMessage());

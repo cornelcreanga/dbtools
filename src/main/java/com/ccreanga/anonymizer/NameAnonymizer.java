@@ -5,10 +5,7 @@ import com.ccreanga.random.Language;
 import com.ccreanga.random.RandomNameGenerator;
 import com.ccreanga.random.RandomNameGeneratorFactory;
 
-import java.io.IOException;
-import java.net.URL;
-
-public class NameAnonymizer implements Anonymizer{
+public class NameAnonymizer implements Anonymizer {
 
     private RandomNameGenerator generator = RandomNameGeneratorFactory.generator(Language.FANTASY);
 
@@ -16,14 +13,14 @@ public class NameAnonymizer implements Anonymizer{
     private int wordNumber = 1;
     private boolean rememberValues;
 
-    public Object anonymize(Object original){
-        if (wordNumber==1)
+    public Object anonymize(Object original) {
+        if (wordNumber == 1)
             return generator.compose(sylNumber);
         //compose the text from multiple words
         StringBuilder sb = new StringBuilder();
-        for(int i= 0;i<wordNumber;i++){
+        for (int i = 0; i < wordNumber; i++) {
             sb.append(generator.compose(sylNumber));
-            if (i!=(wordNumber-1))
+            if (i != (wordNumber - 1))
                 sb.append(" ");
         }
         return sb.toString();

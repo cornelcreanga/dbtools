@@ -3,12 +3,7 @@ package com.ccreanga.jdbc;
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.sql.*;
 
 public class StatementOperations {
 
@@ -19,7 +14,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.BIT);
                     } else {
-                        ps.setBoolean(pos, (Boolean)value);
+                        ps.setBoolean(pos, (Boolean) value);
                     }
                     break;
                 }
@@ -27,7 +22,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.BOOLEAN);
                     } else {
-                        ps.setBoolean(pos, (Boolean)value);
+                        ps.setBoolean(pos, (Boolean) value);
                     }
                     break;
                 }
@@ -35,7 +30,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.BIGINT);
                     } else {
-                        ps.setLong(pos, (Long)value);
+                        ps.setLong(pos, ((Number) value).longValue());
                     }
                     break;
                 }
@@ -43,7 +38,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.INTEGER);
                     } else {
-                        ps.setInt(pos, (Integer)value);
+                        ps.setInt(pos, ((Number) value).intValue());
                     }
                     break;
                 }
@@ -67,7 +62,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.DATE);
                     } else {
-                        ps.setDate(pos, (Date)value);
+                        ps.setDate(pos, (Date) value);
                     }
                     break;
                 }
@@ -75,7 +70,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.TIME);
                     } else {
-                        ps.setTime(pos, (Time)value);
+                        ps.setTime(pos, (Time) value);
                     }
                     break;
                 }
@@ -83,7 +78,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.TIMESTAMP);
                     } else {
-                        ps.setTimestamp(pos, (Timestamp)value);
+                        ps.setTimestamp(pos, (Timestamp) value);
                     }
                     break;
                 }
@@ -91,7 +86,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.LONGVARCHAR);
                     } else {
-                        writeCharacterStream(ps, pos, (String)value);
+                        writeCharacterStream(ps, pos, (String) value);
                     }
                     break;
                 }
@@ -108,7 +103,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.CLOB);
                     } else {//todo
-                        writeCharacterStream(ps, pos, (String)value);
+                        writeCharacterStream(ps, pos, (String) value);
                     }
                     break;
 
@@ -144,7 +139,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.DECIMAL);
                     } else {
-                        ps.setBigDecimal(pos, (BigDecimal)value);
+                        ps.setBigDecimal(pos, (BigDecimal) value);
                     }
                     break;
                 }
@@ -152,7 +147,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.FLOAT);
                     } else {
-                        ps.setFloat(pos, (Float)value);
+                        ps.setFloat(pos, ((Number) value).floatValue());
                     }
                     break;
                 }
@@ -160,7 +155,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.DOUBLE);
                     } else {
-                        ps.setDouble(pos, (Double)value);
+                        ps.setDouble(pos, ((Number) value).doubleValue());
                     }
                     break;
                 }
@@ -168,7 +163,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.SMALLINT);
                     } else {
-                        ps.setShort(pos, (Short)value);
+                        ps.setShort(pos, ((Number) value).shortValue());
                     }
                     break;
                 }
@@ -176,7 +171,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.TINYINT);
                     } else {
-                        ps.setByte(pos, (Byte)value);
+                        ps.setByte(pos, ((Number) value).byteValue());
                     }
                     break;
                 }
@@ -184,7 +179,7 @@ public class StatementOperations {
                     if (value == null) {
                         ps.setNull(pos, Types.NUMERIC);
                     } else {
-                        ps.setBigDecimal(pos, (BigDecimal)value);
+                        ps.setBigDecimal(pos, (BigDecimal) value);
                     }
                     break;
                 }
@@ -203,7 +198,7 @@ public class StatementOperations {
     public static void writeCharacterStream(PreparedStatement ps, int index, String data) throws SQLException {
         StringReader reader = new StringReader(data);
         //ps.setCharacterStream(index, reader, data.length()); - not supported by some jdbc drivers
-        ps.setString(index,data);
+        ps.setString(index, data);
     }
 
     public static void writeBinary(PreparedStatement ps, int index, byte[] bytes) throws SQLException {
