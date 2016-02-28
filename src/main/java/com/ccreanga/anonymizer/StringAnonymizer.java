@@ -13,6 +13,10 @@ public class StringAnonymizer implements Anonymizer {
         return RandomStringUtils.randomAlphabetic(len);
     }
 
+    public String anonymize(int count) {
+        return RandomStringUtils.randomAlphabetic(count);
+    }
+
     public void setCount(int count) {
         this.count = count;
     }

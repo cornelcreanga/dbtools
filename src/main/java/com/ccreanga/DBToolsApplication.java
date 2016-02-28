@@ -194,7 +194,8 @@ public class DBToolsApplication {
         long t1 = System.currentTimeMillis();
         mySqlTablesAnonymizer.anonymizeTables(readConnection, writeConnection, new Schema(schema));
         long t2 = System.currentTimeMillis();
-        System.out.println((t2 - t1) / 1000);
+        DecimalFormat df = FormatUtil.decimalFormatter();
+        System.out.println("Anonymization finished in " + df.format((double) (t2 - t1) / 1000) + " seconds.");
 
     }
 

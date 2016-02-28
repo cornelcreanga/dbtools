@@ -38,6 +38,11 @@ public class MySqlTablesAnonymizer {
             List<Column> tableColumns = model.getColumns(readConnection, schema.getName(), tableName);
             List<Key> primaryKeys = model.getTablePrimaryKeys(readConnection, schema.getName(), tableName);
             List<Column> primaryColumns = Table.getTablePrimaryKeyColumns(tableColumns, primaryKeys);
+            if (primaryColumns.size()==0){
+                System.out.println("table " + tableName + " does not have any primary keys - it cannot be updated");
+                break;
+            }
+
 
             Set<String> columnNames = tableColumns.stream().map(Column::getName).collect(Collectors.toSet());
             boolean skip = false;

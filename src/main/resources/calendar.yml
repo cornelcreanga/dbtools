@@ -1,0 +1,7 @@
+---
+anonymize: yes
+data:
+  event_stamp_test:
+      - field: icaldata
+        type: com.ccreanga.anonymizer.ICalAnonymizer
+...
