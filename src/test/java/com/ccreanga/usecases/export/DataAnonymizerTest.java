@@ -21,7 +21,10 @@ public class DataAnonymizerTest {
 
     @Before
     public void staticSetup() throws Exception {
-        dataAnonymizer = new DataAnonymizer("anonymizer1.yml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("anonymizer1.yml");
+        if (url==null)
+            throw new RuntimeException("cannot load anonymizer1.yml");
+        dataAnonymizer = new DataAnonymizer(url.getFile());
     }
 
 

@@ -54,7 +54,7 @@ public class MySqlTablesAnonymizer {
 
             List<Column> columnsToRead = new ArrayList<>(filteredColumns);
             columnsToRead.addAll(primaryColumns);
-
+            System.out.println("\nProcessing table " + table.getName());
             TableOperations tableOperations = new TableOperations();
             MySQLAnonymizerConsumer consumer = new MySQLAnonymizerConsumer(anonymizer, writeConnection, table, filteredColumns, primaryColumns);
             try {

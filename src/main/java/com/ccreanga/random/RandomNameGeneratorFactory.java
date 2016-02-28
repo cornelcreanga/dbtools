@@ -4,6 +4,7 @@ import com.ccreanga.util.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 public class RandomNameGeneratorFactory {
@@ -12,10 +13,10 @@ public class RandomNameGeneratorFactory {
 
     static {
         try {
-            File grammar = FileUtil.locateFile("fantasy.txt");
-            if (grammar==null)
+            InputStream in = FileUtil.classPathResource("fantasy.txt");
+            if (in==null)
                 throw new RuntimeException("can't locate the file fantasy.txt in the classpath");
-            fantasy = new RandomNameGenerator(grammar);
+            fantasy = new RandomNameGenerator(in);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

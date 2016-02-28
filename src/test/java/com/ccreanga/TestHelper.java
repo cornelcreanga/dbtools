@@ -10,10 +10,7 @@ import com.ccreanga.random.RandomNameGenerator;
 import com.ccreanga.random.RandomNameGeneratorFactory;
 import com.ccreanga.util.FileUtil;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Connection;
@@ -35,12 +32,10 @@ public class TestHelper {
 
     public static void runSqlFile(Connection connection,String fileName) {
         ScriptRunner scriptRunner = new ScriptRunner(connection);
-        File file = FileUtil.locateFile(fileName);
-        if (file == null)
-            throw new RuntimeException("cannot find "+fileName);
+        InputStream in = FileUtil.classPathResource(fileName);
         try {
-            scriptRunner.runScript(new FileReader(file));
-        } catch (FileNotFoundException e) {
+            scriptRunner.runScript(new InputStreamReader(in, "UTF-8"));
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

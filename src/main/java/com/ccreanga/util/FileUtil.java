@@ -1,17 +1,20 @@
 package com.ccreanga.util;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 public class FileUtil {
 
-    public static File locateFile(String file){
+
+    public static InputStream classPathResource(String file) {
         URL url = Thread.currentThread().getContextClassLoader().getResource(file);
-        if (url != null)
-            return new File(url.getFile());
-        else{
-            File f = new File(file);
-            return f.exists()?f:null;
+        if (url==null)
+            throw new RuntimeException("cannot find resource "+file+" in classpath");
+        try {
+            return url.openStream();
+        } catch (IOException e) {
+            throw new RuntimeException("cannot open resource "+file,e);
         }
     }
 

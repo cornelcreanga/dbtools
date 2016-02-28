@@ -1,9 +1,7 @@
 package com.ccreanga.random;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.ArrayList;
 
 public class RandomNameGenerator {
@@ -13,7 +11,7 @@ public class RandomNameGenerator {
     final private static char[] VOWELS = {'a', 'e', 'i', 'o', 'u', 'ä', 'ö', 'õ', 'ü', 'y'};
     final private static char[] CONSONANTS = {'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y'};
 
-    private File file;
+    private InputStream in;
 
     private class Sylabs {
         private String[] syl = null;
@@ -141,14 +139,14 @@ public class RandomNameGenerator {
     }
 
 
-    public RandomNameGenerator(File file) throws IOException {
-        this.file = file;
+    public RandomNameGenerator(InputStream in) throws IOException {
+        this.in = in;
         refresh();
     }
 
     public void refresh() throws IOException {
-        try (FileReader input = new FileReader(file)) {
-            BufferedReader bufRead = new BufferedReader(input);
+        try {
+            BufferedReader bufRead = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             String line = "";
             ArrayList<String> preList = new ArrayList<>();
             ArrayList<String> surList = new ArrayList<>();
@@ -168,6 +166,8 @@ public class RandomNameGenerator {
             pre = new Sylabs(preList);
             mid = new Sylabs(midList);
             sur = new Sylabs(surList);
+        }finally{
+            in.close();
         }
     }
 

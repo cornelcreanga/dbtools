@@ -35,7 +35,7 @@ public class MySqlTablesExport {
             List<Table> tables = model.getAllTables(connection, schema.getName());
             tables.stream().filter(t -> Wildcard.matches(t.getName(), tablePattern)).forEach(t -> {
 
-                        System.out.println("\nProcessing table:" + t.getName());
+                        System.out.println("\nProcessing table " + t.getName());
                         List<Column> columns = model.getColumns(connection, schema.getName(), t.getName());
                         File dumpFile = new File(folder.getAbsolutePath() + File.separator + t.getName() + ".txt");
                         if (dumpFile.exists()) {
