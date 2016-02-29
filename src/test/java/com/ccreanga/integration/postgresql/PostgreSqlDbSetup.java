@@ -13,15 +13,12 @@ public class PostgreSqlDbSetup implements DbSetup {
     private Connection connection;
 
     @Override
-    public void initialize(String server,String schema,String user,String password) throws Exception {
-        Class.forName("org.postgresql.Driver");
-        connection = DriverManager.getConnection(server+"/"+schema+"?user="+user+"&password="+password);
-        connection.setAutoCommit(false);
+    public void initialize(Connection connection) throws Exception {
 
         try {
             TestHelper.runSqlFile(connection,"drop_postgresql.sql");
             TestHelper.runSqlFile(connection,"create_postgresql.sql");
-            TestHelper.insertTestData(connection, 100_000);
+            TestHelper.insertTestData(connection, 10_000);
         }catch (RuntimeSqlException e){
             TestHelper.handleSqlException(e);        }
     }

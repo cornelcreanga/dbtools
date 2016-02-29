@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class MySQLAnonymizerConsumer implements Consumer<List<Object>>, Closeable {
+public class SqlAnonymizerConsumer implements Consumer<List<Object>>, Closeable {
 
     private DataAnonymizer anonymizer;
     private DbConnection writeConnection;
@@ -26,7 +26,7 @@ public class MySQLAnonymizerConsumer implements Consumer<List<Object>>, Closeabl
     private int counter = 1;
     private PreparedStatement ps;
 
-    public MySQLAnonymizerConsumer(DataAnonymizer anonymizer, DbConnection writeConnection, Table table, List<Column> columns, List<Column> primaryKeyColumns) {
+    public SqlAnonymizerConsumer(DataAnonymizer anonymizer, DbConnection writeConnection, Table table, List<Column> columns, List<Column> primaryKeyColumns) {
         this.anonymizer = anonymizer;
         this.writeConnection = writeConnection;
         this.table = table;

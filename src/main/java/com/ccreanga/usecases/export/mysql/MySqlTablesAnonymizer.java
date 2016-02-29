@@ -1,10 +1,12 @@
-package com.ccreanga.usecases.export;
+package com.ccreanga.usecases.export.mysql;
 
 import com.ccreanga.jdbc.DatabaseException;
 import com.ccreanga.jdbc.Operations;
 import com.ccreanga.jdbc.OperationsFactory;
 import com.ccreanga.jdbc.TableOperations;
 import com.ccreanga.jdbc.model.*;
+import com.ccreanga.usecases.export.DataAnonymizer;
+import com.ccreanga.usecases.export.SqlAnonymizerConsumer;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -61,7 +63,7 @@ public class MySqlTablesAnonymizer {
             columnsToRead.addAll(primaryColumns);
             System.out.println("\nProcessing table " + table.getName());
             TableOperations tableOperations = new TableOperations();
-            MySQLAnonymizerConsumer consumer = new MySQLAnonymizerConsumer(anonymizer, writeConnection, table, filteredColumns, primaryColumns);
+            SqlAnonymizerConsumer consumer = new SqlAnonymizerConsumer(anonymizer, writeConnection, table, filteredColumns, primaryColumns);
             try {
                 consumer.start();
                 tableOperations.processTableRows(readConnection, table, columnsToRead, consumer);

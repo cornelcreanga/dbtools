@@ -4,8 +4,8 @@ import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
 import com.ccreanga.usecases.export.DataAnonymizer;
-import com.ccreanga.usecases.export.MySqlTablesAnonymizer;
-import com.ccreanga.usecases.export.MySqlTablesExport;
+import com.ccreanga.usecases.export.mysql.MySqlTablesAnonymizer;
+import com.ccreanga.usecases.export.SqlTablesExport;
 import com.ccreanga.util.ConsoleUtil;
 import com.ccreanga.util.FormatUtil;
 import org.apache.commons.cli.*;
@@ -14,7 +14,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 
 
 @SpringBootApplication
@@ -199,12 +198,12 @@ public class DBToolsApplication {
     }
 
     private static void exportDatabase(DbConnection connection, String schema, String pattern, String folder, boolean overwrite, DataAnonymizer dataAnonymizer) {
-        MySqlTablesExport mySqlTablesExport = dataAnonymizer == null ?
-                new MySqlTablesExport() :
-                new MySqlTablesExport(dataAnonymizer);
+        SqlTablesExport sqlTablesExport = dataAnonymizer == null ?
+                new SqlTablesExport() :
+                new SqlTablesExport(dataAnonymizer);
 
         long t1 = System.currentTimeMillis();
-        mySqlTablesExport.exportTables(connection, new Schema(schema), pattern, folder, overwrite);
+        sqlTablesExport.exportTables(connection, new Schema(schema), pattern, folder, overwrite);
         long t2 = System.currentTimeMillis();
         System.out.println("Export finished in " + FormatUtil.formatMillis(t2-t1) + " seconds.");
     }

@@ -40,24 +40,30 @@ public class TestHelper {
         }
     }
 
-    public static void insertTestData(Connection connection, int rows) {
+    public static void insertTestData(Connection connection, int rows) throws SQLException {
+
+        if (rows>100_000)
+            throw new IllegalArgumentException("rows should be lower than 100000");
 
         long counter = 1;
-        try(Statement stmt = connection.createStatement()) {
+        try(PreparedStatement psParent = connection.prepareStatement("INSERT INTO parent(name) VALUES(?)",PreparedStatement.RETURN_GENERATED_KEYS);
+                PreparedStatement psChild = connection.prepareStatement("INSERT INTO child(parent_id,name) VALUES(?,?)",PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             for (int k = 0; k < rows; k++) {
                 String name = generator.compose(2);
-                stmt.executeUpdate("INSERT INTO parent(name) VALUES('"+ name + " " + generator.compose(2)+"')",Statement.RETURN_GENERATED_KEYS);
-                try(ResultSet rs = stmt.getGeneratedKeys()){
-                    if (rs.next()){
-                        int id=rs.getInt(1);
-                        stmt.executeUpdate("INSERT INTO child(parent_id,name) VALUES("+id+",'"+name + " " + generator.compose(2)+"')",Statement.RETURN_GENERATED_KEYS);
-                    }
-                }
-                if (counter%10000==0)
-                    connection.commit();
-                counter++;
+                psParent.setString(1, name);
+                psParent.addBatch();
             }
+
+            ResultSet rs = psParent.getGeneratedKeys();
+            while (rs.next()){
+                int id=rs.getInt(1);
+                psChild.setInt(1,id);
+                psChild.setString(2,generator.compose(2));
+                psChild.addBatch();
+            }
+
+            connection.commit();
         } catch (SQLException e) {
             throw new RuntimeSqlException(e);
         }
@@ -79,16 +85,22 @@ public class TestHelper {
                     ps.setString(1, generator.compose(2) + " " + generator.compose(2));
                 if (random.nextInt(100) == 0)
                     ps.setNull(2, Types.LONGVARBINARY);
-                else
-                    ps.setBinaryStream(2, new ByteArrayInputStream(generateBytes(300 + random.nextInt(1000))));
+                else{
+                    int len = 300 + random.nextInt(1000);
+                    ps.setBytes(2, generateBytes(len));
+                }
+
                 if (random.nextInt(100) == 0)
                     ps.setNull(3, Types.LONGVARCHAR);
                 else
                     ps.setString(3, generateString(300 + random.nextInt(1000)));
                 if (random.nextInt(100) == 0)
                     ps.setNull(4, Types.LONGVARBINARY);
-                else
-                    ps.setBinaryStream(4, new ByteArrayInputStream(generateBytes(300 + random.nextInt(1000))));
+                else{
+                    int len = 300 + random.nextInt(1000);
+                    ps.setBytes(4, generateBytes(len));
+                }
+
                 if (random.nextInt(100) == 0)
                     ps.setNull(5, Types.TIME);
                 else
@@ -139,13 +151,13 @@ public class TestHelper {
                     ps.setInt(16, random.nextInt(100));
 
                 ps.addBatch();
-                if (counter % 100 == 0)
+                if (counter % 500 == 0)
                     ps.executeBatch();
                 if (counter % 1000 == 0)
                     connection.commit();
-                if (counter % 10000==0) {
+                if (counter % 1000==0) {
                     t2 = System.currentTimeMillis();
-                    System.out.println("inserted 10k in:" + (t2 - t1));
+                    System.out.println("inserted 1k in:" + (t2 - t1));
                     t1 = t2;
                 }
                 counter++;

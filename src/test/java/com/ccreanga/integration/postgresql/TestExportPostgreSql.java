@@ -1,12 +1,10 @@
 package com.ccreanga.integration.postgresql;
 
 import com.ccreanga.DBToolsApplication;
-import com.ccreanga.integration.mysql.MySqlDbSetup;
 import com.ccreanga.jdbc.Dialect;
-import com.ccreanga.jdbc.MySqlOperations;
-import com.ccreanga.jdbc.Operations;
-import com.ccreanga.jdbc.PostgreSqlOperations;
 import com.ccreanga.jdbc.model.DbConnection;
+import com.ccreanga.jdbc.model.Schema;
+import com.ccreanga.usecases.export.SqlTablesExport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = DBToolsApplication.class)
@@ -32,25 +31,25 @@ public class TestExportPostgreSql {
     private String password;
     private String schema;
     private String server;
+    private Connection connection;
     private PostgreSqlDbSetup setup = new PostgreSqlDbSetup();
 
     @Before
     public void staticSetup() throws Exception {
-        setup.initialize(server,schema,user,password);
+        Class.forName("org.postgresql.Driver");
+        connection = DriverManager.getConnection(server+"/"+schema+"?user="+user+"&password="+password);
+        connection.setAutoCommit(false);
+        setup.initialize(connection);
     }
     @After
     public void staticTearDown() throws Exception {
         setup.close();
     }
 
-
     @Test
     public void testExport(){
-        Operations operations = new PostgreSqlOperations();
-        DbConnection dbConnection = new DbConnection(setup.getConnection(), Dialect.POSTGRESQL);
-        System.out.println(operations.getNoOfRows(dbConnection,schema,"test_types"));
-        System.out.println(operations.getAvgRowSize(dbConnection,schema,"test_types"));
-        System.out.println(operations.getTableSize(dbConnection,schema,"test_types"));
+        SqlTablesExport sqlTablesExport = new SqlTablesExport();
+        sqlTablesExport.exportTables(new DbConnection(connection,Dialect.POSTGRESQL), new Schema(schema), "*", "/tmp", true);
 
     }
 

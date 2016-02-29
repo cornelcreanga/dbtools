@@ -15,14 +15,14 @@ import java.sql.Types;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class MySqlTablesExport {
+public class SqlTablesExport {
 
     private DataAnonymizer anonymizer;
 
-    public MySqlTablesExport() {
+    public SqlTablesExport() {
     }
 
-    public MySqlTablesExport(DataAnonymizer anonymizer) {
+    public SqlTablesExport(DataAnonymizer anonymizer) {
         this.anonymizer = anonymizer;
     }
 
@@ -44,10 +44,10 @@ public class MySqlTablesExport {
                         }
                         TableOperations tableOperations = new TableOperations();
 
-                        try (MySQLCSVWriterConsumer mySQLCSVWriter = new MySQLCSVWriterConsumer(dumpFile)) {
+                        try (CloseableConsumer writerConsumer = CSVWriterFactory.getCSVWriter(connection.getDialect(),dumpFile)) {
                             Consumer<List<Object>> consumer = anonymizer == null ?
-                                    mySQLCSVWriter :
-                                    new AnonymizerConsumer(anonymizer, t, columns).andThen(mySQLCSVWriter);
+                                    writerConsumer :
+                                    new AnonymizerConsumer(anonymizer, t, columns).andThen(writerConsumer);
 
                             tableOperations.processTableRows(connection, t, columns, consumer);
                         } catch (IOException e) {

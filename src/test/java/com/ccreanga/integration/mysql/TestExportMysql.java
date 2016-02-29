@@ -2,9 +2,9 @@ package com.ccreanga.integration.mysql;
 
 import com.ccreanga.DBToolsApplication;
 import com.ccreanga.jdbc.Dialect;
-import com.ccreanga.jdbc.MySqlOperations;
-import com.ccreanga.jdbc.Operations;
 import com.ccreanga.jdbc.model.DbConnection;
+import com.ccreanga.jdbc.model.Schema;
+import com.ccreanga.usecases.export.SqlTablesExport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = DBToolsApplication.class)
@@ -30,11 +31,15 @@ public class TestExportMysql {
     private String password;
     private String schema;
     private String server;
+    private Connection connection;
     private MySqlDbSetup setup = new MySqlDbSetup();
 
     @Before
     public void staticSetup() throws Exception {
-        setup.initialize(server,schema,user,password);
+        Class.forName("com.mysql.jdbc.Driver");
+        connection = DriverManager.getConnection(server+"/"+schema+"?user="+user+"&password="+password+"&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=true");
+        connection.setAutoCommit(false);
+        setup.initialize(connection);
     }
     @After
     public void staticTearDown() throws Exception {
@@ -43,11 +48,8 @@ public class TestExportMysql {
 
     @Test
     public void testExport(){
-        Operations operations = new MySqlOperations();
-        DbConnection dbConnection = new DbConnection(setup.getConnection(), Dialect.MYSQL);
-        System.out.println(operations.getNoOfRows(dbConnection,schema,"test_types"));
-        System.out.println(operations.getAvgRowSize(dbConnection,schema,"test_types"));
-        System.out.println(operations.getTableSize(dbConnection,schema,"test_types"));
+        SqlTablesExport sqlTablesExport = new SqlTablesExport();
+        sqlTablesExport.exportTables(new DbConnection(connection,Dialect.MYSQL), new Schema(schema), "*", "/tmp", true);
     }
 
     public void setUser(String user) {
