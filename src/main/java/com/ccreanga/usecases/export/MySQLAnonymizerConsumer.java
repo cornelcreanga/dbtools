@@ -1,5 +1,6 @@
 package com.ccreanga.usecases.export;
 
+import com.ccreanga.GenericConfig;
 import com.ccreanga.anonymizer.Anonymizer;
 import com.ccreanga.jdbc.DatabaseException;
 import com.ccreanga.jdbc.StatementOperations;
@@ -64,9 +65,9 @@ public class MySQLAnonymizerConsumer implements Consumer<List<Object>>, Closeabl
             }
 
             ps.addBatch();
-            if (counter % 100 == 0)
+            if (counter % GenericConfig.batchRowsSize == 0)
                 ps.executeBatch();
-            if (counter % 1000 == 0)
+            if (counter % GenericConfig.commitRowsSize == 0)
                 writeConnection.getConnection().commit();
             counter++;
         } catch (Exception e) {
@@ -75,9 +76,11 @@ public class MySQLAnonymizerConsumer implements Consumer<List<Object>>, Closeabl
     }
 
     public void start() throws SQLException {
-        String updateData = "update " + table.getName() +
-                " set " + String.join(",", columns.stream().map(c -> c.getName() + "=?").collect(Collectors.toList())) +
-                " where " + String.join(" and ", primaryKeyColumns.stream().map(c -> c.getName() + "=?").collect(Collectors.toList()));
+        String updateData = String.format("update %s set %s where %s",
+                table.getName(),
+                String.join(",", columns.stream().map(c -> c.getName() + "=?").collect(Collectors.toList())),
+                String.join(" and ", primaryKeyColumns.stream().map(c -> c.getName() + "=?").collect(Collectors.toList()))
+        );
         ps = writeConnection.getConnection().prepareStatement(updateData);
     }
 

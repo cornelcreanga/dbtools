@@ -4,13 +4,6 @@ import java.text.DecimalFormat;
 
 public class FormatUtil {
 
-    public static DecimalFormat decimalFormatter() {
-        DecimalFormat df = new DecimalFormat("#########.###");
-        df.setGroupingUsed(true);
-        df.setGroupingSize(3);
-        return df;
-    }
-
     public static String readableSize(long size) {
         if (size <= 0) return "0";
         final String[] units = new String[]{"B", "kB", "MB", "GB", "TB"};
@@ -18,4 +11,10 @@ public class FormatUtil {
         return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
+    public static String formatMillis(long milliseconds){
+        DecimalFormat df = new DecimalFormat("#########.###");
+        df.setGroupingUsed(true);
+        df.setGroupingSize(3);
+        return df.format((double) milliseconds / 1000);
+    }
 }

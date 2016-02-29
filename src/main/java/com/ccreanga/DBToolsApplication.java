@@ -194,8 +194,7 @@ public class DBToolsApplication {
         long t1 = System.currentTimeMillis();
         mySqlTablesAnonymizer.anonymizeTables(readConnection, writeConnection, new Schema(schema));
         long t2 = System.currentTimeMillis();
-        DecimalFormat df = FormatUtil.decimalFormatter();
-        System.out.println("Anonymization finished in " + df.format((double) (t2 - t1) / 1000) + " seconds.");
+        System.out.println("Anonymization finished in " + FormatUtil.formatMillis(t2-t1) + " seconds.");
 
     }
 
@@ -207,8 +206,7 @@ public class DBToolsApplication {
         long t1 = System.currentTimeMillis();
         mySqlTablesExport.exportTables(connection, new Schema(schema), pattern, folder, overwrite);
         long t2 = System.currentTimeMillis();
-        DecimalFormat df = FormatUtil.decimalFormatter();
-        System.out.println("Export finished in " + df.format((double) (t2 - t1) / 1000) + " seconds.");
+        System.out.println("Export finished in " + FormatUtil.formatMillis(t2-t1) + " seconds.");
     }
 
     private static DbConnection connection(Dialect dialect, String host, String schema, String user, char[] password, boolean readOnly) {
@@ -216,10 +214,13 @@ public class DBToolsApplication {
             Connection connection;
             if (dialect == Dialect.MYSQL) {
                 Class.forName("com.mysql.jdbc.Driver");
-                connection = DriverManager.getConnection("jdbc:mysql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password) + "&zeroDateTimeBehavior=convertToNull");
+                connection = DriverManager.getConnection(
+                        String.format("jdbc:mysql://%s/%s?user=%s&password=%s&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=%s",
+                                host,schema,user,new String(password),MySqlConfig.rewriteBatchedStatements));
             } else if (dialect == Dialect.POSTGRESQL) {
                 Class.forName("org.postgresql.Driver");
-                connection = DriverManager.getConnection("jdbc:postgresql://" + host + "/" + schema + "?user=" + user + "&password=" + new String(password));
+                connection = DriverManager.getConnection(
+                        String.format("jdbc:postgresql://%s/%s?user=%s&password=%s",host,schema,user,new String(password)));
             } else {
                 throw new IllegalArgumentException("unknown dialect:" + dialect);
             }

@@ -1,5 +1,6 @@
 package com.ccreanga.jdbc;
 
+import com.ccreanga.GenericConfig;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Table;
@@ -13,15 +14,15 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static com.ccreanga.util.FormatUtil.readableSize;
+import static com.ccreanga.util.FormatUtil.*;
 
 public class TableOperations {
 
     public void processTableRows(DbConnection connection, Table table, List<Column> columns, Consumer<List<Object>> consumer) {
-
-        String selectData = "select " + String.join(",", columns.stream().map(Column::getName).collect(Collectors.toList())) + " from " + table.getName();
+        String selectData = String.format("select %s from %s",
+                String.join(",", columns.stream().map(Column::getName).collect(Collectors.toList())),
+                table.getName());
         long totalTime = 0, t1 = System.currentTimeMillis(), startTime = t1;
-        DecimalFormat df = FormatUtil.decimalFormatter();
 
         //try to use statistics
         Operations operations = OperationsFactory.createOperations(connection.getDialect());
@@ -50,12 +51,16 @@ public class TableOperations {
                     }
                 }
                 consumer.accept(line);
-                if (counter % 10000 == 0) {
+                if (counter % GenericConfig.progress == 0) {
                     long time = System.currentTimeMillis() - t1;
                     t1 = System.currentTimeMillis();
                     totalTime = System.currentTimeMillis() - startTime;
-                    String message = "\rProcessing 10000 rows in " + df.format((double) time / 1000) + " seconds, total processed lines=" + readableSize(counter) + ", total time=" + df.format((double) totalTime / 1000) + " seconds.";
-                    System.out.print(message);
+                    System.out.printf("\rProcessing %s rows in %s seconds, total processed lines=%s, total time=%s seconds.",
+                            GenericConfig.progress,
+                            formatMillis(time),
+                            readableSize(counter),
+                            formatMillis(totalTime)
+                            );
                 }
                 counter++;
             }
@@ -63,7 +68,10 @@ public class TableOperations {
                 System.out.print("\rNo rows found");
             else {
                 totalTime = System.currentTimeMillis() - startTime;
-                System.out.println("\rProcessed " + FormatUtil.readableSize(counter - 1) + " rows in " + df.format((double) totalTime / 1000) + " seconds.");
+                System.out.printf("\rProcessed %s rows in %s seconds.\n",
+                        readableSize(counter - 1),
+                        formatMillis(totalTime));
+
             }
 
 

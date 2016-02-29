@@ -29,7 +29,7 @@ public class MySqlTablesAnonymizer {
         for (String tableName : tables) {
             Optional<Table> optTable = model.getTable(readConnection, schema.getName(), tableName);
             if (!optTable.isPresent()) {
-                System.out.println("Cannot find the table " + tableName + " in schema " + schema.getName());
+                System.out.printf("Cannot find the table %s in schema %s\n",tableName,schema.getName());
                 continue;
             }
             Table table = optTable.get();
@@ -39,7 +39,7 @@ public class MySqlTablesAnonymizer {
             List<Key> primaryKeys = model.getTablePrimaryKeys(readConnection, schema.getName(), tableName);
             List<Column> primaryColumns = Table.getTablePrimaryKeyColumns(tableColumns, primaryKeys);
             if (primaryColumns.size()==0){
-                System.out.println("table " + tableName + " does not have any primary keys - it cannot be updated");
+                System.out.printf("table %s does not have any primary keys - it cannot be updated\n",tableName);
                 break;
             }
 
@@ -48,7 +48,7 @@ public class MySqlTablesAnonymizer {
             boolean skip = false;
             for (String columnToAnonymize : columns) {
                 if (!columnNames.contains(columnToAnonymize)) {
-                    System.out.println("table " + tableName + " does not have the column " + columnToAnonymize + "; the anonymization on this table was skipped");
+                    System.out.printf("table %s  does not have the column %s; the anonymization on this table was skipped\n",tableName,columnToAnonymize);
                     skip = true;
                     break;
                 }
