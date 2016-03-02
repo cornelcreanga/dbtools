@@ -33,8 +33,6 @@ public class DBToolsApplication {
         String host = null, user = null, schema = null;
         char[] password = null;
 
-        Option springAnsiEnabled = Option.builder("s").longOpt("spring.output.ansi.enabled").hasArgs().build();
-
         Option hostOption = Option.builder(HOST)
                 .valueSeparator(' ')
                 .numberOfArgs(1)
@@ -98,7 +96,6 @@ public class DBToolsApplication {
         options.addOption(schemaOption);
         options.addOption(exportOption);
         options.addOption(anonymizeOption);
-        options.addOption(springAnsiEnabled);
 
         DefaultParser parser = new DefaultParser();
         CommandLine cmd = null;
