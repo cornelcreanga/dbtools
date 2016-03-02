@@ -9,14 +9,12 @@ import com.ccreanga.usecases.export.SqlTablesExport;
 import com.ccreanga.util.ConsoleUtil;
 import com.ccreanga.util.FormatUtil;
 import org.apache.commons.cli.*;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 
-@SpringBootApplication
 public class DBToolsApplication {
 
 

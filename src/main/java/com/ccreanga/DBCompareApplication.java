@@ -1,8 +1,8 @@
 package com.ccreanga;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+
+
 public class DBCompareApplication {
 
     public static final String HOST1 = "host1";

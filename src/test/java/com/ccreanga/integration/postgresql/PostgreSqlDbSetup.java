@@ -25,7 +25,6 @@ public class PostgreSqlDbSetup implements DbSetup {
 
     @Override
     public void close() throws SQLException {
-        connection.close();
     }
 
     public Connection getConnection() {
