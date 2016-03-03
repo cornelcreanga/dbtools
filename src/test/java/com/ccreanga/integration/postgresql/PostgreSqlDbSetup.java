@@ -18,7 +18,7 @@ public class PostgreSqlDbSetup implements DbSetup {
         try {
             TestHelper.runSqlFile(connection,"drop_postgresql.sql");
             TestHelper.runSqlFile(connection,"create_postgresql.sql");
-            TestHelper.insertTestData(connection, 10_000);
+            TestHelper.insertTestData(connection, 1_000);
         }catch (RuntimeSqlException e){
             TestHelper.handleSqlException(e);        }
     }

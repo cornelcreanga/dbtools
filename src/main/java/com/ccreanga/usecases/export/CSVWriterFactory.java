@@ -2,6 +2,7 @@ package com.ccreanga.usecases.export;
 
 import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.usecases.export.mysql.MySqlCSVWriterConsumer;
+import com.ccreanga.usecases.export.postgresql.PostgreSqlCSVWriterConsumer;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,7 @@ public class CSVWriterFactory {
         if (dialect==Dialect.MYSQL){
             return new MySqlCSVWriterConsumer(file);
         }else if (dialect==Dialect.POSTGRESQL){
-            return new MySqlCSVWriterConsumer(file);//todo - change me
+            return new PostgreSqlCSVWriterConsumer(file);//todo - change me
         }else
             throw new IllegalArgumentException("unknown dialect:"+dialect);
     }

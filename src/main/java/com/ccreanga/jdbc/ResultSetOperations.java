@@ -38,7 +38,8 @@ public class ResultSetOperations {
                 return rs.wasNull() ? null : d;
             }
             case Types.TIME: {
-                Time t = rs.getTime(pos);
+                Timestamp t = rs.getTimestamp(pos);
+                //do not use rs.getTime(pos) as you'll lose the microseconds
                 return rs.wasNull() ? null : t;
             }
             case Types.TIMESTAMP: {
