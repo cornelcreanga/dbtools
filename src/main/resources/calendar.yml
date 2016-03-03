@@ -16,11 +16,11 @@ data:
       - field: firstname
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
-          syl: 2
+          sylNumber: 2
       - field: lastname
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
-          syl: 2
+          sylNumber: 2
 #  event_stamp_new:
 #      - field: icaldata
 #        type: com.ccreanga.anonymizer.ICalAnonymizer

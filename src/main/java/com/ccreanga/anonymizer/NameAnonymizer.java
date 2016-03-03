@@ -11,7 +11,7 @@ public class NameAnonymizer implements Anonymizer {
 
     private int sylNumber = 2;
     private int wordNumber = 1;
-    private boolean rememberValues;
+    private boolean rememberValues;//todo - not yet implemented
 
     public Object anonymize(Object original) {
         if (wordNumber == 1)

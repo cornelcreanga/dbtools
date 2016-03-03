@@ -6,6 +6,10 @@ public class AnonymizerException extends RuntimeException {
         super(message);
     }
 
+    public AnonymizerException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public AnonymizerException(Throwable cause) {
         super(cause);
     }
