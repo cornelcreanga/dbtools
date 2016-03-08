@@ -85,7 +85,4 @@ public class PostgreSqlCSVConvertor {
 
     }
 
-    public static void main(String[] args) {
-        System.out.println(Integer.toString(29, 8));
-    }
 }
