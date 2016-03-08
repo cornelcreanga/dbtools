@@ -3,6 +3,8 @@ package com.ccreanga.usecases.export;
 import com.ccreanga.jdbc.GenericException;
 import com.ccreanga.jdbc.Operations;
 import com.ccreanga.jdbc.OperationsFactory;
+import com.ccreanga.jdbc.ScriptGenerator;
+import com.ccreanga.jdbc.ScriptGeneratorFactory;
 import com.ccreanga.jdbc.TableOperations;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.DbConnection;
@@ -28,6 +30,7 @@ public class SqlTablesExport {
 
     public void exportTables(DbConnection connection, Schema schema, String tablePattern, String folderName, boolean override) {
         Operations model = OperationsFactory.createOperations(connection.getDialect());
+        ScriptGenerator generator = ScriptGeneratorFactory.createScriptGenerator(connection.getDialect());
         File folder = createFolder(folderName);
         File operations = createOperationsFile(folder);
 
@@ -56,7 +59,7 @@ public class SqlTablesExport {
                             throw new GenericException(e);
                         }
                         try {
-                            opWriter.write(loadInline(t, columns, folderName) + "\n");
+                            opWriter.write(generator.generateLoadCommand(t, columns, folderName) + "\n");
                         } catch (Exception e) {
                             throw new GenericException(e);
                         }
@@ -69,40 +72,6 @@ public class SqlTablesExport {
             throw new GenericException(e);
         }
 
-    }
-
-
-    private String loadInline(Table table, List<Column> columns, String folderName) {
-        StringBuilder sb = new StringBuilder("LOAD DATA LOCAL INFILE '" + folderName + File.separator + table.getName() + ".txt'" + " INTO TABLE `" + table.getName() + "` (");
-
-        boolean found = false;
-        for (Column c : columns) {
-            if (binaryType(c)) {
-                sb.append("@");
-                found = true;
-            }
-            sb.append(c.getName()).append(",");
-        }
-        sb.deleteCharAt(sb.length() - 1);
-
-        sb.append(")");
-        if (found) {
-            sb.append(" SET ");
-
-            for (Column c : columns) {
-                if (binaryType(c)) {
-                    sb.append(c.getName()).append("=UNHEX(@").append(c.getName()).append("),");
-                }
-            }
-            sb.deleteCharAt(sb.length() - 1);
-        }
-        sb.append(";");
-
-        return sb.toString();
-    }
-
-    private boolean binaryType(Column c) {
-        return ((c.getType() == Types.BLOB) || (c.getType() == Types.LONGVARBINARY) || (c.getType() == Types.VARBINARY) || (c.getType() == Types.BINARY));
     }
 
     private File createOperationsFile(File folder) {
