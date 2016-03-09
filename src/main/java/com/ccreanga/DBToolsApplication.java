@@ -102,9 +102,7 @@ public class DBToolsApplication {
         try {
             cmd = parser.parse(options, args, false);
         } catch (UnrecognizedOptionException e) {
-            System.out.println(e.getMessage());
-            formatter.printHelp("dbtools", options);
-            System.exit(1);
+            exit(e.getMessage(),formatter,options);
         }
 
         Dialect dialect = Dialect.MYSQL;
@@ -113,33 +111,25 @@ public class DBToolsApplication {
             try {
                 dialect = Dialect.valueOf(cmd.getOptionValue(DIALECT));
             } catch (IllegalArgumentException e) {
-                System.out.println("Don't understand dialect " + cmd.getOptionValue(DIALECT));
-                formatter.printHelp("dbtools", options);
-                System.exit(1);
+                exit("Don't understand dialect " + cmd.getOptionValue(DIALECT),formatter,options);
             }
         } else {
             System.out.println("No dialect specified - using by default " + dialect);
         }
 
         if (!cmd.hasOption(HOST)) {
-            System.out.println("host is mandatory");
-            formatter.printHelp("dbtools", options);
-            System.exit(1);
+            exit("host is mandatory",formatter,options);
         } else {
             host = cmd.getOptionValue(HOST);
         }
         if (!cmd.hasOption(USER)) {
-            System.out.println("user is mandatory");
-            formatter.printHelp("dbtools", options);
-            System.exit(1);
+            exit("user is mandatory",formatter,options);
         } else {
             user = cmd.getOptionValue(USER);
         }
 
         if (!cmd.hasOption(SCHEMA)) {
-            System.out.println("schema is mandatory");
-            formatter.printHelp("dbtools", options);
-            System.exit(1);
+            exit("schema is mandatory",formatter,options);
         } else {
             schema = cmd.getOptionValue(SCHEMA);
         }
@@ -177,7 +167,6 @@ public class DBToolsApplication {
                 System.out.println("An exception occured during the export process, the full stracktrace is");
                 e.printStackTrace();
             }
-
         }
 
     }
@@ -233,5 +222,10 @@ public class DBToolsApplication {
         }
     }
 
+    private static void exit(String message,HelpFormatter formatter,Options options){
+        System.out.println(message);
+        formatter.printHelp("dbtools", options);
+        System.exit(1);
+    }
 
 }
