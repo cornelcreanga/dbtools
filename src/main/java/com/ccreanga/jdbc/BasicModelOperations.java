@@ -103,7 +103,8 @@ public abstract class BasicModelOperations implements Operations {
     @Override
     public List<Key> getTablePrimaryKeys(DbConnection connection, String schema, String table) {
         List<Key> keys = new ArrayList<>(16);
-        try (ResultSet rs = connection.meta().getPrimaryKeys(schema, "%", table)) {
+        //todo
+        try (ResultSet rs = connection.meta().getPrimaryKeys(null, null, table)) {
             while (rs.next()) {
                 keys.add(new Key(rs.getString(1), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
             }

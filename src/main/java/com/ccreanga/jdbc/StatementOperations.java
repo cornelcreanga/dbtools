@@ -183,6 +183,17 @@ public class StatementOperations {
                     }
                     break;
                 }
+                case Types.SQLXML: {
+                    if (value == null) {
+                        ps.setNull(pos, Types.SQLXML);
+                    } else {
+                        SQLXML xmlVal = ps.getConnection().createSQLXML();
+                        xmlVal.setString((String)value);
+                        ps.setSQLXML(pos,xmlVal);
+                    }
+                    break;
+                }
+
 
                 default:
                     throw new RuntimeException("cannot read value;unknown type");

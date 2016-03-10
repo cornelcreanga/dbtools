@@ -4,7 +4,7 @@ import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
 import com.ccreanga.usecases.export.DataAnonymizer;
-import com.ccreanga.usecases.export.mysql.MySqlTablesAnonymizer;
+import com.ccreanga.usecases.process.SqlTablesAnonymizer;
 import com.ccreanga.usecases.export.SqlTablesExport;
 import com.ccreanga.util.ConsoleUtil;
 import com.ccreanga.util.FormatUtil;
@@ -172,10 +172,10 @@ public class DBToolsApplication {
     }
 
     private static void anonymizeDatabase(DbConnection readConnection, DbConnection writeConnection, String schema, DataAnonymizer dataAnonymizer) {
-        MySqlTablesAnonymizer mySqlTablesAnonymizer = new MySqlTablesAnonymizer(dataAnonymizer);
+        SqlTablesAnonymizer sqlTablesAnonymizer = new SqlTablesAnonymizer(dataAnonymizer);
 
         long t1 = System.currentTimeMillis();
-        mySqlTablesAnonymizer.anonymizeTables(readConnection, writeConnection, new Schema(schema));
+        sqlTablesAnonymizer.anonymizeTables(readConnection, writeConnection, new Schema(schema));
         long t2 = System.currentTimeMillis();
         System.out.println("Anonymization finished in " + FormatUtil.formatMillis(t2-t1) + " seconds.");
 

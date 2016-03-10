@@ -1,4 +1,4 @@
-package com.ccreanga.usecases.export;
+package com.ccreanga.usecases.process;
 
 import com.ccreanga.GenericConfig;
 import com.ccreanga.anonymizer.Anonymizer;
@@ -7,6 +7,7 @@ import com.ccreanga.jdbc.StatementOperations;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Table;
+import com.ccreanga.usecases.export.DataAnonymizer;
 
 import java.io.Closeable;
 import java.sql.PreparedStatement;

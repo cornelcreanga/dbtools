@@ -1,4 +1,4 @@
-package com.ccreanga.usecases.export.mysql;
+package com.ccreanga.usecases.process;
 
 import com.ccreanga.jdbc.DatabaseException;
 import com.ccreanga.jdbc.Operations;
@@ -6,7 +6,6 @@ import com.ccreanga.jdbc.OperationsFactory;
 import com.ccreanga.jdbc.TableOperations;
 import com.ccreanga.jdbc.model.*;
 import com.ccreanga.usecases.export.DataAnonymizer;
-import com.ccreanga.usecases.export.SqlAnonymizerConsumer;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,11 +14,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MySqlTablesAnonymizer {
+public class SqlTablesAnonymizer {
 
     private DataAnonymizer anonymizer;
 
-    public MySqlTablesAnonymizer(DataAnonymizer anonymizer) {
+    public SqlTablesAnonymizer(DataAnonymizer anonymizer) {
         this.anonymizer = anonymizer;
     }
 

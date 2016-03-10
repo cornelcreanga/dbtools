@@ -10,7 +10,7 @@ data:
 #  event_stamp:
 #      - field: icaldata
 #        type: com.ccreanga.anonymizer.StringAnonymizer
-  users_new:
+  users:
       - field: email
         type: com.ccreanga.anonymizer.EmailAnonymizer
       - field: firstname
