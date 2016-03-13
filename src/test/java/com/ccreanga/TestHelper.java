@@ -54,6 +54,7 @@ public class TestHelper {
                 psParent.setString(1, name);
                 psParent.addBatch();
             }
+            psParent.executeBatch();
 
             ResultSet rs = psParent.getGeneratedKeys();
             while (rs.next()){
@@ -62,6 +63,7 @@ public class TestHelper {
                 psChild.setString(2,generator.compose(2));
                 psChild.addBatch();
             }
+            psChild.executeBatch();
 
             connection.commit();
         } catch (SQLException e) {
