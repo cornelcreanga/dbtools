@@ -5,7 +5,7 @@ data:
       - field: c_varchar
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
-          syl: 3
+          sylNumber: 3
           rememberValues: true
       - field: c_tinyint
         type: com.ccreanga.anonymizer.LongAnonymizer
@@ -16,13 +16,13 @@ data:
       - field: name
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
-          syl: 3
+          sylNumber: 3
           rememberValues: true
   child:
       - field: name
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
-          syl: 3
+          sylNumber: 3
           rememberValues: true
 ...
 

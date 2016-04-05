@@ -12,12 +12,6 @@ import java.util.Optional;
 
 public abstract class BasicModelOperations implements Operations {
 
-    //SELECT reltuples AS approximate_row_count FROM pg_class WHERE relname = 'test_types';Postgresql
-    //SELECT pg_relation_size(oid)  FROM pg_class where relname = 'test_types';
-
-    //select DATA_LENGTH/AVG_ROW_LENGTH from INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'test_types';
-    //SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'test_types';
-
     @Override
     public List<Schema> getSchemas(DbConnection connection) {
         List<Schema> schemas = new ArrayList<>(16);

@@ -1,15 +1,15 @@
 ---
 anonymize: yes
 data:
-#  attribute:
-#      - field: textvalue
-#        type: com.ccreanga.anonymizer.StringAnonymizer
-#  content_data:
-#      - field: content
-#        type: com.ccreanga.anonymizer.ByteArrayAnonymizer
-#  event_stamp:
-#      - field: icaldata
-#        type: com.ccreanga.anonymizer.StringAnonymizer
+  attribute:
+      - field: textvalue
+        type: com.ccreanga.anonymizer.StringAnonymizer
+  content_data:
+      - field: content
+        type: com.ccreanga.anonymizer.ByteArrayAnonymizer
+  event_stamp:
+      - field: icaldata
+        type: com.ccreanga.anonymizer.StringAnonymizer
   users:
       - field: email
         type: com.ccreanga.anonymizer.EmailAnonymizer
@@ -21,7 +21,7 @@ data:
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
           sylNumber: 2
-#  event_stamp_new:
-#      - field: icaldata
-#        type: com.ccreanga.anonymizer.ICalAnonymizer
+  event_stamp_new:
+      - field: icaldata
+        type: com.ccreanga.anonymizer.ICalAnonymizer
 ...
