@@ -2,6 +2,6 @@ package com.ccreanga.jdbc;
 
 public enum Dialect {
 
-    MYSQL, POSTGRESQL
+    MYSQL, POSTGRESQL, MONGODB, CASSANDRA
 
 }

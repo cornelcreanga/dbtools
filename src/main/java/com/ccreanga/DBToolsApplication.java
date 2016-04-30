@@ -18,13 +18,13 @@ import java.sql.SQLException;
 public class DBToolsApplication {
 
 
-    public static final String HOST = "host";
-    public static final String USER = "user";
-    public static final String PASSWORD = "password";
-    public static final String SCHEMA = "schema";
-    public static final String EXPORT = "export";
-    public static final String AN = "an";
-    public static final String DIALECT = "dialect";
+    private static final String HOST = "host";
+    private static final String USER = "user";
+    private static final String PASSWORD = "password";
+    private static final String SCHEMA = "schema";
+    private static final String EXPORT = "export";
+    private static final String AN = "an";
+    private static final String DIALECT = "dialect";
 
     public static void main(String[] args) throws ParseException {
 
