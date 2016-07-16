@@ -11,9 +11,15 @@ public class NameAnonymizer implements Anonymizer {
 
     private int sylNumber = 2;
     private int wordNumber = 1;
-    private boolean rememberValues;//todo - not yet implemented
+    private String store;
 
     public Object anonymize(Object original) {
+        String cachedValue = null;
+        if (store!=null){
+            cachedValue = (String)Store.get(store,original);
+            if (cachedValue!=null)
+                return cachedValue;
+        }
         if (wordNumber == 1)
             return generator.compose(sylNumber);
         //compose the text from multiple words
@@ -23,6 +29,8 @@ public class NameAnonymizer implements Anonymizer {
             if (i != (wordNumber - 1))
                 sb.append(" ");
         }
+        if ((store!=null))
+            Store.put(store,original,sb.toString());
         return sb.toString();
     }
 
@@ -33,9 +41,6 @@ public class NameAnonymizer implements Anonymizer {
         this.sylNumber = sylNumber;
     }
 
-    public void setRememberValues(boolean rememberValues) {
-        this.rememberValues = rememberValues;
-    }
 
     public void setWordNumber(int wordNumber) {
         this.wordNumber = wordNumber;
@@ -49,7 +54,11 @@ public class NameAnonymizer implements Anonymizer {
         return wordNumber;
     }
 
-    public boolean isRememberValues() {
-        return rememberValues;
+    public String getStore() {
+        return store;
+    }
+
+    public void setStore(String store) {
+        this.store = store;
     }
 }

@@ -11,8 +11,6 @@ public class RandomNameGenerator {
     final private static char[] VOWELS = {'a', 'e', 'i', 'o', 'u', 'ä', 'ö', 'õ', 'ü', 'y'};
     final private static char[] CONSONANTS = {'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y'};
 
-    private InputStream in;
-
     private class Sylabs {
         private String[] syl = null;
         private String[] pureSyl = null;
@@ -140,35 +138,26 @@ public class RandomNameGenerator {
 
 
     public RandomNameGenerator(InputStream in) throws IOException {
-        this.in = in;
-        refresh();
-    }
-
-    public void refresh() throws IOException {
-        try {
-            BufferedReader bufRead = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String line = "";
-            ArrayList<String> preList = new ArrayList<>();
-            ArrayList<String> surList = new ArrayList<>();
-            ArrayList<String> midList = new ArrayList<>();
-            while (line != null) {
-                line = bufRead.readLine();
-                if (line != null && !line.equals("")) {
-                    if (line.charAt(0) == '-') {
-                        preList.add(line.substring(1).toLowerCase());
-                    } else if (line.charAt(0) == '+') {
-                        surList.add(line.substring(1).toLowerCase());
-                    } else {
-                        midList.add(line.toLowerCase());
-                    }
+        BufferedReader bufRead = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+        String line = "";
+        ArrayList<String> preList = new ArrayList<>();
+        ArrayList<String> surList = new ArrayList<>();
+        ArrayList<String> midList = new ArrayList<>();
+        while (line != null) {
+            line = bufRead.readLine();
+            if (line != null && !line.equals("")) {
+                if (line.charAt(0) == '-') {
+                    preList.add(line.substring(1).toLowerCase());
+                } else if (line.charAt(0) == '+') {
+                    surList.add(line.substring(1).toLowerCase());
+                } else {
+                    midList.add(line.toLowerCase());
                 }
             }
-            pre = new Sylabs(preList);
-            mid = new Sylabs(midList);
-            sur = new Sylabs(surList);
-        }finally{
-            in.close();
         }
+        pre = new Sylabs(preList);
+        mid = new Sylabs(midList);
+        sur = new Sylabs(surList);
     }
 
     public String compose(int syls) {

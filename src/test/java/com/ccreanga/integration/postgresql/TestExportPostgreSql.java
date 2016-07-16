@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class TestExportPostgreSql {
 
@@ -25,15 +26,29 @@ public class TestExportPostgreSql {
     private PostgreSqlDbSetup setup = new PostgreSqlDbSetup();
 
     @Before
-    public void staticSetup() throws Exception {
-        Class.forName("org.postgresql.Driver");
+    public void staticSetup() throws SQLException {
+
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("cannot find mysql jdbc driver. this should never happen unless something happened with the maven repo ");
+            System.exit(-1);
+        }
+
         DataSource dataSource = Config.getConfig().getDataSource(Dialect.POSTGRESQL);
         user = dataSource.getUser();
         password = dataSource.getPassword();
         schema = dataSource.getSchema();
         server = dataSource.getServer();
 
-        connection = DriverManager.getConnection(server+"/"+schema+"?user="+user+"&password="+password);
+        try {
+            connection = DriverManager.getConnection(server+"/"+schema+"?user="+user+"&password="+password);
+        } catch (SQLException e) {
+            System.out.printf("cannot open a connection to postgresql using user=%s,password=%s,server=%s,schema=%s. " +
+                    "in order to run the tests you need a postgresql server properly configured (check application.yml file)",user,password,server,schema);
+            System.exit(-1);
+        }
+
         connection.setAutoCommit(false);
         setup.initialize(connection);
     }

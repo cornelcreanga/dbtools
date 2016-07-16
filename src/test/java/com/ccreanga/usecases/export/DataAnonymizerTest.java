@@ -34,7 +34,7 @@ public class DataAnonymizerTest {
         Assert.assertEquals(anonymizer.get() instanceof NameAnonymizer,true);
         NameAnonymizer nameAnonymizer = (NameAnonymizer) anonymizer.get();
         Assert.assertEquals(nameAnonymizer.getSylNumber(),3);
-        Assert.assertEquals(nameAnonymizer.isRememberValues(),true);
+        Assert.assertEquals(nameAnonymizer.getStore(),"test_types_c_varchar_store");
 
         //anonymizer.get()
 

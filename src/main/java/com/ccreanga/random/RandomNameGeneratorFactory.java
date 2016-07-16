@@ -12,8 +12,7 @@ public class RandomNameGeneratorFactory {
     private static RandomNameGenerator fantasy;
 
     static {
-        try {
-            InputStream in = FileUtil.classPathResource("fantasy.txt");
+        try(InputStream in = FileUtil.classPathResource("fantasy.txt")) {
             if (in==null)
                 throw new RuntimeException("can't locate the file fantasy.txt in the classpath");
             fantasy = new RandomNameGenerator(in);
