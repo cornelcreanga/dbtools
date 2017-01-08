@@ -16,7 +16,7 @@ public class TimestampAnonymizer implements Anonymizer {
         Random r = new Random();
         int days = r.nextInt(secondsNegDeviation + secondsPosDeviation);
         Calendar calendar = GregorianCalendar.getInstance();
-        calendar.setTime((Date) original);
+        calendar.setTime((Timestamp) original);
         calendar.add(Calendar.SECOND, days - secondsNegDeviation);
         return new Timestamp(calendar.getTimeInMillis());
     }

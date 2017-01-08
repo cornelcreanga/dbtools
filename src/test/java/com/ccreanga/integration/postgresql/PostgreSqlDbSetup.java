@@ -13,7 +13,7 @@ public class PostgreSqlDbSetup implements DbSetup {
     private Connection connection;
 
     @Override
-    public void initialize(Connection connection) throws Exception {
+    public void initialize(Connection connection) throws SQLException {
 
         try {
             TestHelper.runSqlFile(connection,"drop_postgresql.sql");

@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class MySqlDbSetup implements DbSetup {
 
     @Override
-    public void initialize(Connection connection) throws Exception {
+    public void initialize(Connection connection) throws SQLException {
         try {
             TestHelper.runSqlFile(connection,"drop_mysql.sql");
             TestHelper.runSqlFile(connection,"create_mysql.sql");

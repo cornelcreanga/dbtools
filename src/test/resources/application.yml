@@ -1,9 +1,9 @@
 dataSources:
   mysql:
     user: root
-    password: root
+    password:
     schema: test
-    server: jdbc:mysql://127.0.0.1:3306
+    server: jdbc:mysql://172.17.0.2:3306
   postgresql:
     user: test
     password: test

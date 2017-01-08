@@ -6,7 +6,7 @@ data:
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
           sylNumber: 3
-          rememberValues: true
+          store: test_types_c_varchar_store
       - field: c_varbinary
         type: com.ccreanga.anonymizer.ByteArrayAnonymizer
         values:
@@ -32,12 +32,12 @@ data:
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
           sylNumber: 3
-          rememberValues: true
+          store: parent_name
   child:
       - field: name
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
           sylNumber: 3
-          rememberValues: true
+          store: child_name
 ...
 

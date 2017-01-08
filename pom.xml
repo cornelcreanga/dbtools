@@ -21,7 +21,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-        <mysql.version>6.0.5</mysql.version>
+        <mysql.version>5.1.38</mysql.version>
         <!--the postgresql version inherited from spring-boot-starter-parent is buggy https://github.com/pgjdbc/pgjdbc/pull/449-->
         <postgresql.version>9.4.1208</postgresql.version>
         <lombok.version>1.16.6</lombok.version>
@@ -30,6 +30,7 @@
         <snakeyaml.version>1.16</snakeyaml.version>
 		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
 		<commons-csv.version>1.4</commons-csv.version>
+		<junit.version>4.12</junit.version>
 	</properties>
 
 	<dependencies>
@@ -68,7 +69,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 
