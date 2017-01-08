@@ -45,7 +45,9 @@ public class TestHelper {
         if (rows>100_000)
             throw new IllegalArgumentException("rows should be lower than 100000");
 
-        long counter = 1;
+        long counter;
+        long t1 = System.currentTimeMillis(), t2;
+
         try(PreparedStatement psParent = connection.prepareStatement("INSERT INTO parent(name) VALUES(?)",PreparedStatement.RETURN_GENERATED_KEYS);
                 PreparedStatement psChild = connection.prepareStatement("INSERT INTO child(parent_id,name) VALUES(?,?)",PreparedStatement.RETURN_GENERATED_KEYS)) {
 
@@ -66,13 +68,17 @@ public class TestHelper {
             psChild.executeBatch();
 
             connection.commit();
+
+            t2 = System.currentTimeMillis();
+            System.out.println("inserted "+rows*2+" in:" + (t2 - t1)+" ms");
+
         } catch (SQLException e) {
             throw new RuntimeSqlException(e);
         }
 
 
         counter = 1;
-        long t1 = System.currentTimeMillis(), t2;
+        t1 = System.currentTimeMillis();
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO test_types(c_varchar,c_varbinary,c_text,c_blob,c_time,c_timestamp,c_date,c_datetime," +
                         "c_decimal,c_double,c_float,c_bigint,c_int,c_mediumint,c_smallint,c_tinyint)" +
@@ -159,7 +165,7 @@ public class TestHelper {
                     connection.commit();
                 if (counter % 1000==0) {
                     t2 = System.currentTimeMillis();
-                    System.out.println("inserted 1k in:" + (t2 - t1));
+                    System.out.println("inserted 1k in:" + (t2 - t1)+" ms");
                     t1 = t2;
                 }
                 counter++;

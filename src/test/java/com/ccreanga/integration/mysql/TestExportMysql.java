@@ -26,7 +26,6 @@ public class TestExportMysql {
 
     @Before
     public void staticSetup() throws Exception {
-        Class.forName("com.mysql.jdbc.Driver");
         DataSource dataSource = Config.getConfig().getDataSource(Dialect.MYSQL);
         user = dataSource.getUser();
         password = dataSource.getPassword();

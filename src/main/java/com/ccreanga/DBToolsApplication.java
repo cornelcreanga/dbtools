@@ -43,9 +43,9 @@ public class DBToolsApplication {
         Option dialectOption = Option.builder(DIALECT)
                 .valueSeparator(' ')
                 .numberOfArgs(1)
-                .argName("Dialect (MYSQL or POSTGRESQL")
+                .argName("Dialect (MYSQL or POSTGRESQL)")
                 .longOpt(DIALECT)
-                .desc("Dialect (MYSQL or POSTGRESQL")
+                .desc("Dialect (MYSQL or POSTGRESQL)")
                 .build();
 
         Option userOption = Option.builder(USER)
@@ -75,8 +75,8 @@ public class DBToolsApplication {
                 .numberOfArgs(3)
                 .argName("pattern>  <folder> <overwrite")
                 .longOpt(EXPORT)
-                .desc("Exports the table(s) matching the specified pattern. It expects three params: table pattern, destination folder , overwrite(yes/no). If anonymization parameters are" +
-                        "specified it will export anonymized values")
+                .desc("Exports the table(s) matching the specified pattern. It expects three params: table pattern, destination folder , overwrite(y/n). If anonymization parameters are" +
+                        " specified it will export anonymized values")
                 .build();
 
         Option anonymizeOption = Option.builder(AN)
