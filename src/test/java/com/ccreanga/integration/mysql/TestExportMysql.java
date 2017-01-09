@@ -28,12 +28,6 @@ public class TestExportMysql {
 
     @Before
     public void staticSetup() throws SQLException{
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            System.out.println("cannot find mysql jdbc driver. this should never happen unless something happened with the maven repo ");
-            System.exit(-1);
-        }
         DataSource dataSource = Config.getConfig().getDataSource(Dialect.MYSQL);
         user = dataSource.getUser();
         password = dataSource.getPassword();

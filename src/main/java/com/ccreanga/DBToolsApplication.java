@@ -196,7 +196,6 @@ public class DBToolsApplication {
         try {
             Connection connection;
             if (dialect == Dialect.MYSQL) {
-                Class.forName("com.mysql.jdbc.Driver");
                 connection = DriverManager.getConnection(
                         String.format("jdbc:mysql://%s/%s?user=%s&password=%s&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=%s",
                                 host,schema,user,new String(password),MySqlConfig.rewriteBatchedStatements));
