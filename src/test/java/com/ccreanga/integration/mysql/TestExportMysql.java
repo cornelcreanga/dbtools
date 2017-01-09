@@ -13,9 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class TestExportMysql {
 
@@ -56,6 +54,15 @@ public class TestExportMysql {
         //SqlTablesExport sqlTablesExport = new SqlTablesExport(anonymizer);
         SqlTablesExport sqlTablesExport = new SqlTablesExport();
         sqlTablesExport.exportTables(new DbConnection(connection,Dialect.MYSQL), new Schema(schema), "*", "/tmp", true);
+        //todo run an mysql export; compare files
+        /**
+         SELECT a,b,a+b INTO OUTFILE '/tmp/result.txt'
+         FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
+         LINES TERMINATED BY '\n'
+         FROM test_table;
+         */
+        //or import both exported files and check if the tables are identical
+
     }
 
 }
