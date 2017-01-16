@@ -6,7 +6,6 @@ data:
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
           sylNumber: 3
-          rememberValues: true
       - field: c_tinyint
         type: com.ccreanga.anonymizer.LongAnonymizer
         values:
@@ -17,12 +16,10 @@ data:
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
           sylNumber: 3
-          rememberValues: true
   child:
       - field: name
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
           sylNumber: 3
-          rememberValues: true
 ...
 

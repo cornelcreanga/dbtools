@@ -1,5 +1,6 @@
 package com.ccreanga;
 
+import com.ccreanga.jdbc.DatabaseException;
 import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
@@ -163,9 +164,11 @@ public class DBToolsApplication {
 
             try (DbConnection connection = connection(dialect, host, schema, user, password, true)) {
                 exportDatabase(connection, schema, export[0], export[1], export[2].equalsIgnoreCase("y"), dataAnonymizer);
+            } catch (DatabaseException d){
+                System.out.println("Finished execution due to database error");
             } catch (Exception e) {
-                System.out.println("An exception occured during the export process, the full stracktrace is");
-                e.printStackTrace();
+                System.out.println("Unexpected exception occured during the export process, the full stracktrace is");
+                e.printStackTrace();//todo - change me, better error handling
             }
         }
 
@@ -196,6 +199,7 @@ public class DBToolsApplication {
         try {
             Connection connection;
             if (dialect == Dialect.MYSQL) {
+                Class.forName("com.mysql.jdbc.Driver");
                 connection = DriverManager.getConnection(
                         String.format("jdbc:mysql://%s/%s?user=%s&password=%s&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=%s",
                                 host, schema, user, new String(password), MySqlConfig.rewriteBatchedStatements));

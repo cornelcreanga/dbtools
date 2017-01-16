@@ -23,21 +23,34 @@ public class SqlTablesExport {
     }
 
     public void exportTables(DbConnection connection, Schema schema, String tablePattern, String folderName, boolean override) {
-        Operations model = OperationsFactory.createOperations(connection.getDialect());
+        Operations operations = OperationsFactory.createOperations(connection.getDialect());
         ScriptGenerator generator = ScriptGeneratorFactory.createScriptGenerator(connection.getDialect());
         File folder = createFolder(folderName);
-        File operations = createOperationsFile(folder);
+        File operationsFile = createOperationsFile(folder);
 
-        try (Writer opWriter = new BufferedWriter(new FileWriter(operations))) {
-            List<Table> tables = model.getAllTables(connection, schema.getName());
+        try (Writer opWriter = new BufferedWriter(new FileWriter(operationsFile))) {
+            List<Table> tables;
+            try {
+                tables = operations.getAllTables(connection, schema.getName());
+            } catch (DatabaseException d) {
+                System.out.println("Exception occured during metadata read operations, message is " + d.getMessage());
+                throw d;
+            }
             tables.stream().filter(t -> Wildcard.matches(t.getName(), tablePattern)).forEach(t -> {
 
                         System.out.println("\nProcessing table " + t.getName());
-                        List<Column> columns = model.getColumns(connection, schema.getName(), t.getName());
+                        List<Column> columns;
+                        try {
+                            columns = operations.getColumns(connection, schema.getName(), t.getName());
+                        } catch (DatabaseException d) {
+                            System.out.println("Exception occured during metadata read operations, message is " + d.getMessage());
+                            throw d;
+                        }
+
                         File dumpFile = new File(folder.getAbsolutePath() + File.separator + t.getName() + ".txt");
                         if (dumpFile.exists()) {
                             if (!override) {
-                                System.out.println("skipping table, dump file exists and override is false");
+                                System.out.println("skipping table, dump file exists and override is set to false");
                                 return;
                             }
 
@@ -50,15 +63,15 @@ public class SqlTablesExport {
                                     new AnonymizerConsumer(anonymizer, t, columns).andThen(writerConsumer);
 
                             tableOperations.processTableRows(connection, t, columns, consumer);
-                        } catch (IOException e) {
-                            if (!dumpFile.delete())
-                                System.out.println("exception occured, trying to clean the dump file but failed");
-                            throw new GenericException(e);
+                        } catch (IOException | DatabaseException e) {
+                            System.out.println("\nException occured, message is " + e.getMessage());
+                            if (connection.isClosed())
+                                throw new DatabaseException(e);
                         }
                         try {
                             opWriter.write(generator.generateLoadCommand(t, columns, folderName) + "\n");
                         } catch (Exception e) {
-                            throw new GenericException(e);
+                            System.out.println("Can't generate the operations file, message is " + e.getMessage());
                         }
                     }
 

@@ -15,6 +15,14 @@ public class DbConnection implements AutoCloseable {
         return connection.getMetaData();
     }
 
+    public boolean isClosed() {
+        try {
+            return connection.isClosed();
+        } catch (SQLException e) {
+            return true;//todo? really?
+        }
+    }
+
     public void close() {
         try {
             connection.close();
