@@ -2,18 +2,16 @@ package com.ccreanga.random;
 
 import com.ccreanga.util.FileUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 public class RandomNameGeneratorFactory {
 
     private static RandomNameGenerator fantasy;
 
     static {
-        try(InputStream in = FileUtil.classPathResource("fantasy.txt")) {
-            if (in==null)
+        try (InputStream in = FileUtil.classPathResource("fantasy.txt")) {
+            if (in == null)
                 throw new RuntimeException("can't locate the file fantasy.txt in the classpath");
             fantasy = new RandomNameGenerator(in);
         } catch (IOException e) {

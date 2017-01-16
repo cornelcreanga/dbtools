@@ -9,17 +9,17 @@ import java.io.IOException;
 
 public class CSVWriterFactory {
 
-    private CSVWriterFactory(){
+    private CSVWriterFactory() {
 
     }
 
-    public static CloseableConsumer getCSVWriter(Dialect dialect,File file) throws IOException {
-        if (dialect==Dialect.MYSQL){
+    public static CloseableConsumer getCSVWriter(Dialect dialect, File file) throws IOException {
+        if (dialect == Dialect.MYSQL) {
             return new MySqlCSVWriterConsumer(file);
-        }else if (dialect==Dialect.POSTGRESQL){
-            return new PostgreSqlCSVWriterConsumer(file);//todo - change me
-        }else
-            throw new IllegalArgumentException("unknown dialect:"+dialect);
+        } else if (dialect == Dialect.POSTGRESQL) {
+            return new PostgreSqlCSVWriterConsumer(file);
+        } else
+            throw new IllegalArgumentException("unknown dialect:" + dialect);
     }
 
 }

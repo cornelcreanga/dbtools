@@ -1,11 +1,6 @@
 package com.ccreanga.usecases.export;
 
-import com.ccreanga.jdbc.GenericException;
-import com.ccreanga.jdbc.Operations;
-import com.ccreanga.jdbc.OperationsFactory;
-import com.ccreanga.jdbc.ScriptGenerator;
-import com.ccreanga.jdbc.ScriptGeneratorFactory;
-import com.ccreanga.jdbc.TableOperations;
+import com.ccreanga.jdbc.*;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
@@ -13,7 +8,6 @@ import com.ccreanga.jdbc.model.Table;
 import com.ccreanga.util.Wildcard;
 
 import java.io.*;
-import java.sql.Types;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -42,12 +36,15 @@ public class SqlTablesExport {
                         List<Column> columns = model.getColumns(connection, schema.getName(), t.getName());
                         File dumpFile = new File(folder.getAbsolutePath() + File.separator + t.getName() + ".txt");
                         if (dumpFile.exists()) {
-                            if (!override)
+                            if (!override) {
+                                System.out.println("skipping table, dump file exists and override is false");
                                 return;
+                            }
+
                         }
                         TableOperations tableOperations = new TableOperations();
 
-                        try (CloseableConsumer writerConsumer = CSVWriterFactory.getCSVWriter(connection.getDialect(),dumpFile)) {
+                        try (CloseableConsumer writerConsumer = CSVWriterFactory.getCSVWriter(connection.getDialect(), dumpFile)) {
                             Consumer<List<Object>> consumer = anonymizer == null ?
                                     writerConsumer :
                                     new AnonymizerConsumer(anonymizer, t, columns).andThen(writerConsumer);

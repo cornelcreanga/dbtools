@@ -55,6 +55,7 @@ public class PostgreSqlCSVConvertor {
      * 92	backslash	\\
      * 0 to 31 and 127 to 255	"non-printable" octets	\xxx (octal value)
      * 32 to 126	"printable" octets	client character set representation
+     *
      * @param input
      * @return
      */

@@ -30,7 +30,7 @@ public class SqlTablesAnonymizer {
         for (String tableName : tables) {
             Optional<Table> optTable = model.getTable(readConnection, schema.getName(), tableName);
             if (!optTable.isPresent()) {
-                System.out.printf("Cannot find the table %s in schema %s\n",tableName,schema.getName());
+                System.out.printf("Cannot find the table %s in schema %s\n", tableName, schema.getName());
                 continue;
             }
             Table table = optTable.get();
@@ -39,8 +39,8 @@ public class SqlTablesAnonymizer {
             List<Column> tableColumns = model.getColumns(readConnection, schema.getName(), tableName);
             List<Key> primaryKeys = model.getTablePrimaryKeys(readConnection, schema.getName(), tableName);
             List<Column> primaryColumns = Table.getTablePrimaryKeyColumns(tableColumns, primaryKeys);
-            if (primaryColumns.size()==0){
-                System.out.printf("table %s does not have any primary keys - it cannot be updated\n",tableName);
+            if (primaryColumns.size() == 0) {
+                System.out.printf("table %s does not have any primary keys - it cannot be updated\n", tableName);
                 break;
             }
 
@@ -49,7 +49,7 @@ public class SqlTablesAnonymizer {
             boolean skip = false;
             for (String columnToAnonymize : columns) {
                 if (!columnNames.contains(columnToAnonymize)) {
-                    System.out.printf("table %s  does not have the column %s; the anonymization on this table was skipped\n",tableName,columnToAnonymize);
+                    System.out.printf("table %s  does not have the column %s; the anonymization on this table was skipped\n", tableName, columnToAnonymize);
                     skip = true;
                     break;
                 }

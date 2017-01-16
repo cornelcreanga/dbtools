@@ -1,5 +1,6 @@
-package com.ccreanga.jdbc;
+package com.ccreanga.jdbc.mysql;
 
+import com.ccreanga.jdbc.ScriptGenerator;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.Table;
 
@@ -7,7 +8,7 @@ import java.io.File;
 import java.sql.Types;
 import java.util.List;
 
-public class MySqlScriptGenerator implements ScriptGenerator{
+public class MySqlScriptGenerator implements ScriptGenerator {
     @Override
     public String generateLoadCommand(Table table, List<Column> columns, String folderName) {
         StringBuilder sb = new StringBuilder("LOAD DATA LOCAL INFILE '" + folderName + File.separator + table.getName() + ".txt'" + " INTO TABLE `" + table.getName() + "` (");

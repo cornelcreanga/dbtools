@@ -1,12 +1,14 @@
-package com.ccreanga.jdbc;
+package com.ccreanga.jdbc.postgresql;
 
+import com.ccreanga.jdbc.BasicModelOperations;
+import com.ccreanga.jdbc.RuntimeSqlException;
 import com.ccreanga.jdbc.model.DbConnection;
 
-public class MySqlOperations extends BasicModelOperations {
+public class PostgreSqlOperations extends BasicModelOperations {
     @Override
     public long getTableSize(DbConnection connection, String schema, String table) {
         Object data = singleResultQuery(connection,
-                "select data_length from information_schema.tables where table_name ='" + table + "' and table_schema='" + schema + "'");
+                "select pg_relation_size(oid) from pg_class where relname ='" + table + "'");
         if (data == null)
             throw new RuntimeSqlException("cannot find table " + table + " in schema " + schema);
         return ((Number) data).longValue();
@@ -15,16 +17,16 @@ public class MySqlOperations extends BasicModelOperations {
     @Override
     public long getAvgRowSize(DbConnection connection, String schema, String table) {
         Object data = singleResultQuery(connection,
-                "select avg_row_length from information_schema.tables where table_name ='" + table + "' and table_schema='" + schema + "'");
+                "select sum(avg_width) as average_row_size from pg_stats where tablename='" + table + "'");
         if (data == null)
-            throw new RuntimeSqlException("cannot find table " + table + " in schema " + schema);
+            return -1;//data not available
         return ((Number) data).longValue();
     }
 
     @Override
     public long getNoOfRows(DbConnection connection, String schema, String table) {
         Object data = singleResultQuery(connection,
-                "select table_rows from information_schema.tables where table_name='" + table + "' and table_schema='" + schema + "'");
+                "select reltuples AS approximate_row_count from pg_class where relname ='" + table + "'");
         if (data == null)
             throw new RuntimeSqlException("cannot find table " + table + " in schema " + schema);
         return ((Number) data).longValue();

@@ -5,7 +5,9 @@ import com.ccreanga.anonymizer.Anonymizer;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -18,7 +20,7 @@ public class DataAnonymizer {
     private HashMap<String, Anonymizer> anonymizers = new HashMap<>();
 
     public DataAnonymizer(String fileRules) {
-        try(InputStream input = new FileInputStream(fileRules)) {
+        try (InputStream input = new FileInputStream(fileRules)) {
             Yaml yaml = new Yaml();
             Map<String, Object> data = null;
             try {
@@ -52,7 +54,7 @@ public class DataAnonymizer {
                         if (values != null) {
                             Set<String> keys = values.keySet();
                             for (String next : keys) {
-                                setProperty(processor,next,values.get(next));
+                                setProperty(processor, next, values.get(next));
                             }
                         }
 
@@ -71,25 +73,25 @@ public class DataAnonymizer {
 
     }
 
-    private void setProperty(Object object, String name,Object value){
+    private void setProperty(Object object, String name, Object value) {
         Class<?> clazz = object.getClass();
-        String methodName = "set"+Character.toUpperCase(name.charAt(0))+name.substring(1);
+        String methodName = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
         try {
-            Method method = getMethod(clazz,methodName);
-            if (method==null)
-                throw new AnonymizerException("cannot find the method "+methodName+"(parameter) in class" +clazz.getName());
-            method.invoke(object,value);
+            Method method = getMethod(clazz, methodName);
+            if (method == null)
+                throw new AnonymizerException("cannot find the method " + methodName + "(parameter) in class" + clazz.getName());
+            method.invoke(object, value);
         } catch (InvocationTargetException e) {
-            throw new AnonymizerException("methodName:"+methodName+" throwed an exception",e);
+            throw new AnonymizerException("methodName:" + methodName + " throwed an exception", e);
         } catch (IllegalAccessException e) {
-            throw new AnonymizerException("methodName:"+methodName+" cannot be invoked",e);
+            throw new AnonymizerException("methodName:" + methodName + " cannot be invoked", e);
         }
     }
 
-    private static Method getMethod(Class<?> clazz, String methodName){
+    private static Method getMethod(Class<?> clazz, String methodName) {
         Method[] declaredMethods = clazz.getDeclaredMethods();
-        for (Method method: declaredMethods) {
-            if ((method.getName().equals(methodName)) && (method.getParameterCount()==1))  {
+        for (Method method : declaredMethods) {
+            if ((method.getName().equals(methodName)) && (method.getParameterCount() == 1)) {
                 return method;
             }
         }

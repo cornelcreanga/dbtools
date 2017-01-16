@@ -4,8 +4,8 @@ import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
 import com.ccreanga.usecases.export.DataAnonymizer;
-import com.ccreanga.usecases.process.SqlTablesAnonymizer;
 import com.ccreanga.usecases.export.SqlTablesExport;
+import com.ccreanga.usecases.process.SqlTablesAnonymizer;
 import com.ccreanga.util.ConsoleUtil;
 import com.ccreanga.util.FormatUtil;
 import org.apache.commons.cli.*;
@@ -102,7 +102,7 @@ public class DBToolsApplication {
         try {
             cmd = parser.parse(options, args, false);
         } catch (UnrecognizedOptionException e) {
-            exit(e.getMessage(),formatter,options);
+            exit(e.getMessage(), formatter, options);
         }
 
         Dialect dialect = Dialect.MYSQL;
@@ -111,25 +111,25 @@ public class DBToolsApplication {
             try {
                 dialect = Dialect.valueOf(cmd.getOptionValue(DIALECT));
             } catch (IllegalArgumentException e) {
-                exit("Don't understand dialect " + cmd.getOptionValue(DIALECT),formatter,options);
+                exit("Don't understand dialect " + cmd.getOptionValue(DIALECT), formatter, options);
             }
         } else {
             System.out.println("No dialect specified - using by default " + dialect);
         }
 
         if (!cmd.hasOption(HOST)) {
-            exit("host is mandatory",formatter,options);
+            exit("host is mandatory", formatter, options);
         } else {
             host = cmd.getOptionValue(HOST);
         }
         if (!cmd.hasOption(USER)) {
-            exit("user is mandatory",formatter,options);
+            exit("user is mandatory", formatter, options);
         } else {
             user = cmd.getOptionValue(USER);
         }
 
         if (!cmd.hasOption(SCHEMA)) {
-            exit("schema is mandatory",formatter,options);
+            exit("schema is mandatory", formatter, options);
         } else {
             schema = cmd.getOptionValue(SCHEMA);
         }
@@ -177,7 +177,7 @@ public class DBToolsApplication {
         long t1 = System.currentTimeMillis();
         sqlTablesAnonymizer.anonymizeTables(readConnection, writeConnection, new Schema(schema));
         long t2 = System.currentTimeMillis();
-        System.out.println("Anonymization finished in " + FormatUtil.formatMillis(t2-t1) + " seconds.");
+        System.out.println("Anonymization finished in " + FormatUtil.formatMillis(t2 - t1) + " seconds.");
 
     }
 
@@ -189,7 +189,7 @@ public class DBToolsApplication {
         long t1 = System.currentTimeMillis();
         sqlTablesExport.exportTables(connection, new Schema(schema), pattern, folder, overwrite);
         long t2 = System.currentTimeMillis();
-        System.out.println("Export finished in " + FormatUtil.formatMillis(t2-t1) + " seconds.");
+        System.out.println("Export finished in " + FormatUtil.formatMillis(t2 - t1) + " seconds.");
     }
 
     private static DbConnection connection(Dialect dialect, String host, String schema, String user, char[] password, boolean readOnly) {
@@ -198,11 +198,11 @@ public class DBToolsApplication {
             if (dialect == Dialect.MYSQL) {
                 connection = DriverManager.getConnection(
                         String.format("jdbc:mysql://%s/%s?user=%s&password=%s&zeroDateTimeBehavior=convertToNull&rewriteBatchedStatements=%s",
-                                host,schema,user,new String(password),MySqlConfig.rewriteBatchedStatements));
+                                host, schema, user, new String(password), MySqlConfig.rewriteBatchedStatements));
             } else if (dialect == Dialect.POSTGRESQL) {
                 Class.forName("org.postgresql.Driver");
                 connection = DriverManager.getConnection(
-                        String.format("jdbc:postgresql://%s/%s?user=%s&password=%s",host,schema,user,new String(password)));
+                        String.format("jdbc:postgresql://%s/%s?user=%s&password=%s", host, schema, user, new String(password)));
             } else {
                 throw new IllegalArgumentException("unknown dialect:" + dialect);
             }
@@ -221,7 +221,7 @@ public class DBToolsApplication {
         }
     }
 
-    private static void exit(String message,HelpFormatter formatter,Options options){
+    private static void exit(String message, HelpFormatter formatter, Options options) {
         System.out.println(message);
         formatter.printHelp("dbtools", options);
         System.exit(1);

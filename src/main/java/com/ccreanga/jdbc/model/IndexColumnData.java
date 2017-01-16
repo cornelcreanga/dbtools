@@ -1,7 +1,6 @@
 package com.ccreanga.jdbc.model;
 
 
-
 public class IndexColumnData {
 
 
@@ -18,7 +17,6 @@ public class IndexColumnData {
     private int cardinality;
     private int pages;
     private String filterCondition;
-
 
 
 }

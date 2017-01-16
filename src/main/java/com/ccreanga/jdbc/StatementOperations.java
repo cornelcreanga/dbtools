@@ -188,8 +188,8 @@ public class StatementOperations {
                         ps.setNull(pos, Types.SQLXML);
                     } else {
                         SQLXML xmlVal = ps.getConnection().createSQLXML();
-                        xmlVal.setString((String)value);
-                        ps.setSQLXML(pos,xmlVal);
+                        xmlVal.setString((String) value);
+                        ps.setSQLXML(pos, xmlVal);
                     }
                     break;
                 }

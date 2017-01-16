@@ -1,6 +1,5 @@
 package com.ccreanga.anonymizer;
 
-import java.sql.Date;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.GregorianCalendar;

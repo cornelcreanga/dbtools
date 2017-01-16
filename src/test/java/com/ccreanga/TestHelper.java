@@ -1,10 +1,6 @@
 package com.ccreanga;
 
-import com.ccreanga.jdbc.Dialect;
-import com.ccreanga.jdbc.MySqlOperations;
-import com.ccreanga.jdbc.Operations;
 import com.ccreanga.jdbc.RuntimeSqlException;
-import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.random.Language;
 import com.ccreanga.random.RandomNameGenerator;
 import com.ccreanga.random.RandomNameGeneratorFactory;
@@ -12,12 +8,10 @@ import com.ccreanga.util.FileUtil;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -42,7 +36,7 @@ public class TestHelper {
 
     public static void insertTestData(Connection connection, int rows) throws SQLException {
 
-        if (rows>100_000)
+        if (rows>1000_000)
             throw new IllegalArgumentException("rows should be lower than 100000");
 
         long counter;

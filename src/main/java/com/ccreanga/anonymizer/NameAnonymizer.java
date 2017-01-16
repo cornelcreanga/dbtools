@@ -15,9 +15,9 @@ public class NameAnonymizer implements Anonymizer {
 
     public Object anonymize(Object original) {
         String cachedValue = null;
-        if (store!=null){
-            cachedValue = (String)Store.get(store,original);
-            if (cachedValue!=null)
+        if (store != null) {
+            cachedValue = (String) Store.get(store, original);
+            if (cachedValue != null)
                 return cachedValue;
         }
         if (wordNumber == 1)
@@ -29,8 +29,8 @@ public class NameAnonymizer implements Anonymizer {
             if (i != (wordNumber - 1))
                 sb.append(" ");
         }
-        if ((store!=null))
-            Store.put(store,original,sb.toString());
+        if ((store != null))
+            Store.put(store, (String) original, sb.toString());
         return sb.toString();
     }
 

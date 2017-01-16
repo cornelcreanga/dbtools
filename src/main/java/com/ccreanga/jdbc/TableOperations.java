@@ -8,13 +8,13 @@ import com.ccreanga.util.FormatUtil;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static com.ccreanga.util.FormatUtil.*;
+import static com.ccreanga.util.FormatUtil.formatMillis;
+import static com.ccreanga.util.FormatUtil.readableSize;
 
 public class TableOperations {
 
@@ -33,7 +33,7 @@ public class TableOperations {
 
         try (Statement st = connection.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             if (connection.getDialect() == Dialect.MYSQL)
-                st.setFetchSize(Integer.MIN_VALUE);//todo - this is just for mysql!
+                st.setFetchSize(Integer.MIN_VALUE);//enable mysql streaming
             else
                 st.setFetchSize(100);
             ResultSet rs = st.executeQuery(selectData);
@@ -62,7 +62,7 @@ public class TableOperations {
                             formatMillis(time),
                             readableSize(counter),
                             formatMillis(totalTime)
-                            );
+                    );
                 }
                 counter++;
             }
