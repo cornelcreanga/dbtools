@@ -27,8 +27,7 @@ public class DbConnection implements AutoCloseable {
         try {
             connection.close();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            //ignored
+            //ignore
         }
     }
 

@@ -1,12 +1,14 @@
 package com.ccreanga.jdbc;
 
 import com.ccreanga.GenericConfig;
+import com.ccreanga.IOExceptionRuntime;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Table;
 import com.ccreanga.util.FormatUtil;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +33,16 @@ public class TableOperations {
 
         System.out.println("Table size is " + readableSize(tableSize) + ", estimated number of rows is " + FormatUtil.readableSize(tableRows));
 
-        try (Statement st = connection.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+        boolean close = true;
+        ResultSet rs = null;
+        Statement st = null;
+        try  {
+            st = connection.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             if (connection.getDialect() == Dialect.MYSQL)
                 st.setFetchSize(Integer.MIN_VALUE);//enable mysql streaming
             else
                 st.setFetchSize(100);
-            ResultSet rs = st.executeQuery(selectData);
+            rs = st.executeQuery(selectData);
             int colCount = rs.getMetaData().getColumnCount();
             int types[] = new int[colCount];
             for (int i = 0; i < types.length; i++) {
@@ -76,9 +82,19 @@ public class TableOperations {
 
             }
 
-
-        } catch (Exception e) {
+        } catch (IOExceptionRuntime e){
+            operations.forceDiscardResultSet(connection,rs);
+            close = false;
+            throw e;
+            //force discard rs, close connection
+        } catch (SQLException e) {
             throw new DatabaseException(e);
+        } finally{
+            try {
+                if ((st!=null) && close)
+                    st.close();
+            } catch (SQLException e) {
+            }
         }
 
     }

@@ -2,6 +2,7 @@ package com.ccreanga.jdbc;
 
 import com.ccreanga.jdbc.model.*;
 
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,4 +28,6 @@ public interface Operations {
     long getAvgRowSize(DbConnection connection, String schema, String table);
 
     long getNoOfRows(DbConnection connection, String schema, String table);
+
+    void forceDiscardResultSet(DbConnection connection, ResultSet rs);
 }

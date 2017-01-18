@@ -13,7 +13,7 @@ public class CSVWriterFactory {
 
     }
 
-    public static CloseableConsumer getCSVWriter(Dialect dialect, File file) throws IOException {
+    public static CloseableConsumer getCSVWriter(Dialect dialect, File file){
         if (dialect == Dialect.MYSQL) {
             return new MySqlCSVWriterConsumer(file);
         } else if (dialect == Dialect.POSTGRESQL) {

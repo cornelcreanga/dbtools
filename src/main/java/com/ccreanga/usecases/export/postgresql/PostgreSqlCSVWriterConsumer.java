@@ -1,5 +1,6 @@
 package com.ccreanga.usecases.export.postgresql;
 
+import com.ccreanga.IOExceptionRuntime;
 import com.ccreanga.usecases.export.CloseableConsumer;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -13,9 +14,13 @@ public class PostgreSqlCSVWriterConsumer implements CloseableConsumer<List<Objec
     CSVPrinter printer;
     PostgreSqlCSVConvertor postgreSqlCSVConvertor = new PostgreSqlCSVConvertor();
 
-    public PostgreSqlCSVWriterConsumer(File file) throws IOException {
+    public PostgreSqlCSVWriterConsumer(File file){
         CSVFormat format = CSVFormat.MYSQL.withNullString("\\N").withQuote('"').withQuoteMode(QuoteMode.MINIMAL).withDelimiter(',');
-        printer = new CSVPrinter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"), 1024 * 1024), format);
+        try {
+            printer = new CSVPrinter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"), 1024 * 1024), format);
+        } catch (IOException e) {
+            throw new IOExceptionRuntime(e);
+        }
     }
 
     @Override
@@ -26,7 +31,7 @@ public class PostgreSqlCSVWriterConsumer implements CloseableConsumer<List<Objec
             }
             printer.println();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IOExceptionRuntime(e);
         }
     }
 

@@ -11,6 +11,7 @@ import com.ccreanga.util.ConsoleUtil;
 import com.ccreanga.util.FormatUtil;
 import org.apache.commons.cli.*;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -149,7 +150,7 @@ public class DBToolsApplication {
                 anonymizeDatabase(readConnection, writeConnection, schema, new DataAnonymizer(cmd.getOptionValue(AN)));
             } catch (Exception e) {
                 System.out.println("An exception occured during the anonymization process, the full stracktrace is");
-                e.printStackTrace();
+                e.printStackTrace();//todo
             }
             return;
         }
@@ -163,15 +164,16 @@ public class DBToolsApplication {
             String[] export = cmd.getOptionValues(EXPORT);
 
             try (DbConnection connection = connection(dialect, host, schema, user, password, true)) {
-                exportDatabase(connection, schema, export[0], export[1], export[2].equalsIgnoreCase("y"), dataAnonymizer);
-            } catch (DatabaseException d){
-                System.out.println("Finished execution due to database error");
-            } catch (Exception e) {
-                System.out.println("Unexpected exception occured during the export process, the full stracktrace is");
-                e.printStackTrace();//todo - change me, better error handling
+                exportDatabase(connection, schema, export[0], export[1], booleanParam(export[2]), dataAnonymizer);
+            } catch (DatabaseException | IOExceptionRuntime e){
+                System.out.println("Finished execution due to unexpected error.");
             }
         }
 
+    }
+
+    private static boolean booleanParam(String s){
+        return s.equalsIgnoreCase("y") || s.equalsIgnoreCase("yes");
     }
 
     private static void anonymizeDatabase(DbConnection readConnection, DbConnection writeConnection, String schema, DataAnonymizer dataAnonymizer) {
