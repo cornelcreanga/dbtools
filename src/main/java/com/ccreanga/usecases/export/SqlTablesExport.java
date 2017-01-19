@@ -36,6 +36,15 @@ public class SqlTablesExport {
             System.out.println("Exception occured during metadata read operations, message is " + d.getMessage());
             throw d;
         }
+
+        Writer opWriter = null;
+        try {
+            opWriter = new BufferedWriter(new FileWriter(operationsFile));
+        } catch (IOException e) {
+            System.out.println("\nException occured, message is " + e.getMessage());
+            throw new IOExceptionRuntime(e);
+        }
+
         for (Table t : tables) {
             if (Wildcard.matches(t.getName(), tablePattern)) {
                 System.out.println("\nProcessing table " + t.getName());
@@ -63,6 +72,8 @@ public class SqlTablesExport {
                             new AnonymizerConsumer(anonymizer, t, columns).andThen(writerConsumer);
 
                     tableOperations.processTableRows(connection, t, columns, consumer);
+
+                    opWriter.write(generator.generateLoadCommand(t, columns, folderName) + "\n");
                 } catch (DatabaseException e) {
                     System.out.println("\nException occured, message is " + e.getMessage());
                     if (connection.isClosed())
@@ -71,16 +82,14 @@ public class SqlTablesExport {
                     System.out.println("\nException occured, message is " + e.getMessage());
                     throw e;
                 } catch (IOException e) {
-                    //this should only happen on close.
                     throw new IOExceptionRuntime(e);
                 }
-                try (Writer opWriter = new BufferedWriter(new FileWriter(operationsFile))) {
-                    opWriter.write(generator.generateLoadCommand(t, columns, folderName) + "\n");
-                } catch (Exception e) {
-                    System.out.println("Can't generate the operations file, message is " + e.getMessage());
-                }
-
             }
+
+        }
+        try {
+            opWriter.close();
+        } catch (IOException e) {
         }
         System.out.println();
 

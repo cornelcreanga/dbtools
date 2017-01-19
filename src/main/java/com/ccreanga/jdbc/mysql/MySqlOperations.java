@@ -40,13 +40,13 @@ public class MySqlOperations extends BasicModelOperations {
     }
 
     @Override
-    public void forceDiscardResultSet(DbConnection connection, ResultSet rs) {
+    public void forceDiscardResultSetAndCloseConnection(DbConnection connection, ResultSet rs) {
         if (!(rs instanceof JDBC42ResultSet)) {
-            super.forceDiscardResultSet(connection, rs);
-            connection.close();
+            super.forceDiscardResultSetAndCloseConnection(connection, rs);
         }
         else {
             try {
+                //this code was tested with mysql driver 5.1.40
                 Class<?> rsClass = rs.getClass().getSuperclass().getSuperclass();
                 Field rowdata = rsClass.getDeclaredField("rowData");
                 rowdata.setAccessible(true);
@@ -58,15 +58,15 @@ public class MySqlOperations extends BasicModelOperations {
                 noMoreRowsField.set(rd, true);
                 try {
                     ((MySQLConnection) connection.getConnection()).setNetTimeoutForStreamingResults(0);
-                    connection.close();//the protocol is broken in this moment the only 'sane' operations is close
+                    connection.close();
+                    //the mysql client server protocol is broken in this moment.
+                    // the only 'sane' operations is close (and this one can fail too)
                 }catch (SQLException e){
                     //ignore any exception thrown
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 //revert to the standard way
-                super.forceDiscardResultSet(connection, rs);
-                connection.close();
-
+                super.forceDiscardResultSetAndCloseConnection(connection, rs);
             }
 
         }

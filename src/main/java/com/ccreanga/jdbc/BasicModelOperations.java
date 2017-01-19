@@ -150,7 +150,7 @@ public abstract class BasicModelOperations implements Operations {
         }
     }
 
-    public void forceDiscardResultSet(DbConnection connection, ResultSet rs){
+    public void forceDiscardResultSetAndCloseConnection(DbConnection connection, ResultSet rs){
         if (rs!=null){
             try {
                 rs.close();
@@ -158,5 +158,6 @@ public abstract class BasicModelOperations implements Operations {
                 //ignore
             }
         }
+        connection.close();
     }
 }

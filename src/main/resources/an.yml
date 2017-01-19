@@ -6,6 +6,7 @@ data:
         type: com.ccreanga.anonymizer.NameAnonymizer
         values:
           sylNumber: 3
+          store: name
       - field: c_tinyint
         type: com.ccreanga.anonymizer.LongAnonymizer
         values:

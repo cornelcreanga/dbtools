@@ -83,7 +83,7 @@ public class TableOperations {
             }
 
         } catch (IOExceptionRuntime e){
-            operations.forceDiscardResultSet(connection,rs);
+            operations.forceDiscardResultSetAndCloseConnection(connection,rs);
             close = false;
             throw e;
             //force discard rs, close connection

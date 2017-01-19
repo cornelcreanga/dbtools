@@ -28,6 +28,12 @@ public class DBToolsApplication {
     private static final String AN = "an";
     private static final String DIALECT = "dialect";
 
+    /**
+     * -an /home/cornel/projects/dbtools/src/main/resources/an.yml -host localhost -password root -schema test -user root -export * /tmp y
+     * -an /home/cornel/projects/dbtools/src/main/resources/an.yml -dialect POSTGRESQL -host localhost -password test -schema test -user test -export * /tmp y
+     * @param args
+     * @throws ParseException
+     */
     public static void main(String[] args) throws ParseException {
 
         HelpFormatter formatter = new HelpFormatter();
