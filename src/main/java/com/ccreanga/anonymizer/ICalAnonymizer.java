@@ -2,6 +2,8 @@ package com.ccreanga.anonymizer;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.Collections;
+import java.util.List;
 
 public class ICalAnonymizer implements Anonymizer {
 
@@ -23,7 +25,7 @@ public class ICalAnonymizer implements Anonymizer {
     }
 
     @Override
-    public Object anonymize(Object original) {
+    public Object anonymize(Object original,List<Object> fullRow) {
         String event = (String) original;
         BufferedReader reader = new BufferedReader(new StringReader(event));
         String line;
@@ -62,7 +64,7 @@ public class ICalAnonymizer implements Anonymizer {
                     int index = line.indexOf(":");
                     if (index != -1) {
                         result.append(line.substring(0, index + 1));
-                        result.append(stringAnonymizer.anonymize(line.substring(index + 1)));
+                        result.append(stringAnonymizer.anonymize(line.substring(index + 1), Collections.emptyList()));
                         result.append("\n");
                     }
 

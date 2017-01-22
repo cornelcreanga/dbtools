@@ -56,7 +56,7 @@ public class SqlAnonymizerConsumer implements Consumer<List<Object>>, Closeable 
                 if (value != null) {
                     Optional<Anonymizer> optional = anonymizer.getAnonymizer(table.getName(), columns.get(i).getName());
                     if (optional.isPresent()) {
-                        valueToWrite = optional.get().anonymize(value);
+                        valueToWrite = optional.get().anonymize(value,objects);
                     }
                 }
                 StatementOperations.setValue(ps, i + 1, columns.get(i).getType(), valueToWrite);

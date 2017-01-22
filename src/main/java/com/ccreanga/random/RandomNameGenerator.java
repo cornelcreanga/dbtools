@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+/**
+ * See http://forum.codecall.net/topic/49665-java-random-name-generator/
+ */
 public class RandomNameGenerator {
 
     Sylabs pre, mid, sur;

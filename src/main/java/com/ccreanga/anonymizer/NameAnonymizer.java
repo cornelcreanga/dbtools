@@ -5,6 +5,8 @@ import com.ccreanga.random.Language;
 import com.ccreanga.random.RandomNameGenerator;
 import com.ccreanga.random.RandomNameGeneratorFactory;
 
+import java.util.List;
+
 public class NameAnonymizer implements Anonymizer {
 
     private RandomNameGenerator generator = RandomNameGeneratorFactory.generator(Language.FANTASY);
@@ -13,7 +15,7 @@ public class NameAnonymizer implements Anonymizer {
     private int wordNumber = 1;
     private String store;
 
-    public Object anonymize(Object original) {
+    public Object anonymize(Object original,List<Object> fullRow) {
         String cachedValue = null;
         if (store != null) {
             cachedValue = (String) Store.get(store, original);

@@ -49,17 +49,14 @@ public class TestHelper {
                 String name = generator.compose(2);
                 psParent.setString(1, name);
                 psParent.addBatch();
-            }
-            psParent.executeBatch();
 
-            ResultSet rs = psParent.getGeneratedKeys();
-            while (rs.next()){
-                int id=rs.getInt(1);
-                psChild.setInt(1,id);
-                psChild.setString(2,generator.compose(2));
-                psChild.addBatch();
+                if (k%10000==0){
+                    executeChildBatch(psParent, psChild);
+                    connection.commit();
+                }
             }
-            psChild.executeBatch();
+
+            executeChildBatch(psParent, psChild);
 
             connection.commit();
 
@@ -75,8 +72,8 @@ public class TestHelper {
         t1 = System.currentTimeMillis();
         try (PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO test_types(c_varchar,c_varbinary,c_text,c_blob,c_time,c_timestamp,c_date,c_datetime," +
-                        "c_decimal,c_double,c_float,c_bigint,c_int,c_mediumint,c_smallint,c_tinyint)" +
-                        " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+                        "c_decimal,c_double,c_float,c_bigint,c_int,c_mediumint,c_smallint,c_tinyint,c_json)" +
+                        " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
         ) {
             Random random = new Random();
 
@@ -151,6 +148,7 @@ public class TestHelper {
                     ps.setNull(16, Types.INTEGER);
                 else
                     ps.setInt(16, random.nextInt(100));
+                ps.setString(17,"{\"k1\": \"value\", \"k2\": "+k+"}");
 
                 ps.addBatch();
                 if (counter % 500 == 0)
@@ -169,6 +167,18 @@ public class TestHelper {
         } catch (SQLException e) {
             throw new RuntimeSqlException(e);
         }
+    }
+
+    private static void executeChildBatch(PreparedStatement psParent, PreparedStatement psChild) throws SQLException {
+        psParent.executeBatch();
+        ResultSet rs = psParent.getGeneratedKeys();
+        while (rs.next()){
+            int id=rs.getInt(1);
+            psChild.setInt(1,id);
+            psChild.setString(2,generator.compose(2));
+            psChild.addBatch();
+        }
+        psChild.executeBatch();
     }
 
 

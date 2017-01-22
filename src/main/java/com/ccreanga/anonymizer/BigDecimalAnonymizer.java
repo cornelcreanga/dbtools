@@ -1,6 +1,7 @@
 package com.ccreanga.anonymizer;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class BigDecimalAnonymizer implements Anonymizer {
 
@@ -16,7 +17,7 @@ public class BigDecimalAnonymizer implements Anonymizer {
     }
 
     @Override
-    public Object anonymize(Object original) {
+    public Object anonymize(Object original,List<Object> fullRow) {
         return rangeMin.add(new BigDecimal(Math.random()).multiply(rangeMax.subtract(rangeMin)));
     }
 }

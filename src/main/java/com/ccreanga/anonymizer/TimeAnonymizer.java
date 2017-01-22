@@ -3,6 +3,7 @@ package com.ccreanga.anonymizer;
 import java.sql.Time;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Random;
 
 public class TimeAnonymizer implements Anonymizer {
@@ -11,7 +12,7 @@ public class TimeAnonymizer implements Anonymizer {
     private int secondsPosDeviation = 1000;
 
     @Override
-    public Object anonymize(Object original) {
+    public Object anonymize(Object original,List<Object> fullRow) {
         Random r = new Random();
         int days = r.nextInt(secondsNegDeviation + secondsPosDeviation);
         Calendar calendar = GregorianCalendar.getInstance();

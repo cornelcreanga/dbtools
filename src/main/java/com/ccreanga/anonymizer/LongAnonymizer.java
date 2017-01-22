@@ -1,5 +1,6 @@
 package com.ccreanga.anonymizer;
 
+import java.util.List;
 import java.util.Random;
 
 public class LongAnonymizer implements Anonymizer {
@@ -16,7 +17,7 @@ public class LongAnonymizer implements Anonymizer {
     }
 
     @Override
-    public Object anonymize(Object original) {
+    public Object anonymize(Object original,List<Object> fullRow) {
         Random r = new Random();
         return (long) (rangeMin + (rangeMax - rangeMin) * r.nextDouble());//todo - prevent overflow
 

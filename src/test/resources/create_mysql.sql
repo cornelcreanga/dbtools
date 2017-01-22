@@ -33,5 +33,6 @@ CREATE TABLE `test_types` (
   `c_mediumint` mediumint(9) DEFAULT NULL,
   `c_smallint` smallint(6) DEFAULT NULL,
   `c_tinyint` tinyint(4) DEFAULT NULL,
+  `c_json` JSON DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1258252 DEFAULT CHARSET=utf8;

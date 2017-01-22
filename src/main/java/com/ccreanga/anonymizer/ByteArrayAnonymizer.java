@@ -1,5 +1,6 @@
 package com.ccreanga.anonymizer;
 
+import java.util.List;
 import java.util.Random;
 
 public class ByteArrayAnonymizer implements Anonymizer {
@@ -7,7 +8,7 @@ public class ByteArrayAnonymizer implements Anonymizer {
     private int count = -1;
 
     @Override
-    public Object anonymize(Object original) {
+    public Object anonymize(Object original,List<Object> fullRow) {
         Random r = new Random();
         byte[] originalBytes = (byte[]) original;
         int len = count == -1 ? originalBytes.length : count;
