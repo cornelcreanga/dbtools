@@ -67,7 +67,9 @@ public class TestExportCassandra {
 
         } else {
             TableMetadata tableMetadata = keyspaceMetadata.getTable("test_types");
-            if (tableMetadata == null) {
+            if (tableMetadata != null) {
+                session.execute("drop table test.test_types;");
+            }
                 session.execute("CREATE TABLE test.test_types (\n" +
                         "  id uuid PRIMARY KEY,\n" +
                         "  c_ascii text,\n" +
@@ -93,7 +95,6 @@ public class TestExportCassandra {
                         "  c_varint varint\n" +
                         ");");
 
-            }
         }
 
         ResultSet rs = session.execute("select release_version from system.local");
@@ -144,7 +145,7 @@ public class TestExportCassandra {
         Random random = new Random();
 
         long t1 = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 10; i++) {
 
             BoundStatement bound = ps.bind()
                     .setUUID("id", UUID.randomUUID())

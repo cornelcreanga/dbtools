@@ -4,14 +4,16 @@ import com.ccreanga.jdbc.DatabaseException;
 import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
+import com.ccreanga.usecases.export.CassandraExport;
 import com.ccreanga.usecases.export.DataAnonymizer;
 import com.ccreanga.usecases.export.SqlTablesExport;
 import com.ccreanga.usecases.process.SqlTablesAnonymizer;
 import com.ccreanga.util.ConsoleUtil;
 import com.ccreanga.util.FormatUtil;
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
 import org.apache.commons.cli.*;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -130,7 +132,7 @@ public class DBToolsApplication {
         } else {
             host = cmd.getOptionValue(HOST);
         }
-        if (!cmd.hasOption(USER)) {
+        if (!cmd.hasOption(USER) && dialect.isSQL()) {
             exit("user is mandatory", formatter, options);
         } else {
             user = cmd.getOptionValue(USER);
@@ -169,10 +171,16 @@ public class DBToolsApplication {
             }
             String[] export = cmd.getOptionValues(EXPORT);
 
-            try (DbConnection connection = connection(dialect, host, schema, user, password, true)) {
-                exportDatabase(connection, schema, export[0], export[1], booleanParam(export[2]), dataAnonymizer);
-            } catch (DatabaseException | IOExceptionRuntime e){
-                System.out.println("Finished execution due to unexpected error.");
+            if (dialect.isSQL()) {
+                try (DbConnection connection = connection(dialect, host, schema, user, password, true)) {
+                    exportSQLDatabase(connection, schema, export[0], export[1], booleanParam(export[2]), dataAnonymizer);
+                } catch (DatabaseException | IOExceptionRuntime e) {
+                    System.out.println("Finished execution due to unexpected error.");
+                }
+            }else if (dialect.equals(Dialect.CASSANDRA)){
+                try(Session session = session(host,schema,user,password)){
+                    exportCassandra(session, schema, export[0], export[1], booleanParam(export[2]), dataAnonymizer);
+                }
             }
         }
 
@@ -192,7 +200,7 @@ public class DBToolsApplication {
 
     }
 
-    private static void exportDatabase(DbConnection connection, String schema, String pattern, String folder, boolean overwrite, DataAnonymizer dataAnonymizer) {
+    private static void exportSQLDatabase(DbConnection connection, String schema, String pattern, String folder, boolean overwrite, DataAnonymizer dataAnonymizer) {
         SqlTablesExport sqlTablesExport = dataAnonymizer == null ?
                 new SqlTablesExport() :
                 new SqlTablesExport(dataAnonymizer);
@@ -201,6 +209,29 @@ public class DBToolsApplication {
         sqlTablesExport.exportTables(connection, new Schema(schema), pattern, folder, overwrite);
         long t2 = System.currentTimeMillis();
         System.out.println("Export finished in " + FormatUtil.formatMillis(t2 - t1) + " seconds.");
+    }
+
+    private static void exportCassandra(Session session, String schema, String pattern, String folder, boolean overwrite, DataAnonymizer dataAnonymizer) {
+        CassandraExport cassandraExport = dataAnonymizer == null ?
+                new CassandraExport() :
+                new CassandraExport(dataAnonymizer);
+
+        long t1 = System.currentTimeMillis();
+        cassandraExport.exportTables(session, new Schema(schema), pattern, folder, overwrite);
+        long t2 = System.currentTimeMillis();
+        System.out.println("Export finished in " + FormatUtil.formatMillis(t2 - t1) + " seconds.");
+    }
+
+
+    private static Session session(String contactPoint,String keyspace,String user,char[] password){
+
+        Cluster.Builder builder = Cluster.builder()
+                .addContactPoint(contactPoint);//todo- with port
+        if (user!=null)
+            builder = builder.withCredentials(user,new String(password));
+
+        return builder.build().connect(keyspace);
+
     }
 
     private static DbConnection connection(Dialect dialect, String host, String schema, String user, char[] password, boolean readOnly) {
