@@ -1,6 +1,8 @@
 package com.ccreanga.usecases.export;
 
 import com.ccreanga.IOExceptionRuntime;
+import com.ccreanga.jdbc.ScriptGenerator;
+import com.ccreanga.jdbc.ScriptGeneratorFactory;
 import com.ccreanga.jdbc.*;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.DbConnection;
@@ -11,6 +13,7 @@ import com.ccreanga.util.Wildcard;
 import java.io.*;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class SqlTablesExport {
 
@@ -67,9 +70,10 @@ public class SqlTablesExport {
                 TableOperations tableOperations = new TableOperations();
 
                 try (CloseableConsumer writerConsumer = CSVWriterFactory.getCSVWriter(connection.getDialect(), dumpFile)) {
+                    List<String> columnNames = columns.stream().map(Column::getName).collect(Collectors.toList());
                     Consumer<List<Object>> consumer = anonymizer == null ?
                             writerConsumer :
-                            new AnonymizerConsumer(anonymizer, t, columns).andThen(writerConsumer);
+                            new AnonymizerConsumer(anonymizer, t.getName(), columnNames).andThen(writerConsumer);
 
                     tableOperations.processTableRows(connection, t, columns, consumer);
 

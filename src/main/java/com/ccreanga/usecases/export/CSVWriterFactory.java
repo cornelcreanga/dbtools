@@ -1,5 +1,6 @@
 package com.ccreanga.usecases.export;
 
+import com.ccreanga.cassandra.CassandraWriterConsumer;
 import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.usecases.export.mysql.MySqlCSVWriterConsumer;
 import com.ccreanga.usecases.export.postgresql.PostgreSqlCSVWriterConsumer;

@@ -211,13 +211,13 @@ public class DBToolsApplication {
         System.out.println("Export finished in " + FormatUtil.formatMillis(t2 - t1) + " seconds.");
     }
 
-    private static void exportCassandra(Session session, String schema, String pattern, String folder, boolean overwrite, DataAnonymizer dataAnonymizer) {
+    private static void exportCassandra(Session session, String keyspace, String pattern, String folder, boolean overwrite, DataAnonymizer dataAnonymizer) {
         CassandraExport cassandraExport = dataAnonymizer == null ?
                 new CassandraExport() :
                 new CassandraExport(dataAnonymizer);
 
         long t1 = System.currentTimeMillis();
-        cassandraExport.exportTables(session, new Schema(schema), pattern, folder, overwrite);
+        cassandraExport.exportTables(session, keyspace, pattern, folder, overwrite);
         long t2 = System.currentTimeMillis();
         System.out.println("Export finished in " + FormatUtil.formatMillis(t2 - t1) + " seconds.");
     }

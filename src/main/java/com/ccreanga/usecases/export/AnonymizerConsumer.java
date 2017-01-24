@@ -11,21 +11,21 @@ import java.util.function.Consumer;
 public class AnonymizerConsumer implements Consumer<List<Object>> {
 
     private DataAnonymizer dataAnonymizer;
-    private Table table;
-    private List<Column> tableColumns;
+    private String tableName;
+    private List<String> columns;
 
-    public AnonymizerConsumer(DataAnonymizer dataAnonymizer, Table table, List<Column> tableColumns) {
+    public AnonymizerConsumer(DataAnonymizer dataAnonymizer, String tableName, List<String> columns) {
         this.dataAnonymizer = dataAnonymizer;
-        this.table = table;
-        this.tableColumns = tableColumns;
+        this.tableName = tableName;
+        this.columns = columns;
     }
 
     @Override
     public void accept(List<Object> objects) {
         if (dataAnonymizer != null && dataAnonymizer.shouldAnonymize()) {
             int index = 0;
-            for (Column column : tableColumns) {
-                Optional<Anonymizer> optional = dataAnonymizer.getAnonymizer(table.getName(), column.getName());
+            for (String column : columns) {
+                Optional<Anonymizer> optional = dataAnonymizer.getAnonymizer(tableName, column);
                 if (optional.isPresent()) {
                     Anonymizer anonymizer = optional.get();
                     Object original = objects.get(index);
