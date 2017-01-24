@@ -143,10 +143,12 @@ public class DBToolsApplication {
         } else {
             schema = cmd.getOptionValue(SCHEMA);
         }
-        if (!cmd.hasOption(PASSWORD)) {
-            password = ConsoleUtil.readPassword("[%s]", "Password:");
-        } else {
-            password = cmd.getOptionValue(PASSWORD).toCharArray();
+        if (cmd.hasOption(USER)) {
+            if (!cmd.hasOption(PASSWORD)) {
+                password = ConsoleUtil.readPassword("[%s]", "Password:");
+            } else {
+                password = cmd.getOptionValue(PASSWORD).toCharArray();
+            }
         }
 
         //anonymize database

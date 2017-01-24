@@ -4,6 +4,6 @@ import java.util.List;
 
 public class CassandraScriptGenerator{
     public String generateLoadCommand(String table, List<String> columns, String folderName) {
-        return null;
+        return "COPY "+table+" FROM ("+table+")";
     }
 }
