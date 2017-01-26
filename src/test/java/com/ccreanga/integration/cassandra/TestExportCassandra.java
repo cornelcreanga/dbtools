@@ -53,7 +53,7 @@ public class TestExportCassandra {
                     "  c_inet inet,\n" +
                     "  c_int int,\n" +
                     "  c_list list<text>,\n" +
-                    "  c_map map<text,text>,\n" +
+//                    "  c_map map<text,text>,\n" +
                     "  c_set set<text>,\n" +
                     "  c_smallint smallint,\n" +
                     "  c_text text,\n" +
@@ -70,30 +70,30 @@ public class TestExportCassandra {
             if (tableMetadata != null) {
                 session.execute("drop table test.test_types;");
             }
-                session.execute("CREATE TABLE test.test_types (\n" +
-                        "  id uuid PRIMARY KEY,\n" +
-                        "  c_ascii text,\n" +
-                        "  c_bigint bigint,\n" +
-                        "  c_blob blob,\n" +
-                        "  c_boolean boolean,\n" +
-                        "  c_date date,\n" +
-                        "  c_decimal decimal,\n" +
-                        "  c_double double,\n" +
-                        "  c_float float,\n" +
-                        "  c_inet inet,\n" +
-                        "  c_int int,\n" +
-                        "  c_list list<text>,\n" +
-                        "  c_map map<text,text>,\n" +
-                        "  c_set set<text>,\n" +
-                        "  c_smallint smallint,\n" +
-                        "  c_text text,\n" +
-                        "  c_time time,\n" +
-                        "  c_timestamp timestamp,\n" +
-                        "  c_timeuuid timeuuid,\n" +
-                        "  c_tinyint tinyint,\n" +
-                        "  c_varchar varchar,\n" +
-                        "  c_varint varint\n" +
-                        ");");
+            session.execute("CREATE TABLE test.test_types (\n" +
+                    "  id uuid PRIMARY KEY,\n" +
+                    "  c_ascii text,\n" +
+                    "  c_bigint bigint,\n" +
+                    "  c_blob blob,\n" +
+                    "  c_boolean boolean,\n" +
+                    "  c_date date,\n" +
+                    "  c_decimal decimal,\n" +
+                    "  c_double double,\n" +
+                    "  c_float float,\n" +
+                    "  c_inet inet,\n" +
+                    "  c_int int,\n" +
+                    "  c_list list<text>,\n" +
+                    "  c_map map<text,text>,\n" +
+                    "  c_set set<text>,\n" +
+                    "  c_smallint smallint,\n" +
+                    "  c_text text,\n" +
+                    "  c_time time,\n" +
+                    "  c_timestamp timestamp,\n" +
+                    "  c_timeuuid timeuuid,\n" +
+                    "  c_tinyint tinyint,\n" +
+                    "  c_varchar varchar,\n" +
+                    "  c_varint varint\n" +
+                    ");");
 
         }
 
@@ -123,7 +123,7 @@ public class TestExportCassandra {
                 "  c_inet,\n" +
                 "  c_int,\n" +
                 "  c_list,\n" +
-                "  c_map,\n" +
+//                "  c_map,\n" +
                 "  c_set,\n" +
                 "  c_smallint,\n" +
                 "  c_text,\n" +
@@ -132,7 +132,7 @@ public class TestExportCassandra {
                 "  c_timeuuid,\n" +
                 "  c_tinyint,\n" +
                 "  c_varchar,\n" +
-                "  c_varint) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                "  c_varint) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         List<String> list = Arrays.asList("element1", "element2");
         Map<String, String> map = new HashMap<>();
@@ -160,7 +160,7 @@ public class TestExportCassandra {
                     .setInet("c_inet", InetAddress.getByName("127.0.0.1"))
                     .setInt("c_int", Integer.MAX_VALUE * random.nextInt())
                     .setList("c_list", list)
-                    .setMap("c_map", map)
+//                    .setMap("c_map", map)
                     .setSet("c_set", set)
                     .setShort("c_smallint", (short) random.nextInt(Short.MAX_VALUE))
                     .setString("c_text", RandomUtil.generateString(4000))

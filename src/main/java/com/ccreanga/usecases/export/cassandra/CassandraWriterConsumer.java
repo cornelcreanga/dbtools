@@ -1,10 +1,8 @@
-package com.ccreanga.cassandra;
+package com.ccreanga.usecases.export.cassandra;
 
 import com.ccreanga.IOExceptionRuntime;
-import com.ccreanga.usecases.export.CloseableConsumer;
+import com.ccreanga.usecases.export.jdbc.CloseableConsumer;
 import com.datastax.driver.core.ColumnMetadata;
-import com.datastax.driver.core.DataType;
-import com.datastax.driver.core.Row;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
@@ -18,7 +16,7 @@ public class CassandraWriterConsumer implements CloseableConsumer<List<Object>> 
     CassandraCSVConvertor cassandraCSVConvertor = new CassandraCSVConvertor();
     List<ColumnMetadata> columns;
 
-    public CassandraWriterConsumer(File file, List<ColumnMetadata> columns){
+    public CassandraWriterConsumer(File file, List<ColumnMetadata> columns) {
         CSVFormat format = CSVFormat.MYSQL.withNullString("").withEscape('\\').withQuote('"').withQuoteMode(QuoteMode.MINIMAL).withDelimiter(',');
 
         try {

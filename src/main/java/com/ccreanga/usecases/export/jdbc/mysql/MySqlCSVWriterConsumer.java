@@ -1,7 +1,7 @@
-package com.ccreanga.usecases.export.mysql;
+package com.ccreanga.usecases.export.jdbc.mysql;
 
 import com.ccreanga.IOExceptionRuntime;
-import com.ccreanga.usecases.export.CloseableConsumer;
+import com.ccreanga.usecases.export.jdbc.CloseableConsumer;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -14,7 +14,7 @@ public class MySqlCSVWriterConsumer implements CloseableConsumer<List<Object>> {
     CSVPrinter printer;
     MySqlCSVConvertor mySQLCSVConvertor = new MySqlCSVConvertor();
 
-    public MySqlCSVWriterConsumer(File file){
+    public MySqlCSVWriterConsumer(File file) {
         try {
             printer = new CSVPrinter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"), 1024 * 1024), CSVFormat.MYSQL);
         } catch (IOException e) {

@@ -1,4 +1,4 @@
-package com.ccreanga.usecases.export;
+package com.ccreanga.usecases.export.jdbc;
 
 import java.io.Closeable;
 import java.util.function.Consumer;

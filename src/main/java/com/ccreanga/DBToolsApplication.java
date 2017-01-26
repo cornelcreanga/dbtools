@@ -4,9 +4,9 @@ import com.ccreanga.jdbc.DatabaseException;
 import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
-import com.ccreanga.usecases.export.CassandraExport;
 import com.ccreanga.usecases.export.DataAnonymizer;
-import com.ccreanga.usecases.export.SqlTablesExport;
+import com.ccreanga.usecases.export.cassandra.CassandraExport;
+import com.ccreanga.usecases.export.jdbc.SqlTablesExport;
 import com.ccreanga.usecases.process.SqlTablesAnonymizer;
 import com.ccreanga.util.ConsoleUtil;
 import com.ccreanga.util.FormatUtil;
@@ -33,6 +33,7 @@ public class DBToolsApplication {
     /**
      * -an /home/cornel/projects/dbtools/src/main/resources/an.yml -host localhost -password root -schema test -user root -export * /tmp y
      * -an /home/cornel/projects/dbtools/src/main/resources/an.yml -dialect POSTGRESQL -host localhost -password test -schema test -user test -export * /tmp y
+     *
      * @param args
      * @throws ParseException
      */
@@ -179,8 +180,8 @@ public class DBToolsApplication {
                 } catch (DatabaseException | IOExceptionRuntime e) {
                     System.out.println("Finished execution due to unexpected error.");
                 }
-            }else if (dialect.equals(Dialect.CASSANDRA)){
-                try(Session session = session(host,schema,user,password)){
+            } else if (dialect.equals(Dialect.CASSANDRA)) {
+                try (Session session = session(host, schema, user, password)) {
                     exportCassandra(session, schema, export[0], export[1], booleanParam(export[2]), dataAnonymizer);
                 }
             }
@@ -188,7 +189,7 @@ public class DBToolsApplication {
 
     }
 
-    private static boolean booleanParam(String s){
+    private static boolean booleanParam(String s) {
         return s.equalsIgnoreCase("y") || s.equalsIgnoreCase("yes");
     }
 
@@ -225,12 +226,12 @@ public class DBToolsApplication {
     }
 
 
-    private static Session session(String contactPoint,String keyspace,String user,char[] password){
+    private static Session session(String contactPoint, String keyspace, String user, char[] password) {
 
         Cluster.Builder builder = Cluster.builder()
                 .addContactPoint(contactPoint);//todo- with port
-        if (user!=null)
-            builder = builder.withCredentials(user,new String(password));
+        if (user != null)
+            builder = builder.withCredentials(user, new String(password));
 
         return builder.build().connect(keyspace);
 

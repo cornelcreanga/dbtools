@@ -1,16 +1,14 @@
 package com.ccreanga.integration.postgresql;
 
 import com.ccreanga.Config;
-import com.ccreanga.DBToolsApplication;
 import com.ccreanga.DataSource;
 import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.model.DbConnection;
 import com.ccreanga.jdbc.model.Schema;
-import com.ccreanga.usecases.export.SqlTablesExport;
+import com.ccreanga.usecases.export.jdbc.SqlTablesExport;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -42,25 +40,26 @@ public class TestExportPostgreSql {
         server = dataSource.getServer();
 
         try {
-            connection = DriverManager.getConnection(server+"/"+schema+"?user="+user+"&password="+password);
+            connection = DriverManager.getConnection(server + "/" + schema + "?user=" + user + "&password=" + password);
         } catch (SQLException e) {
             System.out.printf("cannot open a connection to postgresql using user=%s,password=%s,server=%s,schema=%s. " +
-                    "in order to run the tests you need a postgresql server properly configured (check application.yml file)",user,password,server,schema);
+                    "in order to run the tests you need a postgresql server properly configured (check application.yml file)", user, password, server, schema);
             System.exit(-1);
         }
 
         connection.setAutoCommit(false);
         setup.initialize(connection);
     }
+
     @After
     public void staticTearDown() throws Exception {
         setup.close();
     }
 
     @Test
-    public void testExport(){
+    public void testExport() {
         SqlTablesExport sqlTablesExport = new SqlTablesExport();
-        sqlTablesExport.exportTables(new DbConnection(connection,Dialect.POSTGRESQL), new Schema(schema), "*", "/tmp", true);
+        sqlTablesExport.exportTables(new DbConnection(connection, Dialect.POSTGRESQL), new Schema(schema), "*", "/tmp", true);
 
     }
 

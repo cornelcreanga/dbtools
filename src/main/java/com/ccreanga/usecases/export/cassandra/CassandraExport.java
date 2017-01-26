@@ -1,44 +1,41 @@
-package com.ccreanga.usecases.export;
+package com.ccreanga.usecases.export.cassandra;
 
 import com.ccreanga.IOExceptionRuntime;
-import com.ccreanga.jdbc.ScriptGenerator;
-import com.ccreanga.jdbc.ScriptGeneratorFactory;
-import com.ccreanga.jdbc.*;
-import com.ccreanga.jdbc.model.Column;
-import com.ccreanga.jdbc.model.DbConnection;
-import com.ccreanga.jdbc.model.Schema;
-import com.ccreanga.jdbc.model.Table;
+import com.ccreanga.cassandra.CassandraOperations;
+import com.ccreanga.cassandra.CassandraScriptGenerator;
+import com.ccreanga.usecases.export.AnonymizerConsumer;
+import com.ccreanga.usecases.export.DataAnonymizer;
+import com.ccreanga.usecases.export.jdbc.CloseableConsumer;
 import com.ccreanga.util.Wildcard;
+import com.datastax.driver.core.ColumnMetadata;
+import com.datastax.driver.core.Session;
+import com.datastax.driver.core.TableMetadata;
 
 import java.io.*;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class SqlTablesExport {
+public class CassandraExport {
+
 
     private DataAnonymizer anonymizer;
 
-    public SqlTablesExport() {
+    public CassandraExport() {
     }
 
-    public SqlTablesExport(DataAnonymizer anonymizer) {
+    public CassandraExport(DataAnonymizer anonymizer) {
         this.anonymizer = anonymizer;
     }
 
-    public void exportTables(DbConnection connection, Schema schema, String tablePattern, String folderName, boolean override) {
-        Operations operations = OperationsFactory.createOperations(connection.getDialect());
-        ScriptGenerator generator = ScriptGeneratorFactory.createScriptGenerator(connection.getDialect());
+    public void exportTables(Session session, String keyspace, String tablePattern, String folderName, boolean override) {
+        CassandraScriptGenerator generator = new CassandraScriptGenerator();
         File folder = createFolder(folderName);
         File operationsFile = createOperationsFile(folder);
 
-        List<Table> tables;
-        try {
-            tables = operations.getAllTables(connection, schema.getName());
-        } catch (DatabaseException d) {
-            System.out.println("Exception occured during metadata read operations, message is " + d.getMessage());
-            throw d;
-        }
+        Collection<TableMetadata> tables;
+        tables = session.getCluster().getMetadata().getKeyspace(keyspace).getTables();
 
         Writer opWriter = null;
         try {
@@ -48,16 +45,10 @@ public class SqlTablesExport {
             throw new IOExceptionRuntime(e);
         }
 
-        for (Table t : tables) {
+        for (TableMetadata t : tables) {
             if (Wildcard.matches(t.getName(), tablePattern)) {
                 System.out.println("\nProcessing table " + t.getName());
-                List<Column> columns;
-                try {
-                    columns = operations.getColumns(connection, schema.getName(), t.getName());
-                } catch (DatabaseException d) {
-                    System.out.println("Exception occured during metadata read operations, message is " + d.getMessage());
-                    throw d;
-                }
+                List<ColumnMetadata> columns = t.getColumns();
 
                 File dumpFile = new File(folder.getAbsolutePath() + File.separator + t.getName() + ".txt");
                 if (dumpFile.exists()) {
@@ -67,21 +58,19 @@ public class SqlTablesExport {
                     }
 
                 }
-                TableOperations tableOperations = new TableOperations();
+                CassandraOperations operations = new CassandraOperations();
 
-                try (CloseableConsumer writerConsumer = CSVWriterFactory.getCSVWriter(connection.getDialect(), dumpFile)) {
-                    List<String> columnNames = columns.stream().map(Column::getName).collect(Collectors.toList());
+                try (CloseableConsumer writerConsumer = new CassandraWriterConsumer(dumpFile, columns)) {
+
+                    List<String> columnNames = columns.stream().map(ColumnMetadata::getName).collect(Collectors.toList());
+
                     Consumer<List<Object>> consumer = anonymizer == null ?
                             writerConsumer :
                             new AnonymizerConsumer(anonymizer, t.getName(), columnNames).andThen(writerConsumer);
 
-                    tableOperations.processTableRows(connection, t, columns, consumer);
+                    operations.processTableRows(session, t, columns, consumer);
 
-                    opWriter.write(generator.generateLoadCommand(t, columns, folderName) + "\n");
-                } catch (DatabaseException e) {
-                    System.out.println("\nException occured, message is " + e.getMessage());
-                    if (connection.isClosed())
-                        throw new DatabaseException(e);
+                    opWriter.write(generator.generateLoadCommand(t.getName(), columnNames, folderName) + "\n");
                 } catch (IOExceptionRuntime e) {
                     System.out.println("\nException occured, message is " + e.getMessage());
                     throw e;
@@ -115,5 +104,6 @@ public class SqlTablesExport {
         }
         return folder;
     }
+
 
 }
