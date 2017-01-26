@@ -1,12 +1,8 @@
 package com.ccreanga.cassandra;
 
 import com.ccreanga.GenericConfig;
-import com.ccreanga.jdbc.model.Column;
-import com.ccreanga.jdbc.model.DbConnection;
-import com.ccreanga.jdbc.model.Table;
 import com.datastax.driver.core.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -25,9 +21,9 @@ public class CassandraOperations {
         long totalTime = 0, t1 = System.currentTimeMillis(), startTime = t1;
         ResultSet rs = session.execute(statement);
         int counter = 1;
-        while(!rs.isExhausted()){
+        while (!rs.isExhausted()) {
             Row row = rs.one();
-            consumer.accept(new RowReader().readRow(row,columns));
+            consumer.accept(new RowReader().readRow(row, columns));
             if (counter % GenericConfig.progress == 0) {
                 long time = System.currentTimeMillis() - t1;
                 t1 = System.currentTimeMillis();

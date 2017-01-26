@@ -25,7 +25,7 @@ public class ICalAnonymizer implements Anonymizer {
     }
 
     @Override
-    public Object anonymize(Object original,List<Object> fullRow) {
+    public Object anonymize(Object original, List<Object> fullRow) {
         String event = (String) original;
         BufferedReader reader = new BufferedReader(new StringReader(event));
         String line;

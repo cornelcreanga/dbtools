@@ -1,8 +1,6 @@
 package com.ccreanga.usecases.export;
 
 import com.ccreanga.anonymizer.Anonymizer;
-import com.ccreanga.jdbc.model.Column;
-import com.ccreanga.jdbc.model.Table;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +28,7 @@ public class AnonymizerConsumer implements Consumer<List<Object>> {
                     Anonymizer anonymizer = optional.get();
                     Object original = objects.get(index);
                     if (original != null)
-                        objects.set(index, anonymizer.anonymize(original,objects));
+                        objects.set(index, anonymizer.anonymize(original, objects));
                 }
                 index++;
             }

@@ -15,7 +15,7 @@ public class NameAnonymizer implements Anonymizer {
     private int wordNumber = 1;
     private String store;
 
-    public Object anonymize(Object original,List<Object> fullRow) {
+    public Object anonymize(Object original, List<Object> fullRow) {
         String cachedValue = null;
         if (store != null) {
             cachedValue = (String) Store.get(store, original);

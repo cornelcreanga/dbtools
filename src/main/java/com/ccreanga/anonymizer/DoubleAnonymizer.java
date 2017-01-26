@@ -17,7 +17,7 @@ public class DoubleAnonymizer implements Anonymizer {
     }
 
     @Override
-    public Object anonymize(Object original,List<Object> fullRow) {
+    public Object anonymize(Object original, List<Object> fullRow) {
         Random r = new Random();
         return (rangeMin + (rangeMax - rangeMin) * r.nextDouble());//todo - prevent overflow
 

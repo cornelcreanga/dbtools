@@ -6,18 +6,11 @@ import com.ccreanga.random.RandomNameGenerator;
 import com.ccreanga.random.RandomNameGeneratorFactory;
 import com.ccreanga.util.FileUtil;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.sql.*;
 import java.util.Random;
 
 import static com.ccreanga.RandomUtil.*;
@@ -26,7 +19,7 @@ public class TestHelper {
 
     private static RandomNameGenerator generator = RandomNameGeneratorFactory.generator(Language.FANTASY);
 
-    public static void runSqlFile(Connection connection,String fileName) {
+    public static void runSqlFile(Connection connection, String fileName) {
         ScriptRunner scriptRunner = new ScriptRunner(connection);
         InputStream in = FileUtil.classPathResource(fileName);
         try {
@@ -38,21 +31,21 @@ public class TestHelper {
 
     public static void insertTestData(Connection connection, int rows) throws SQLException {
 
-        if (rows>1000_000)
+        if (rows > 1000_000)
             throw new IllegalArgumentException("rows should be lower than 100000");
 
         long counter;
         long t1 = System.currentTimeMillis(), t2;
 
-        try(PreparedStatement psParent = connection.prepareStatement("INSERT INTO parent(name) VALUES(?)",PreparedStatement.RETURN_GENERATED_KEYS);
-                PreparedStatement psChild = connection.prepareStatement("INSERT INTO child(parent_id,name) VALUES(?,?)",PreparedStatement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement psParent = connection.prepareStatement("INSERT INTO parent(name) VALUES(?)", PreparedStatement.RETURN_GENERATED_KEYS);
+             PreparedStatement psChild = connection.prepareStatement("INSERT INTO child(parent_id,name) VALUES(?,?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             for (int k = 0; k < rows; k++) {
                 String name = generator.compose(2);
                 psParent.setString(1, name);
                 psParent.addBatch();
 
-                if (k%10000==0){
+                if (k % 10000 == 0) {
                     executeChildBatch(psParent, psChild);
                     connection.commit();
                 }
@@ -63,7 +56,7 @@ public class TestHelper {
             connection.commit();
 
             t2 = System.currentTimeMillis();
-            System.out.println("inserted "+rows*2+" in:" + (t2 - t1)+" ms");
+            System.out.println("inserted " + rows * 2 + " in:" + (t2 - t1) + " ms");
 
         } catch (SQLException e) {
             throw new RuntimeSqlException(e);
@@ -86,7 +79,7 @@ public class TestHelper {
                     ps.setString(1, generator.compose(2) + " " + generator.compose(2));
                 if (random.nextInt(100) == 0)
                     ps.setNull(2, Types.LONGVARBINARY);
-                else{
+                else {
                     int len = 300 + random.nextInt(1000);
                     ps.setBytes(2, generateBytes(len));
                 }
@@ -97,7 +90,7 @@ public class TestHelper {
                     ps.setString(3, generateString(300 + random.nextInt(1000)));
                 if (random.nextInt(100) == 0)
                     ps.setNull(4, Types.LONGVARBINARY);
-                else{
+                else {
                     int len = 300 + random.nextInt(1000);
                     ps.setBytes(4, generateBytes(len));
                 }
@@ -150,16 +143,16 @@ public class TestHelper {
                     ps.setNull(16, Types.INTEGER);
                 else
                     ps.setInt(16, random.nextInt(100));
-                ps.setString(17,"{\"k1\": \"value\", \"k2\": "+k+"}");
+                ps.setString(17, "{\"k1\": \"value\", \"k2\": " + k + "}");
 
                 ps.addBatch();
                 if (counter % 500 == 0)
                     ps.executeBatch();
                 if (counter % 1000 == 0)
                     connection.commit();
-                if (counter % 1000==0) {
+                if (counter % 1000 == 0) {
                     t2 = System.currentTimeMillis();
-                    System.out.println("inserted 1k in:" + (t2 - t1)+" ms");
+                    System.out.println("inserted 1k in:" + (t2 - t1) + " ms");
                     t1 = t2;
                 }
                 counter++;
@@ -174,20 +167,19 @@ public class TestHelper {
     private static void executeChildBatch(PreparedStatement psParent, PreparedStatement psChild) throws SQLException {
         psParent.executeBatch();
         ResultSet rs = psParent.getGeneratedKeys();
-        while (rs.next()){
-            int id=rs.getInt(1);
-            psChild.setInt(1,id);
-            psChild.setString(2,generator.compose(2));
+        while (rs.next()) {
+            int id = rs.getInt(1);
+            psChild.setInt(1, id);
+            psChild.setString(2, generator.compose(2));
             psChild.addBatch();
         }
         psChild.executeBatch();
     }
 
 
-
-    public static void handleSqlException(Exception e){
+    public static void handleSqlException(Exception e) {
         SQLException exception = (SQLException) e.getCause();
-        while(exception!=null){
+        while (exception != null) {
             exception.printStackTrace();
             exception = exception.getNextException();
         }

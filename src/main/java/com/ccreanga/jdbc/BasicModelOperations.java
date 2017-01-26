@@ -150,8 +150,8 @@ public abstract class BasicModelOperations implements Operations {
         }
     }
 
-    public void forceDiscardResultSetAndCloseConnection(DbConnection connection, ResultSet rs){
-        if (rs!=null){
+    public void forceDiscardResultSetAndCloseConnection(DbConnection connection, ResultSet rs) {
+        if (rs != null) {
             try {
                 rs.close();
             } catch (SQLException e) {

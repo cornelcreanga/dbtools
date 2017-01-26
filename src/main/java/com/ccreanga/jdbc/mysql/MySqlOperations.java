@@ -43,8 +43,7 @@ public class MySqlOperations extends BasicModelOperations {
     public void forceDiscardResultSetAndCloseConnection(DbConnection connection, ResultSet rs) {
         if (!(rs instanceof JDBC42ResultSet)) {
             super.forceDiscardResultSetAndCloseConnection(connection, rs);
-        }
-        else {
+        } else {
             try {
                 //this code was tested with mysql driver 5.1.40
                 Class<?> rsClass = rs.getClass().getSuperclass().getSuperclass();
@@ -61,7 +60,7 @@ public class MySqlOperations extends BasicModelOperations {
                     connection.close();
                     //the mysql client server protocol is broken in this moment.
                     // the only 'sane' operations is close (and this one can fail too)
-                }catch (SQLException e){
+                } catch (SQLException e) {
                     //ignore any exception thrown
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {

@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public class UUIDAnonymizer implements Anonymizer {
     @Override
-    public Object anonymize(Object original,List<Object> fullRow) {
+    public Object anonymize(Object original, List<Object> fullRow) {
         return UUID.randomUUID();
     }
 }

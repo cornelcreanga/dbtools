@@ -15,7 +15,7 @@ public class DateAnonymizer implements Anonymizer {
     }
 
     @Override
-    public Object anonymize(Object original,List<Object> fullRow) {
+    public Object anonymize(Object original, List<Object> fullRow) {
         Random r = new Random();
         int days = r.nextInt(daysNegDeviation + daysPosDeviation);
         Calendar calendar = GregorianCalendar.getInstance();

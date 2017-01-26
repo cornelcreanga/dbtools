@@ -17,7 +17,7 @@ public class BigDecimalAnonymizer implements Anonymizer {
     }
 
     @Override
-    public Object anonymize(Object original,List<Object> fullRow) {
+    public Object anonymize(Object original, List<Object> fullRow) {
         return rangeMin.add(new BigDecimal(Math.random()).multiply(rangeMax.subtract(rangeMin)));
     }
 }

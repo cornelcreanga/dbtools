@@ -16,7 +16,7 @@ public class DataAnonymizerTest {
     @Before
     public void staticSetup() throws Exception {
         URL url = Thread.currentThread().getContextClassLoader().getResource("anonymizer1.yml");
-        if (url==null)
+        if (url == null)
             throw new RuntimeException("cannot load anonymizer1.yml");
         dataAnonymizer = new DataAnonymizer(url.getFile());
     }
@@ -29,12 +29,12 @@ public class DataAnonymizerTest {
 
     @Test
     public void testGetAnonymizer() throws Exception {
-        Optional<Anonymizer> anonymizer = dataAnonymizer.getAnonymizer("test_types","c_varchar");
-        Assert.assertEquals(anonymizer.isPresent(),true);
-        Assert.assertEquals(anonymizer.get() instanceof NameAnonymizer,true);
+        Optional<Anonymizer> anonymizer = dataAnonymizer.getAnonymizer("test_types", "c_varchar");
+        Assert.assertEquals(anonymizer.isPresent(), true);
+        Assert.assertEquals(anonymizer.get() instanceof NameAnonymizer, true);
         NameAnonymizer nameAnonymizer = (NameAnonymizer) anonymizer.get();
-        Assert.assertEquals(nameAnonymizer.getSylNumber(),3);
-        Assert.assertEquals(nameAnonymizer.getStore(),"test_types_c_varchar_store");
+        Assert.assertEquals(nameAnonymizer.getSylNumber(), 3);
+        Assert.assertEquals(nameAnonymizer.getStore(), "test_types_c_varchar_store");
 
         //anonymizer.get()
 

@@ -12,7 +12,7 @@ public class TimestampAnonymizer implements Anonymizer {
     private int secondsPosDeviation = 1000;
 
     @Override
-    public Object anonymize(Object original,List<Object> fullRow) {
+    public Object anonymize(Object original, List<Object> fullRow) {
         Random r = new Random();
         int days = r.nextInt(secondsNegDeviation + secondsPosDeviation);
         Calendar calendar = GregorianCalendar.getInstance();

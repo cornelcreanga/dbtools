@@ -11,7 +11,7 @@ import java.sql.*;
 
 public class ScriptRunner {
 
-    private static final String LINE_SEPARATOR = System.getProperty("line.separator","\n");
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
     private static final String DEFAULT_DELIMITER = ";";
 
@@ -184,7 +184,7 @@ public class ScriptRunner {
     }
 
     private void executeStatement(String command) throws SQLException, UnsupportedEncodingException {
-        if(characterSetName != null){
+        if (characterSetName != null) {
             command = new String(command.getBytes(), characterSetName);
         }
         boolean hasResults = false;

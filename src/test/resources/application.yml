@@ -9,5 +9,15 @@ dataSources:
     password: test
     schema: test
     server: jdbc:postgresql://127.0.0.1:5432
+  oracle:
+    user: system
+    password: oracle
+    schema: XE
+    server: jdbc:oracle:thin:@//localhost:1521/XE
+  cassandra:
+    user:
+    password:
+    schema: test
+    server: 127.0.0.1
 
 

@@ -11,7 +11,7 @@ public class EmailAnonymizer implements Anonymizer {
     RandomNameGenerator randomNameGenerator = RandomNameGeneratorFactory.generator(Language.FANTASY);
 
     @Override
-    public Object anonymize(Object original,List<Object> fullRow) {
+    public Object anonymize(Object original, List<Object> fullRow) {
         return randomNameGenerator.compose(2) + "." + randomNameGenerator.compose(2) + "@domain.com";
     }
 

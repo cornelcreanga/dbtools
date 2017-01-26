@@ -35,6 +35,7 @@ public interface Operations {
      * When to use it - if some fatal error occurs during a very large result set processing it does not make sense to wait until all the result
      * set is drained from server (as currently implemented in the MYSQL jdbc connector)
      * For the moment only MySQL forces you to
+     *
      * @param connection
      * @param rs
      */

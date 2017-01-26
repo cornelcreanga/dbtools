@@ -2,9 +2,9 @@ package com.ccreanga.jdbc;
 
 public enum Dialect {
 
-    MYSQL, POSTGRESQL, MONGODB, CASSANDRA;
+    MYSQL, POSTGRESQL, ORACLE, CASSANDRA;
 
-    public boolean isSQL(){
-        return this.equals(MYSQL) || this.equals(POSTGRESQL);
+    public boolean isSQL() {
+        return this.equals(MYSQL) || this.equals(POSTGRESQL) || this.equals(ORACLE);
     }
 }

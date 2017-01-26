@@ -6,11 +6,10 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.util.Map;
-import java.util.Set;
 
 public class Config {
 
-    Map<String,DataSource> dataSources;
+    Map<String, DataSource> dataSources;
 
     private static Config config;
 
@@ -22,14 +21,14 @@ public class Config {
         this.dataSources = dataSources;
     }
 
-    public DataSource getDataSource(Dialect dialect){
-         return dataSources.get(dialect.name().toLowerCase());
+    public DataSource getDataSource(Dialect dialect) {
+        return dataSources.get(dialect.name().toLowerCase());
     }
 
-    static{
+    static {
         InputStream in = FileUtil.classPathResource("application.yml");
         Yaml yaml = new Yaml();
-        config = yaml.loadAs( in, Config.class );
+        config = yaml.loadAs(in, Config.class);
     }
 
     public static Config getConfig() {

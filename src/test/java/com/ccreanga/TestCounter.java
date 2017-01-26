@@ -9,7 +9,7 @@ import java.sql.Statement;
 public class TestCounter {
 
 
-    private static class Worker implements Runnable{
+    private static class Worker implements Runnable {
 
         private Connection connection;
 
@@ -19,7 +19,7 @@ public class TestCounter {
 
         @Override
         public void run() {
-            for(int i=0;i<1;i++) {
+            for (int i = 0; i < 1; i++) {
                 try (Statement st = connection.createStatement()) {
                     st.executeUpdate("update counter set value = value+1");
                     connection.commit();
@@ -35,11 +35,11 @@ public class TestCounter {
         Connection connection = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:5432/test?user=test&password=test");
         connection.setAutoCommit(false);
         Thread[] threads = new Thread[1000];
-        for (int i = 0; i < 1000;i++ ) {
+        for (int i = 0; i < 1000; i++) {
             threads[i] = new Thread(new Worker(connection));
         }
         long t1 = System.currentTimeMillis();
-        for (int i = 0; i < 1000;i++ ) {
+        for (int i = 0; i < 1000; i++) {
             threads[i].start();
         }
         for (Thread t : threads)

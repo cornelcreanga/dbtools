@@ -36,7 +36,7 @@ public class TableOperations {
         boolean close = true;
         ResultSet rs = null;
         Statement st = null;
-        try  {
+        try {
             st = connection.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
             if (connection.getDialect() == Dialect.MYSQL)
                 st.setFetchSize(Integer.MIN_VALUE);//enable mysql streaming
@@ -82,16 +82,16 @@ public class TableOperations {
 
             }
 
-        } catch (IOExceptionRuntime e){
-            operations.forceDiscardResultSetAndCloseConnection(connection,rs);
+        } catch (IOExceptionRuntime e) {
+            operations.forceDiscardResultSetAndCloseConnection(connection, rs);
             close = false;
             throw e;
             //force discard rs, close connection
         } catch (SQLException e) {
             throw new DatabaseException(e);
-        } finally{
+        } finally {
             try {
-                if ((st!=null) && close)
+                if ((st != null) && close)
                     st.close();
             } catch (SQLException e) {
             }
