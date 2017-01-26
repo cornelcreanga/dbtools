@@ -1,6 +1,7 @@
 package com.ccreanga.jdbc;
 
 import com.ccreanga.jdbc.mysql.MySqlOperations;
+import com.ccreanga.jdbc.oracle.OracleOperations;
 import com.ccreanga.jdbc.postgresql.PostgreSqlOperations;
 
 public class OperationsFactory {
@@ -13,7 +14,9 @@ public class OperationsFactory {
             return new MySqlOperations();
         if (dialect == Dialect.POSTGRESQL)
             return new PostgreSqlOperations();
-        throw new IllegalArgumentException("uknown dialect " + dialect);
+        if (dialect == Dialect.ORACLE)
+            return new OracleOperations();
+        throw new IllegalArgumentException("unknown dialect " + dialect);
     }
 
 }

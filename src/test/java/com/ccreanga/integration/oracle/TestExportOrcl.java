@@ -36,7 +36,7 @@ public class TestExportOrcl {
         server = dataSource.getServer();
         try {
             OracleDataSource ods = new OracleDataSource();
-            ods.setURL(server);
+            ods.setURL(server+"/"+schema);
             ods.setUser(user);
             ods.setPassword(password);
             connection = ods.getConnection();

@@ -13,7 +13,7 @@ dataSources:
     user: system
     password: oracle
     schema: XE
-    server: jdbc:oracle:thin:@//localhost:1521/XE
+    server: jdbc:oracle:thin:@//localhost:1521
   cassandra:
     user:
     password:

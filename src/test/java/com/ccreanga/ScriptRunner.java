@@ -13,7 +13,7 @@ public class ScriptRunner {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
-    private static final String DEFAULT_DELIMITER = ";";
+    private static final char DEFAULT_DELIMITER = ';';
 
     private Connection connection;
 
@@ -24,8 +24,7 @@ public class ScriptRunner {
     private PrintWriter logWriter = new PrintWriter(System.out);
     private PrintWriter errorLogWriter = new PrintWriter(System.err);
 
-    private String delimiter = DEFAULT_DELIMITER;
-    private boolean fullLineDelimiter = false;
+    private char delimiter = DEFAULT_DELIMITER;
     private String characterSetName;
 
     public ScriptRunner(Connection connection) {
@@ -56,12 +55,8 @@ public class ScriptRunner {
         this.errorLogWriter = errorLogWriter;
     }
 
-    public void setDelimiter(String delimiter) {
+    public void setDelimiter(char delimiter) {
         this.delimiter = delimiter;
-    }
-
-    public void setFullLineDelimiter(boolean fullLineDelimiter) {
-        this.fullLineDelimiter = fullLineDelimiter;
     }
 
     public void runScript(Reader reader) {
@@ -102,6 +97,8 @@ public class ScriptRunner {
             BufferedReader lineReader = new BufferedReader(reader);
             String line;
             while ((line = lineReader.readLine()) != null) {
+                if (line.trim().isEmpty())
+                    continue;
                 command = handleLine(command, line);
             }
             commitConnection();
@@ -168,7 +165,12 @@ public class ScriptRunner {
             executeStatement(command.toString());
             command.setLength(0);
         } else if (trimmedLine.length() > 0) {
-            command.append(line);
+            if ((trimmedLine.length()>=2) &&
+                    (trimmedLine.charAt(trimmedLine.length()-1)==delimiter) &&
+                    (trimmedLine.charAt(trimmedLine.length()-2)==delimiter))
+                command.append(trimmedLine.substring(0,trimmedLine.length()-1));
+            else
+                command.append(line);
             command.append(LINE_SEPARATOR);
         }
         return command;
@@ -179,8 +181,14 @@ public class ScriptRunner {
     }
 
     private boolean commandReadyToExecute(String trimmedLine) {
-        return !fullLineDelimiter && trimmedLine.endsWith(delimiter)
-                || fullLineDelimiter && trimmedLine.equals(delimiter);
+        if ((trimmedLine.length()==1) && (trimmedLine.charAt(0)==delimiter))
+            return true;
+        boolean endsWithDelimiter = trimmedLine.charAt(trimmedLine.length()-1)==delimiter;
+        if (endsWithDelimiter)
+            if ( trimmedLine.charAt(trimmedLine.length()-2)!=delimiter)
+            return true;
+        return false;
+
     }
 
     private void executeStatement(String command) throws SQLException, UnsupportedEncodingException {
