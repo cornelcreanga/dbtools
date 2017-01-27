@@ -1,7 +1,8 @@
 package com.ccreanga.integration.mysql;
 
 import com.ccreanga.DbSetup;
-import com.ccreanga.TestHelper;
+import com.ccreanga.MySqlHelper;
+import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.RuntimeSqlException;
 
 import java.sql.Connection;
@@ -12,11 +13,11 @@ public class MySqlDbSetup implements DbSetup {
     @Override
     public void initialize(Connection connection) throws SQLException {
         try {
-            TestHelper.runSqlFile(connection, "drop_mysql.sql");
-            TestHelper.runSqlFile(connection, "create_mysql.sql");
-            TestHelper.insertTestData(connection, 10_000);
+            MySqlHelper.runSqlFile(connection, "drop_mysql.sql");
+            MySqlHelper.runSqlFile(connection, "create_mysql.sql");
+            MySqlHelper.insertTestData(connection, 10_000);
         } catch (RuntimeSqlException e) {
-            TestHelper.handleSqlException(e);
+            MySqlHelper.handleSqlException(e);
         }
     }
 

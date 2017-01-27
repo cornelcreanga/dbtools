@@ -14,6 +14,7 @@ public class ScriptRunner {
     private static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
 
     private static final char DEFAULT_DELIMITER = ';';
+    private static final char ESCAPE_DELIMITER = '\\';
 
     private Connection connection;
 
@@ -156,19 +157,19 @@ public class ScriptRunner {
 
     private StringBuffer handleLine(StringBuffer command, String line) throws SQLException, UnsupportedEncodingException {
         String trimmedLine = line.trim();
+        int len = trimmedLine.length();
         if (lineIsComment(trimmedLine)) {
             println(trimmedLine);
         } else if (commandReadyToExecute(trimmedLine)) {
             command.append(line.substring(0, line.lastIndexOf(delimiter)));
             command.append(LINE_SEPARATOR);
             println(command);
+            println("----------------------------------------------");
             executeStatement(command.toString());
             command.setLength(0);
-        } else if (trimmedLine.length() > 0) {
-            if ((trimmedLine.length()>=2) &&
-                    (trimmedLine.charAt(trimmedLine.length()-1)==delimiter) &&
-                    (trimmedLine.charAt(trimmedLine.length()-2)==delimiter))
-                command.append(trimmedLine.substring(0,trimmedLine.length()-1));
+        } else if (len > 0) {
+            if ((len>=2) && (trimmedLine.charAt(len-1)==delimiter) && (trimmedLine.charAt(len-2)==ESCAPE_DELIMITER))
+                command.append(trimmedLine.substring(0,len-2)+delimiter);
             else
                 command.append(line);
             command.append(LINE_SEPARATOR);
@@ -181,11 +182,12 @@ public class ScriptRunner {
     }
 
     private boolean commandReadyToExecute(String trimmedLine) {
-        if ((trimmedLine.length()==1) && (trimmedLine.charAt(0)==delimiter))
+        int len = trimmedLine.length();
+        if ((len==1) && (trimmedLine.charAt(0)==delimiter))
             return true;
-        boolean endsWithDelimiter = trimmedLine.charAt(trimmedLine.length()-1)==delimiter;
+        boolean endsWithDelimiter = trimmedLine.charAt(len-1)==delimiter;
         if (endsWithDelimiter)
-            if ( trimmedLine.charAt(trimmedLine.length()-2)!=delimiter)
+            if ( trimmedLine.charAt(len-2)!=ESCAPE_DELIMITER)
             return true;
         return false;
 

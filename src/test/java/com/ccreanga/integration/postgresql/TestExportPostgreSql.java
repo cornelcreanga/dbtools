@@ -29,7 +29,7 @@ public class TestExportPostgreSql {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
-            System.out.println("cannot find mysql jdbc driver. this should never happen unless something happened with the maven repo ");
+            System.out.println("cannot find postgresql jdbc driver. this should never happen unless something happened with the maven repo ");
             System.exit(-1);
         }
 

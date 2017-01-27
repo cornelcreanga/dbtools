@@ -1,5 +1,6 @@
 package com.ccreanga;
 
+import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.RuntimeSqlException;
 import com.ccreanga.random.Language;
 import com.ccreanga.random.RandomNameGenerator;
@@ -15,7 +16,7 @@ import java.util.Random;
 
 import static com.ccreanga.RandomUtil.*;
 
-public class TestHelper {
+public class PostgreSqlHelper {
 
     private static RandomNameGenerator generator = RandomNameGeneratorFactory.generator(Language.FANTASY);
 
@@ -31,7 +32,7 @@ public class TestHelper {
 
     public static void insertTestData(Connection connection, int rows) throws SQLException {
 
-        if (rows > 1000_000)
+        if (rows > 100_000)
             throw new IllegalArgumentException("rows should be lower than 100000");
 
         long counter;
@@ -39,19 +40,18 @@ public class TestHelper {
 
         try (PreparedStatement psParent = connection.prepareStatement("INSERT INTO parent(name) VALUES(?)", PreparedStatement.RETURN_GENERATED_KEYS);
              PreparedStatement psChild = connection.prepareStatement("INSERT INTO child(parent_id,name) VALUES(?,?)", PreparedStatement.RETURN_GENERATED_KEYS)) {
-
-            for (int k = 0; k < rows; k++) {
+            for (int k = 1; k <= rows; k++) {
                 String name = generator.compose(2);
                 psParent.setString(1, name);
                 psParent.addBatch();
 
                 if (k % 10000 == 0) {
-                    executeChildBatch(psParent, psChild);
+                    executeBatch(psParent, psChild);
                     connection.commit();
                 }
             }
 
-            executeChildBatch(psParent, psChild);
+            executeBatch(psParent, psChild);
 
             connection.commit();
 
@@ -66,9 +66,9 @@ public class TestHelper {
         counter = 1;
         t1 = System.currentTimeMillis();
         try (PreparedStatement ps = connection.prepareStatement(
-                "INSERT INTO test_types(c_varchar,c_varbinary,c_text,c_blob,c_time,c_timestamp,c_date,c_datetime," +
-                        "c_decimal,c_double,c_float,c_bigint,c_int,c_mediumint,c_smallint,c_tinyint,c_json)" +
-                        " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+                "INSERT INTO test_types(c_varchar,c_text,c_blob,c_time,c_timestamp,c_date," +
+                        "c_decimal,c_double,c_float,c_bigint,c_int,c_smallint)" +
+                        " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)")
         ) {
             Random random = new Random();
 
@@ -77,73 +77,54 @@ public class TestHelper {
                     ps.setNull(1, Types.VARCHAR);
                 else
                     ps.setString(1, generator.compose(2) + " " + generator.compose(2));
+
                 if (random.nextInt(100) == 0)
-                    ps.setNull(2, Types.LONGVARBINARY);
+                    ps.setNull(2, Types.LONGVARCHAR);
+                else
+                    ps.setString(2, generateString(300 + random.nextInt(1000)));
+                if (random.nextInt(100) == 0)
+                    ps.setNull(3, Types.LONGVARBINARY);
                 else {
                     int len = 300 + random.nextInt(1000);
-                    ps.setBytes(2, generateBytes(len));
+                    ps.setBytes(3, generateBytes(len));
                 }
 
                 if (random.nextInt(100) == 0)
-                    ps.setNull(3, Types.LONGVARCHAR);
+                    ps.setNull(4, Types.TIME);
                 else
-                    ps.setString(3, generateString(300 + random.nextInt(1000)));
+                    ps.setTime(4, new Time(generateDate()));
                 if (random.nextInt(100) == 0)
-                    ps.setNull(4, Types.LONGVARBINARY);
-                else {
-                    int len = 300 + random.nextInt(1000);
-                    ps.setBytes(4, generateBytes(len));
-                }
-
-                if (random.nextInt(100) == 0)
-                    ps.setNull(5, Types.TIME);
+                    ps.setNull(5, Types.TIMESTAMP);
                 else
-                    ps.setTime(5, new Time(generateDate()));
+                    ps.setTimestamp(5, new Timestamp(generateDate()));
                 if (random.nextInt(100) == 0)
-                    ps.setNull(6, Types.TIMESTAMP);
+                    ps.setNull(6, Types.DATE);
                 else
-                    ps.setTimestamp(6, new Timestamp(generateDate()));
+                    ps.setDate(6, new java.sql.Date(generateDate()));
                 if (random.nextInt(100) == 0)
-                    ps.setNull(7, Types.DATE);
+                    ps.setNull(7, Types.DECIMAL);
                 else
-                    ps.setDate(7, new java.sql.Date(generateDate()));
+                    ps.setBigDecimal(7, new BigDecimal(10_000_000_000d * random.nextDouble()));
                 if (random.nextInt(100) == 0)
-                    ps.setNull(8, Types.TIMESTAMP);
+                    ps.setNull(8, Types.DOUBLE);
                 else
-                    ps.setTimestamp(8, new java.sql.Timestamp(generateDate()));
+                    ps.setDouble(8, Double.MAX_VALUE * random.nextDouble());
                 if (random.nextInt(100) == 0)
-                    ps.setNull(9, Types.DECIMAL);
+                    ps.setNull(9, Types.FLOAT);
                 else
-                    ps.setBigDecimal(9, new BigDecimal(10_000_000_000d * random.nextDouble()));
+                    ps.setFloat(9, Float.MAX_VALUE * random.nextFloat());
                 if (random.nextInt(100) == 0)
-                    ps.setNull(10, Types.DOUBLE);
+                    ps.setNull(10, Types.BIGINT);
                 else
-                    ps.setDouble(10, Double.MAX_VALUE * random.nextDouble());
+                    ps.setLong(10, random.nextLong());
                 if (random.nextInt(100) == 0)
-                    ps.setNull(11, Types.FLOAT);
+                    ps.setNull(11, Types.INTEGER);
                 else
-                    ps.setFloat(11, Float.MAX_VALUE * random.nextFloat());
+                    ps.setInt(11, random.nextInt());
                 if (random.nextInt(100) == 0)
-                    ps.setNull(12, Types.BIGINT);
+                    ps.setNull(12, Types.INTEGER);
                 else
-                    ps.setLong(12, random.nextLong());
-                if (random.nextInt(100) == 0)
-                    ps.setNull(13, Types.INTEGER);
-                else
-                    ps.setInt(13, random.nextInt());
-                if (random.nextInt(100) == 0)
-                    ps.setNull(14, Types.INTEGER);
-                else
-                    ps.setInt(14, random.nextInt(100_000));
-                if (random.nextInt(100) == 0)
-                    ps.setNull(15, Types.INTEGER);
-                else
-                    ps.setInt(15, random.nextInt(10_000));
-                if (random.nextInt(100) == 0)
-                    ps.setNull(16, Types.INTEGER);
-                else
-                    ps.setInt(16, random.nextInt(100));
-                ps.setString(17, "{\"k1\": \"value\", \"k2\": " + k + "}");
+                    ps.setInt(12, random.nextInt(100));
 
                 ps.addBatch();
                 if (counter % 500 == 0)
@@ -164,14 +145,15 @@ public class TestHelper {
         }
     }
 
-    private static void executeChildBatch(PreparedStatement psParent, PreparedStatement psChild) throws SQLException {
+    private static void executeBatch(PreparedStatement psParent, PreparedStatement psChild) throws SQLException {
         psParent.executeBatch();
         ResultSet rs = psParent.getGeneratedKeys();
         while (rs.next()) {
-            int id = rs.getInt(1);
+            int id= rs.getInt(1);
             psChild.setInt(1, id);
             psChild.setString(2, generator.compose(2));
             psChild.addBatch();
+
         }
         psChild.executeBatch();
     }

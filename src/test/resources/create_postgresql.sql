@@ -38,21 +38,17 @@ CREATE TABLE test_types
 (
   id bigserial NOT NULL,
   c_varchar character varying(100),
-  c_varbinary bytea,
   c_text text,
   c_blob bytea,
   c_time time without time zone,
   c_timestamp timestamp without time zone,
   c_date date,
-  c_datetime date,
   c_decimal numeric(22,6),
   c_double double precision,
   c_float real,
   c_bigint bigint,
   c_int integer,
-  c_mediumint integer,
   c_smallint smallint,
-  c_tinyint smallint,
   CONSTRAINT pk_test_types PRIMARY KEY (id)
 )
 WITH (

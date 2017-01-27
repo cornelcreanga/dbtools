@@ -1,7 +1,9 @@
 package com.ccreanga.integration.postgresql;
 
 import com.ccreanga.DbSetup;
-import com.ccreanga.TestHelper;
+import com.ccreanga.MySqlHelper;
+import com.ccreanga.PostgreSqlHelper;
+import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.RuntimeSqlException;
 
 import java.sql.Connection;
@@ -15,11 +17,11 @@ public class PostgreSqlDbSetup implements DbSetup {
     public void initialize(Connection connection) throws SQLException {
 
         try {
-            TestHelper.runSqlFile(connection, "drop_postgresql.sql");
-            TestHelper.runSqlFile(connection, "create_postgresql.sql");
-            TestHelper.insertTestData(connection, 10_000);
+            PostgreSqlHelper.runSqlFile(connection, "drop_postgresql.sql");
+            PostgreSqlHelper.runSqlFile(connection, "create_postgresql.sql");
+            PostgreSqlHelper.insertTestData(connection, 10_000);
         } catch (RuntimeSqlException e) {
-            TestHelper.handleSqlException(e);
+            MySqlHelper.handleSqlException(e);
         }
     }
 
