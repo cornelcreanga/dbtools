@@ -41,7 +41,11 @@ public abstract class BasicModelOperations implements Operations {
     @Override
     public List<Table> getTables(DbConnection connection, String schema, String tablePattern) {
         List<Table> tables = new ArrayList<>(16);
-        try (ResultSet rs = connection.meta().getTables(schema, "%", tablePattern, new String[]{"TABLE"})) {
+        try (ResultSet rs = connection.meta().getTables(
+                catalog(schema,connection.getDialect()),
+                schema(schema,connection.getDialect()),
+                tablePattern,
+                new String[]{"TABLE"})) {
             while (rs.next()) {
                 String tableName = rs.getString(3);
                 Table table = new Table(
@@ -58,6 +62,19 @@ public abstract class BasicModelOperations implements Operations {
         return tables;
     }
 
+
+    private String schema(String schema,Dialect dialect){
+        if (dialect==Dialect.ORACLE)
+            return schema.toUpperCase();
+        return "%";
+    }
+
+    private String catalog(String schema, Dialect dialect){
+        if (dialect==Dialect.ORACLE)
+            return null;
+        return schema;
+    }
+
     private ResultSet getSchemaRs(DbConnection connection) throws SQLException {
         if (connection.getDialect().equals(Dialect.MYSQL)) {
             return connection.meta().getCatalogs();
@@ -69,7 +86,11 @@ public abstract class BasicModelOperations implements Operations {
     public List<Column> getColumns(DbConnection connection, String schema, String table) {
 
         List<Column> columns = new ArrayList<>(16);
-        try (ResultSet rs = connection.meta().getColumns(schema, "%", table, "%");) {
+        try (ResultSet rs = connection.meta().getColumns(
+                catalog(schema,connection.getDialect()),
+                schema(schema,connection.getDialect()),
+                table,
+                "%");) {
             while (rs.next()) {
                 Column column = new Column(
                         rs.getString(1),
@@ -97,8 +118,10 @@ public abstract class BasicModelOperations implements Operations {
     @Override
     public List<Key> getTablePrimaryKeys(DbConnection connection, String schema, String table) {
         List<Key> keys = new ArrayList<>(16);
-        //todo
-        try (ResultSet rs = connection.meta().getPrimaryKeys(null, null, table)) {
+        try (ResultSet rs = connection.meta().getPrimaryKeys(
+                catalog(schema,connection.getDialect()),
+                schema(schema,connection.getDialect()),
+                table)) {
             while (rs.next()) {
                 keys.add(new Key(rs.getString(1), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6)));
             }
@@ -121,7 +144,10 @@ public abstract class BasicModelOperations implements Operations {
 
     @Override
     public List<Relation> getTableImportedKeys(DbConnection connection, String schema, String table) {
-        try (ResultSet rs = connection.meta().getImportedKeys(schema, "%", table)) {
+        try (ResultSet rs = connection.meta().getImportedKeys(
+                catalog(schema,connection.getDialect()),
+                schema(schema,connection.getDialect()),
+                table)) {
             return buildRelations(rs);
         } catch (Exception e) {
             throw new DatabaseException(e);
@@ -130,7 +156,10 @@ public abstract class BasicModelOperations implements Operations {
 
     @Override
     public List<Relation> getTableExportedKeys(DbConnection connection, String schema, String table) {
-        try (ResultSet rs = connection.meta().getExportedKeys(schema, "%", table)) {
+        try (ResultSet rs = connection.meta().getExportedKeys(
+                catalog(schema,connection.getDialect()),
+                schema(schema,connection.getDialect()),
+                table)) {
             return buildRelations(rs);
         } catch (Exception e) {
             throw new DatabaseException(e);

@@ -37,7 +37,7 @@ public class TestExportOrcl {
         server = dataSource.getServer();
         try {
             OracleDataSource ods = new OracleDataSource();
-            ods.setURL(server+"/"+schema);
+            ods.setURL(server);
             ods.setUser(user);
             ods.setPassword(password);
             connection = ods.getConnection();
@@ -47,13 +47,6 @@ public class TestExportOrcl {
             System.exit(-1);
         }
         connection.setAutoCommit(false);
-        ResultSet r= connection.getMetaData().getTables(null,"%","%",new String[]{"TABLE"});
-        while(r.next()){
-            System.out.println(r.getString(1));
-            System.out.println(r.getString(2));
-            System.out.println(r.getString(3));
-            System.out.println("-----------------");
-        }
         setup.initialize(connection);
     }
 

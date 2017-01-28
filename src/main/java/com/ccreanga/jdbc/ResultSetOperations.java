@@ -26,10 +26,12 @@ public class ResultSetOperations {
                 int i = rs.getInt(pos);
                 return rs.wasNull() ? null : i;
             }
+            case Types.NVARCHAR:
             case Types.VARCHAR: {
                 String s = rs.getString(pos);
                 return rs.wasNull() ? null : s;
             }
+            case Types.NCHAR:
             case Types.CHAR:
                 String s = rs.getString(pos);
                 return rs.wasNull() ? null : s;
@@ -43,14 +45,17 @@ public class ResultSetOperations {
                 //do not use rs.getTime(pos) as you'll lose the microseconds -todo - recheck
                 return rs.wasNull() ? null : time;
             }
+            case -101://oracle
             case Types.TIMESTAMP: {
                 Timestamp t = rs.getTimestamp(pos);
                 return rs.wasNull() ? null : t;
             }
+            case Types.LONGNVARCHAR:
             case Types.LONGVARCHAR: {
                 Clob clob = rs.getClob(pos);
                 return rs.wasNull() ? null : readClob(clob);
             }
+            case Types.NCLOB:
             case Types.CLOB: {
                 Clob clob = rs.getClob(pos);
                 return rs.wasNull() ? null : readClob(clob);
@@ -77,10 +82,12 @@ public class ResultSetOperations {
                 BigDecimal b = rs.getBigDecimal(pos);
                 return rs.wasNull() ? null : b;
             }
+            case 100://oracle
             case Types.FLOAT: {
                 float d = rs.getFloat(pos);
                 return rs.wasNull() ? null : d;
             }
+            case 101://oracle
             case Types.DOUBLE: {
                 double d = rs.getDouble(pos);
                 return rs.wasNull() ? null : d;
