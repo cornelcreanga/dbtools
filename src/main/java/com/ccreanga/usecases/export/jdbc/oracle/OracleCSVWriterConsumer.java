@@ -8,7 +8,7 @@ import org.apache.commons.csv.CSVPrinter;
 import java.io.*;
 import java.util.List;
 
-
+//http://docs.oracle.com/cd/B19306_01/server.102/b14215/ldr_loading.htm#sthref1368 todo
 public class OracleCSVWriterConsumer implements CloseableConsumer<List<Object>> {
 
     CSVPrinter printer;

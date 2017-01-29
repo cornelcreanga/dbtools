@@ -20,7 +20,7 @@ public abstract class BasicModelOperations implements Operations {
                 schemas.add(new Schema(rs.getString(1)));
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new DatabaseException(e);
         }
         return schemas;
     }
@@ -76,7 +76,7 @@ public abstract class BasicModelOperations implements Operations {
     }
 
     private ResultSet getSchemaRs(DbConnection connection) throws SQLException {
-        if (connection.getDialect().equals(Dialect.MYSQL)) {
+        if (connection.getDialect()==Dialect.MYSQL) {
             return connection.meta().getCatalogs();
         }
         throw new IllegalArgumentException("unhandled dialect " + connection.getDialect());

@@ -1,7 +1,6 @@
 package com.ccreanga.integration.oracle;
 
 import com.ccreanga.DbSetup;
-import com.ccreanga.MySqlHelper;
 import com.ccreanga.OracleHelper;
 import com.ccreanga.jdbc.RuntimeSqlException;
 
@@ -15,7 +14,7 @@ public class OracleDbSetup implements DbSetup {
         try {
             OracleHelper.runSqlFile(connection, "drop_orcl.sql");
             OracleHelper.runSqlFile(connection, "create_orcl.sql");
-            OracleHelper.insertTestData(connection, 1_000);
+            OracleHelper.insertTestData(connection, 2);
         } catch (RuntimeSqlException e) {
             OracleHelper.handleSqlException(e);
         }

@@ -52,11 +52,7 @@ public class TableOperations {
             while (rs.next()) {
                 List<Object> line = new ArrayList<>(colCount);
                 for (int i = 0; i < colCount; i++) {
-                    try {
-                        line.add(ResultSetOperations.readValue(rs, i + 1, types[i]));
-                    } catch (Exception e) {
-                        throw new DatabaseException(e);
-                    }
+                    line.add(ResultSetOperations.readValue(rs, i + 1, types[i]));
                 }
                 consumer.accept(line);
                 if (counter % GenericConfig.progress == 0) {

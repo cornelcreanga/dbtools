@@ -180,7 +180,7 @@ public class DBToolsApplication {
                 } catch (DatabaseException | IOExceptionRuntime e) {
                     System.out.println("Finished execution due to unexpected error.");
                 }
-            } else if (dialect.equals(Dialect.CASSANDRA)) {
+            } else if (dialect==Dialect.CASSANDRA) {
                 try (Session session = session(host, schema, user, password)) {
                     exportCassandra(session, schema, export[0], export[1], booleanParam(export[2]), dataAnonymizer);
                 }
