@@ -54,9 +54,9 @@ public class DBToolsApplication {
         Option dialectOption = Option.builder(DIALECT)
                 .valueSeparator(' ')
                 .numberOfArgs(1)
-                .argName("Dialect (MYSQL or POSTGRESQL)")
+                .argName("Dialect (MYSQL/POSTGRESQL/ORACLE/CASSANDRA)")
                 .longOpt(DIALECT)
-                .desc("Dialect (MYSQL or POSTGRESQL)")
+                .desc("Dialect (MYSQL/POSTGRESQL/ORACLE/CASSANDRA)")
                 .build();
 
         Option userOption = Option.builder(USER)

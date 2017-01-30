@@ -4,6 +4,8 @@ import com.ccreanga.jdbc.ScriptGenerator;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.Table;
 
+import java.io.File;
+import java.sql.Types;
 import java.util.List;
 
 public class OracleScriptGenerator implements ScriptGenerator {
@@ -42,6 +44,40 @@ public class OracleScriptGenerator implements ScriptGenerator {
 
     @Override
     public String generateLoadCommand(Table table, List<Column> columns, String folderName) {
-        return null;
+        StringBuilder sb =
+                new StringBuilder("LOAD DATA LOCAL INFILE '" + folderName + File.separator + table.getName() + ".ldr' \"str '{EOL}'\"" +
+                        " INTO TABLE \"" + table.getName() + "\" FIELDS TERMINATED BY ',' (\n");
+
+        for (Column c : columns) {
+            if (lob(c)){
+
+            }else
+            sb.append("\""+c.getName()+"\"");
+            if ((c.getType()==Types.CHAR) || (c.getType()==Types.NCHAR))
+                sb.append(" CHAR("+c.getSize()+")");
+            else if (c.getType()==Types.DATE)
+                sb.append(" DATE \"YYYY-MM-DD HH24:MI:SS\"");
+            else if ((c.getType()==-101) || (c.getType()==Types.TIMESTAMP))
+                sb.append(" TIMESTAMP \"YYYY-MM-DD HH24:MI:SS.FF\"");
+            sb.append("\n,");
+
+        }
+        sb.deleteCharAt(sb.length() - 1);
+
+        sb.append(")");
+
+        return sb.toString();
+
     }
+
+    private boolean lob(Column c) {
+        return (
+                (c.getType() == Types.BLOB) ||
+                        (c.getType() == Types.CLOB) ||
+                        (c.getType() == Types.NCLOB) ||
+                        (c.getType() == Types.LONGVARCHAR) ||
+                        (c.getType() == Types.LONGNVARCHAR)
+        );
+    }
+
 }
