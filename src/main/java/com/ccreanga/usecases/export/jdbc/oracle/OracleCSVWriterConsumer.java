@@ -1,6 +1,8 @@
 package com.ccreanga.usecases.export.jdbc.oracle;
 
 import com.ccreanga.IOExceptionRuntime;
+import com.ccreanga.jdbc.oracle.LobFiles;
+import com.ccreanga.jdbc.oracle.OracleScriptGenerator;
 import com.ccreanga.usecases.export.jdbc.CloseableConsumer;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -12,11 +14,17 @@ import java.util.List;
 public class OracleCSVWriterConsumer implements CloseableConsumer<List<Object>> {
 
     CSVPrinter printer;
-    OracleCSVConvertor oracleCSVConvertor = new OracleCSVConvertor();
+    OracleCSVConvertor oracleCSVConvertor;
+    String table;
+    List<String> columns;
 
-    public OracleCSVWriterConsumer(File file) {
+
+    public OracleCSVWriterConsumer(File file,String table,List<String> columns) {
         try {
             printer = new CSVPrinter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"), 1024 * 1024), CSVFormat.MYSQL);
+            oracleCSVConvertor = new OracleCSVConvertor();
+            this.table = table;
+            this.columns = columns;
         } catch (IOException e) {
             throw new IOExceptionRuntime(e);
         }
@@ -25,8 +33,13 @@ public class OracleCSVWriterConsumer implements CloseableConsumer<List<Object>> 
     @Override
     public void accept(List<Object> line) {
         try {
-            for (Object next : line) {
-                printer.print(oracleCSVConvertor.toStringConvertor(next));
+            for (int i = 0; i < line.size(); i++) {
+                Object next =  line.get(i);
+                printer.print(oracleCSVConvertor.toStringConvertor(
+                        next,
+                        LobFiles.getOutputStream(table,columns.get(i)),
+                        OracleUtil.generateLobBoundary(table+"###"+columns.get(i))
+                ));
             }
             printer.println();
         } catch (IOException e) {

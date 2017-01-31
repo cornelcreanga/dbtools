@@ -68,16 +68,18 @@ public class SqlTablesExport {
 
                 }
                 TableOperations tableOperations = new TableOperations();
+                List<String> columnNames = columns.stream().map(Column::getName).collect(Collectors.toList());
+                try (CloseableConsumer writerConsumer = CSVWriterFactory.getCSVWriter(connection.getDialect(), dumpFile,t.getName(),columnNames)) {
 
-                try (CloseableConsumer writerConsumer = CSVWriterFactory.getCSVWriter(connection.getDialect(), dumpFile)) {
-                    List<String> columnNames = columns.stream().map(Column::getName).collect(Collectors.toList());
                     Consumer<List<Object>> consumer = anonymizer == null ?
                             writerConsumer :
                             new AnonymizerConsumer(anonymizer, t.getName(), columnNames).andThen(writerConsumer);
 
+                    opWriter.write(generator.generateLoadCommand(t, columns, folderName) + "\n");
+
                     tableOperations.processTableRows(connection, t, columns, consumer);
 
-                    opWriter.write(generator.generateLoadCommand(t, columns, folderName) + "\n");
+                    generator.end(t);
                 } catch (DatabaseException e) {
                     System.out.println("\nException occured, message is " + e.getMessage());
                     if (connection.isClosed())
@@ -91,6 +93,8 @@ public class SqlTablesExport {
             }
 
         }
+
+
         try {
             opWriter.close();
         } catch (IOException e) {

@@ -12,4 +12,9 @@ public class PostgreSqlScriptGenerator implements ScriptGenerator {
     public String generateLoadCommand(Table table, List<Column> columns, String folderName) {
         return "COPY " + table.getName() + " FROM '" + folderName + File.separator + table.getName() + ".txt' CSV NULL '\\N';";
     }
+
+    @Override
+    public void end(Table table) {
+
+    }
 }

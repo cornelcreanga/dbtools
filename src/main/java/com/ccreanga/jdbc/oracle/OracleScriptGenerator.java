@@ -1,12 +1,17 @@
 package com.ccreanga.jdbc.oracle;
 
+import com.ccreanga.IOExceptionRuntime;
 import com.ccreanga.jdbc.ScriptGenerator;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.Table;
+import com.ccreanga.usecases.export.jdbc.oracle.OracleUtil;
 
-import java.io.File;
+import java.io.*;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class OracleScriptGenerator implements ScriptGenerator {
 
@@ -42,14 +47,29 @@ public class OracleScriptGenerator implements ScriptGenerator {
      1  "RESUME"    LOBFILE( CONSTANT 'jqresume') CHAR(2000)
      TERMINATED BY "<endlob>\n")     */
 
+
+
+
+
     @Override
     public String generateLoadCommand(Table table, List<Column> columns, String folderName) {
         StringBuilder sb =
-                new StringBuilder("LOAD DATA LOCAL INFILE '" + folderName + File.separator + table.getName() + ".ldr' \"str '{EOL}'\"" +
+                new StringBuilder("LOAD DATA INFILE '" + folderName + File.separator + table.getName() + ".ldr' \"str '{EOL}'\"" +
                         " INTO TABLE \"" + table.getName() + "\" FIELDS TERMINATED BY ',' (\n");
 
         for (Column c : columns) {
             if (lob(c)){
+                String lobFile = OracleUtil.generateLobFileName(table.getName(),c.getName());
+                try {
+                    BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(folderName+File.separator+lobFile));
+                    LobFiles.put(lobFile,out);
+                } catch (FileNotFoundException e) {
+                    throw new IOExceptionRuntime(e);
+                }
+                sb.append("\""+c.getName()+"\"");
+                sb.append("LOBFILE( CONSTANT '"+lobFile+"') TERMINATED BY \""+
+                        OracleUtil.generateLobBoundary(table.getName()+"###"+c.getName())
+                        +"\"");
 
             }else
             sb.append("\""+c.getName()+"\"");
@@ -59,16 +79,22 @@ public class OracleScriptGenerator implements ScriptGenerator {
                 sb.append(" DATE \"YYYY-MM-DD HH24:MI:SS\"");
             else if ((c.getType()==-101) || (c.getType()==Types.TIMESTAMP))
                 sb.append(" TIMESTAMP \"YYYY-MM-DD HH24:MI:SS.FF\"");
-            sb.append("\n,");
+            sb.append(",\n");
 
         }
-        sb.deleteCharAt(sb.length() - 1);
+        sb.setLength(sb.length()-2);
 
         sb.append(")");
 
         return sb.toString();
 
     }
+
+    @Override
+    public void end(Table table) {
+        LobFiles.closeLobForTable(table.getName());
+    }
+
 
     private boolean lob(Column c) {
         return (

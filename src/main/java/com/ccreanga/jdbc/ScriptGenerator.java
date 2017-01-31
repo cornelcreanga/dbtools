@@ -9,4 +9,6 @@ public interface ScriptGenerator {
 
     String generateLoadCommand(Table table, List<Column> columns, String folderName);
 
+    void end(Table table);
+
 }

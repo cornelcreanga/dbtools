@@ -1,7 +1,11 @@
 package com.ccreanga.usecases.export.jdbc.oracle;
 
+import com.ccreanga.IOExceptionRuntime;
+import com.ccreanga.jdbc.oracle.OracleScriptGenerator;
 import com.ccreanga.util.Encoding;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
@@ -14,8 +18,10 @@ public class OracleCSVConvertor {
     DateTimeFormatter timeStampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm:ss");
 
+    public OracleCSVConvertor() {
+    }
 
-    public String toStringConvertor(Object value) {
+    public String toStringConvertor(Object value,OutputStream lobStream,String boundary) {
         if (value == null)
             return null;
         if (value instanceof String)
@@ -46,7 +52,13 @@ public class OracleCSVConvertor {
         }
 
         if (value instanceof byte[]) {
-            return Encoding.encodeHexString((byte[]) value);
+            try {
+                lobStream.write((byte[]) value);
+                lobStream.write(boundary.getBytes());
+                return "";
+            } catch (IOException e) {
+                throw new IOExceptionRuntime(e);
+            }
         }
         throw new RuntimeException("cannot convert value;unknown type:" + value.getClass());
     }

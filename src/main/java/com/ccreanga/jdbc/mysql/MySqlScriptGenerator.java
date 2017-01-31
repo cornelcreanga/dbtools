@@ -40,6 +40,11 @@ public class MySqlScriptGenerator implements ScriptGenerator {
 
     }
 
+    @Override
+    public void end(Table table) {
+
+    }
+
     private boolean binaryType(Column c) {
         return ((c.getType() == Types.BLOB) || (c.getType() == Types.LONGVARBINARY) || (c.getType() == Types.VARBINARY) || (c.getType() == Types.BINARY));
     }
