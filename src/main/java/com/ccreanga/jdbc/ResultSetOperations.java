@@ -52,31 +52,22 @@ public class ResultSetOperations {
                 case Types.LONGNVARCHAR:
                 case Types.LONGVARCHAR: {
                     Clob clob = rs.getClob(pos);
-                    return rs.wasNull() ? null : readClob(clob);
+                    return rs.wasNull() ? null : clob.getCharacterStream();
                 }
                 case Types.NCLOB:
                 case Types.CLOB: {
                     Clob clob = rs.getClob(pos);
-                    return rs.wasNull() ? null : readClob(clob);
+                    return rs.wasNull() ? null : clob.getCharacterStream();
                 }
                 case Types.BLOB: {
                     Blob blob = rs.getBlob(pos);
-                    return rs.wasNull() ? null : readBlob(blob);
+                    return rs.wasNull() ? null : blob.getBinaryStream();
                 }
-                case Types.LONGVARBINARY: {
-                    InputStream reader = rs.getBinaryStream(pos);
-                    return rs.wasNull() ? null : readBinary(reader);
-                }
-                case Types.VARBINARY: {
-                    InputStream reader = rs.getBinaryStream(pos);
-                    return rs.wasNull() ? null : readBinary(reader);
-
-                }
+                case Types.LONGVARBINARY:
+                case Types.VARBINARY:
                 case Types.BINARY: {
-                    InputStream reader = rs.getBinaryStream(pos);
-                    return rs.wasNull() ? null : readBinary(reader);
-
-                }
+                    InputStream in = rs.getBinaryStream(pos);
+                    return rs.wasNull() ? null : in;                }
                 case Types.DECIMAL: {
                     BigDecimal b = rs.getBigDecimal(pos);
                     return rs.wasNull() ? null : b;
@@ -115,7 +106,7 @@ public class ResultSetOperations {
                 default:
                     throw new DatabaseException("unknown column type:" + type);
             }
-        } catch (SQLException | IOException e) {
+        } catch (SQLException e) {
             throw new DatabaseException(e);
         }
 

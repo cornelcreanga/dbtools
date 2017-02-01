@@ -1,5 +1,13 @@
 package com.ccreanga.usecases.export.jdbc.postgresql;
 
+import com.ccreanga.jdbc.DatabaseException;
+import com.ccreanga.util.Encoding;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.CharStreams;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
@@ -41,9 +49,23 @@ public class PostgreSqlCSVConvertor {
             return b ? "1" : "0";
         }
 
-        if (value instanceof byte[]) {
-            return bytea((byte[]) value);
+
+        if (value instanceof InputStream) {
+            try {
+                return bytea(ByteStreams.toByteArray((InputStream)value));
+            } catch (IOException e) {
+                throw new DatabaseException(e);
+            }
         }
+
+        if (value instanceof Reader) {
+            try{
+                return CharStreams.toString((Reader)value);
+            } catch (IOException e) {
+                throw new DatabaseException(e);
+            }
+        }
+
         throw new RuntimeException("cannot convert value;unknown type:" + value.getClass());
     }
 

@@ -1,7 +1,15 @@
 package com.ccreanga.usecases.export.jdbc.mysql;
 
+import com.ccreanga.jdbc.DatabaseException;
 import com.ccreanga.util.Encoding;
+import com.google.common.base.Charsets;
+import com.google.common.io.ByteStreams;
+import com.google.common.io.CharStreams;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
@@ -45,8 +53,20 @@ public class MySqlCSVConvertor {
             return b ? "1" : "0";
         }
 
-        if (value instanceof byte[]) {
-            return Encoding.encodeHexString((byte[]) value);
+        if (value instanceof InputStream) {
+            try {
+                return Encoding.encodeHexString(ByteStreams.toByteArray((InputStream)value));
+            } catch (IOException e) {
+                throw new DatabaseException(e);
+            }
+        }
+
+        if (value instanceof Reader) {
+            try{
+                return CharStreams.toString((Reader)value);
+            } catch (IOException e) {
+                throw new DatabaseException(e);
+            }
         }
         throw new RuntimeException("cannot convert value;unknown type:" + value.getClass());
     }

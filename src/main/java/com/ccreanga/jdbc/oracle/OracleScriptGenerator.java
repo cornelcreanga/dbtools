@@ -55,7 +55,7 @@ public class OracleScriptGenerator implements ScriptGenerator {
     public String generateLoadCommand(Table table, List<Column> columns, String folderName) {
         StringBuilder sb =
                 new StringBuilder("LOAD DATA INFILE '" + folderName + File.separator + table.getName() + ".ldr' \"str '{EOL}'\"" +
-                        " INTO TABLE \"" + table.getName() + "\" FIELDS TERMINATED BY ',' (\n");
+                        " INTO TABLE \"" + table.getName() + "\" FIELDS TERMINATED BY ',' TRAILING NULLCOLS(\n");
 
         for (Column c : columns) {
             if (lob(c)){

@@ -3,9 +3,12 @@ package com.ccreanga.usecases.export.jdbc.oracle;
 import com.ccreanga.IOExceptionRuntime;
 import com.ccreanga.jdbc.oracle.OracleScriptGenerator;
 import com.ccreanga.util.Encoding;
+import com.ccreanga.util.IOUtil;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
@@ -51,15 +54,26 @@ public class OracleCSVConvertor {
             return b ? "1" : "0";
         }
 
-        if (value instanceof byte[]) {
+        if (value instanceof InputStream) {
             try {
-                lobStream.write((byte[]) value);
+                IOUtil.copy((InputStream)value,lobStream);
                 lobStream.write(boundary.getBytes());
                 return "";
             } catch (IOException e) {
                 throw new IOExceptionRuntime(e);
             }
         }
+
+        if (value instanceof Reader) {
+            try {
+                IOUtil.copy((Reader)value,lobStream);
+                lobStream.write(boundary.getBytes());
+                return "";
+            } catch (IOException e) {
+                throw new IOExceptionRuntime(e);
+            }
+        }
+
         throw new RuntimeException("cannot convert value;unknown type:" + value.getClass());
     }
 

@@ -6,6 +6,7 @@ import com.ccreanga.jdbc.oracle.OracleScriptGenerator;
 import com.ccreanga.usecases.export.jdbc.CloseableConsumer;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.QuoteMode;
 
 import java.io.*;
 import java.util.List;
@@ -20,8 +21,17 @@ public class OracleCSVWriterConsumer implements CloseableConsumer<List<Object>> 
 
 
     public OracleCSVWriterConsumer(File file,String table,List<String> columns) {
+
+        CSVFormat format = CSVFormat.MYSQL.
+                withNullString("").
+                withQuote('"').
+                withQuoteMode(QuoteMode.MINIMAL).
+                withDelimiter(',');
+
         try {
-            printer = new CSVPrinter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"), 1024 * 1024), CSVFormat.MYSQL);
+            printer = new CSVPrinter(
+                    new BufferedWriter(
+                            new OutputStreamWriter(new FileOutputStream(file), "UTF-8"), 1024 * 1024), format);
             oracleCSVConvertor = new OracleCSVConvertor();
             this.table = table;
             this.columns = columns;
