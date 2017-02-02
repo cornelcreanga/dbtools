@@ -1,12 +1,25 @@
 package com.ccreanga.jdbc;
 
+import com.ccreanga.jdbc.model.DbConnection;
+
 import java.io.*;
 import java.math.BigDecimal;
 import java.sql.*;
 
-public class ResultSetOperations {
+public class RsBasicOperations implements RsOperations {
 
-    public static Object readValue(ResultSet rs, int pos, int type) {
+    public void forceDiscardResultSetAndCloseConnection(DbConnection connection, ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                //ignore
+            }
+        }
+        connection.close();
+    }
+
+    public Object readValue(ResultSet rs, int pos, int type) {
         try {
             switch (type) {
                 case Types.BIT: {
@@ -112,70 +125,5 @@ public class ResultSetOperations {
 
     }
 
-    private static void readClob(Clob clob, Writer writer) throws SQLException, IOException {
 
-        char[] buffer = new char[4 * 1024];
-        int count = 0;
-        Reader reader = clob.getCharacterStream();
-        while ((count = reader.read(buffer)) >= 0) {
-            writer.write(buffer, 0, count);
-        }
-    }
-
-    private static void readCharacterStream(Reader reader, Writer writer) throws SQLException, IOException {
-
-        char[] buffer = new char[4 * 1024];
-        int count;
-        if (reader != null) {
-            while ((count = reader.read(buffer)) >= 0) {
-                writer.write(buffer, 0, count);
-            }
-        }
-    }
-
-    private static String readClob(Clob clob) throws SQLException, IOException {
-        StringWriter writer = new StringWriter();
-        readClob(clob, writer);
-        return writer.toString();
-    }
-
-    private static String readCharacterStream(Reader reader) throws SQLException, IOException {
-        StringWriter writer = new StringWriter();
-        readCharacterStream(reader, writer);
-        return writer.toString();
-    }
-
-    private static void readBlob(Blob blob, OutputStream out) throws SQLException, IOException {
-        byte[] buffer = new byte[4 * 1024];
-        int count;
-        InputStream reader = blob.getBinaryStream();
-        while ((count = reader.read(buffer)) >= 0) {
-            out.write(buffer, 0, count);
-        }
-    }
-
-    private static void readBinary(InputStream reader, OutputStream out) throws SQLException, IOException {
-
-        byte[] buffer = new byte[4 * 1024];
-        int count;
-        if (reader != null) {
-            while ((count = reader.read(buffer)) >= 0) {
-                out.write(buffer, 0, count);
-            }
-        }
-    }
-
-    private static byte[] readBinary(InputStream reader) throws SQLException, IOException {
-
-        ByteArrayOutputStream writer = new ByteArrayOutputStream();
-        readBinary(reader, writer);
-        return writer.toByteArray();
-    }
-
-    private static byte[] readBlob(Blob blob) throws SQLException, IOException {
-
-        ByteArrayOutputStream writer = new ByteArrayOutputStream();
-        readBlob(blob, writer);
-        return writer.toByteArray();
-    }
 }

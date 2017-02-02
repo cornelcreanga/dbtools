@@ -27,16 +27,17 @@ public class SqlTablesExport {
     }
 
     public void exportTables(DbConnection connection, Schema schema, String tablePattern, String folderName, boolean override) {
-        Operations operations = OperationsFactory.createOperations(connection.getDialect());
+        DbOperations dbOperations = OperationsFactory.createDbOperations(connection.getDialect());
+        TableOperations tableOperations = OperationsFactory.createTableOperations(connection.getDialect());
         ScriptGenerator generator = ScriptGeneratorFactory.createScriptGenerator(connection.getDialect());
         File folder = createFolder(folderName);
         File operationsFile = createOperationsFile(folder);
 
         List<Table> tables;
         try {
-            tables = operations.getAllTables(connection, schema.getName());
+            tables = dbOperations.getAllTables(connection, schema.getName());
         } catch (DatabaseException d) {
-            System.out.println("Exception occured during metadata read operations, message is " + d.getMessage());
+            System.out.println("Exception occured during metadata read dbOperations, message is " + d.getMessage());
             throw d;
         }
 
@@ -53,9 +54,9 @@ public class SqlTablesExport {
                 System.out.println("\nProcessing table " + t.getName());
                 List<Column> columns;
                 try {
-                    columns = operations.getColumns(connection, schema.getName(), t.getName());
+                    columns = tableOperations.getColumns(connection, schema.getName(), t.getName());
                 } catch (DatabaseException d) {
-                    System.out.println("Exception occured during metadata read operations, message is " + d.getMessage());
+                    System.out.println("Exception occured during metadata read dbOperations, message is " + d.getMessage());
                     throw d;
                 }
 
@@ -67,7 +68,6 @@ public class SqlTablesExport {
                     }
 
                 }
-                TableOperations tableOperations = new TableOperations();
                 List<String> columnNames = columns.stream().map(Column::getName).collect(Collectors.toList());
                 try (CloseableConsumer writerConsumer = CSVWriterFactory.getCSVWriter(connection.getDialect(), dumpFile,t.getName(),columnNames)) {
 

@@ -1,10 +1,13 @@
 package com.ccreanga.jdbc.postgresql;
 
-import com.ccreanga.jdbc.BasicModelOperations;
+import com.ccreanga.jdbc.BasicTableOperations;
 import com.ccreanga.jdbc.RuntimeSqlException;
 import com.ccreanga.jdbc.model.DbConnection;
 
-public class PostgreSqlOperations extends BasicModelOperations {
+import static com.ccreanga.jdbc.JdbcUtil.singleResultQuery;
+
+public class PostgreSqlTableOperations extends BasicTableOperations {
+
     @Override
     public long getTableSize(DbConnection connection, String schema, String table) {
         Object data = singleResultQuery(connection,

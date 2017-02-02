@@ -66,7 +66,7 @@ public class OracleScriptGenerator implements ScriptGenerator {
                 } catch (FileNotFoundException e) {
                     throw new IOExceptionRuntime(e);
                 }
-                sb.append("\""+c.getName()+"\"");
+                sb.append("\""+c.getName()+"\" ");
                 sb.append("LOBFILE( CONSTANT '"+lobFile+"') TERMINATED BY \""+
                         OracleUtil.generateLobBoundary(table.getName()+"###"+c.getName())
                         +"\"");
