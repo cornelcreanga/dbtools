@@ -34,7 +34,7 @@ public class RandomStringUtils {
             }
         } else {
             if (end <= start) {
-                throw new IllegalArgumentException("Parameter end (" + end + ") must be greater than start (" + start + ")");
+                throw new IllegalArgumentException("Parameter endProcessingTable (" + end + ") must be greater than startProcessingTable (" + start + ")");
             }
         }
 

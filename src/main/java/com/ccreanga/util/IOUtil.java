@@ -7,6 +7,13 @@ import java.security.MessageDigest;
 public class IOUtil {
 
 
+    public static void closeSilent(Closeable closeable) {
+        try {
+            if (closeable != null)
+                closeable.close();
+        } catch (IOException e) {/**ignore**/}
+    }
+
     public static void copy(Reader reader,OutputStream writer) throws IOException{
         char[] buffer=new char[8*1024];
         int len;

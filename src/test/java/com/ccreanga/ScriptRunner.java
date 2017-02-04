@@ -151,7 +151,7 @@ public class ScriptRunner {
 
     private void checkForMissingLineTerminator(StringBuffer command) {
         if (command != null && command.toString().trim().length() > 0) {
-            throw new RuntimeSqlException("Line missing end-of-line terminator (" + delimiter + ") => " + command);
+            throw new RuntimeSqlException("Line missing endProcessingTable-of-line terminator (" + delimiter + ") => " + command);
         }
     }
 

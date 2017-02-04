@@ -5,8 +5,11 @@ import com.ccreanga.jdbc.ScriptGenerator;
 import com.ccreanga.jdbc.model.Column;
 import com.ccreanga.jdbc.model.Table;
 import com.ccreanga.usecases.export.jdbc.oracle.OracleUtil;
+import com.ccreanga.util.IOUtil;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.List;
@@ -49,10 +52,22 @@ public class OracleScriptGenerator implements ScriptGenerator {
 
 
 
+    private Writer writer;
+    private String folderName;
 
+    public OracleScriptGenerator(String folderName) {
+        this.folderName = folderName;
+
+        try {
+            writer = new BufferedWriter(new FileWriter(folderName+File.separator + "operations.txt"));
+        } catch (IOException e) {
+            System.out.println("\nException occured, message is " + e.getMessage());
+            throw new IOExceptionRuntime(e);
+        }
+    }
 
     @Override
-    public String generateLoadCommand(Table table, List<Column> columns, String folderName) {
+    public void startProcessingTable(Table table, List<Column> columns) {
         StringBuilder sb =
                 new StringBuilder("LOAD DATA INFILE '" + folderName + File.separator + table.getName() + ".ldr' \"str '{EOL}'\"" +
                         " INTO TABLE \"" + table.getName() + "\" FIELDS TERMINATED BY ',' TRAILING NULLCOLS(\n");
@@ -86,13 +101,23 @@ public class OracleScriptGenerator implements ScriptGenerator {
 
         sb.append(")");
 
-        return sb.toString();
+        try {
+            writer.write(sb.toString());
+        } catch (IOException e) {
+            System.out.println("\nException occured, message is " + e.getMessage());
+            throw new IOExceptionRuntime(e);
+        }
 
     }
 
     @Override
-    public void end(Table table) {
+    public void endProcessingTable(Table table) {
         LobFiles.closeLobForTable(table.getName());
+    }
+
+    @Override
+    public void close() {
+        IOUtil.closeSilent(writer);
     }
 
 

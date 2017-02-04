@@ -29,38 +29,29 @@ public class SqlTablesExport {
     public void exportTables(DbConnection connection, Schema schema, String tablePattern, String folderName, boolean override) {
         DbOperations dbOperations = OperationsFactory.createDbOperations(connection.getDialect());
         TableOperations tableOperations = OperationsFactory.createTableOperations(connection.getDialect());
-        ScriptGenerator generator = ScriptGeneratorFactory.createScriptGenerator(connection.getDialect());
+        ScriptGenerator generator = ScriptGeneratorFactory.createScriptGenerator(connection.getDialect(),folderName);
         File folder = createFolder(folderName);
-        File operationsFile = createOperationsFile(folder);
 
         List<Table> tables;
         try {
             tables = dbOperations.getAllTables(connection, schema.getName());
         } catch (DatabaseException d) {
-            System.out.println("Exception occured during metadata read dbOperations, message is " + d.getMessage());
+            System.out.println("Can't obtain table names, message is " + d.getMessage());
             throw d;
         }
 
-        Writer opWriter = null;
-        try {
-            opWriter = new BufferedWriter(new FileWriter(operationsFile));
-        } catch (IOException e) {
-            System.out.println("\nException occured, message is " + e.getMessage());
-            throw new IOExceptionRuntime(e);
-        }
-
-        for (Table t : tables) {
-            if (Wildcard.matches(t.getName(), tablePattern)) {
-                System.out.println("\nProcessing table " + t.getName());
+        for (Table table : tables) {
+            if (Wildcard.matches(table.getName(), tablePattern)) {
+                System.out.println("\nProcessing table " + table.getName());
                 List<Column> columns;
                 try {
-                    columns = tableOperations.getColumns(connection, schema.getName(), t.getName());
+                    columns = tableOperations.getColumns(connection, schema.getName(), table.getName());
                 } catch (DatabaseException d) {
                     System.out.println("Exception occured during metadata read dbOperations, message is " + d.getMessage());
                     throw d;
                 }
 
-                File dumpFile = new File(folder.getAbsolutePath() + File.separator + t.getName() + ".txt");
+                File dumpFile = new File(folder.getAbsolutePath() + File.separator + table.getName() + ".txt");
                 if (dumpFile.exists()) {
                     if (!override) {
                         System.out.println("skipping table, dump file exists and override is set to false");
@@ -69,17 +60,17 @@ public class SqlTablesExport {
 
                 }
                 List<String> columnNames = columns.stream().map(Column::getName).collect(Collectors.toList());
-                try (CloseableConsumer writerConsumer = CSVWriterFactory.getCSVWriter(connection.getDialect(), dumpFile,t.getName(),columnNames)) {
+                try (CloseableConsumer writerConsumer = CSVWriterFactory.getCSVWriter(connection.getDialect(), dumpFile,table.getName(),columnNames)) {
 
                     Consumer<List<Object>> consumer = anonymizer == null ?
                             writerConsumer :
-                            new AnonymizerConsumer(anonymizer, t.getName(), columnNames).andThen(writerConsumer);
+                            new AnonymizerConsumer(anonymizer, table.getName(), columnNames).andThen(writerConsumer);
 
-                    opWriter.write(generator.generateLoadCommand(t, columns, folderName) + "\n");
+                    generator.startProcessingTable(table, columns);
 
-                    tableOperations.processTableRows(connection, t, columns, consumer);
+                    tableOperations.processTableRows(connection, table, columns, consumer);
 
-                    generator.end(t);
+                    generator.endProcessingTable(table);
                 } catch (DatabaseException e) {
                     System.out.println("\nException occured, message is " + e.getMessage());
                     if (connection.isClosed())
@@ -91,24 +82,10 @@ public class SqlTablesExport {
                     throw new IOExceptionRuntime(e);
                 }
             }
-
         }
-
-
-        try {
-            opWriter.close();
-        } catch (IOException e) {
-        }
+        generator.close();
         System.out.println();
 
-    }
-
-    private File createOperationsFile(File folder) {
-        File operations = new File(folder.getAbsolutePath() + File.separator + "operations.txt");
-        if (operations.exists()) {
-            System.out.println("overriding file:" + operations.getName());
-        }
-        return operations;
     }
 
     private File createFolder(String folderName) {

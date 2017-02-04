@@ -7,8 +7,10 @@ import java.util.List;
 
 public interface ScriptGenerator {
 
-    String generateLoadCommand(Table table, List<Column> columns, String folderName);
+    void startProcessingTable(Table table, List<Column> columns);
 
-    void end(Table table);
+    void endProcessingTable(Table table);
+
+    void close();
 
 }
