@@ -29,7 +29,7 @@ public class SqlTablesExport {
     public void exportTables(DbConnection connection, Schema schema, String tablePattern, String folderName, boolean override) {
         DbOperations dbOperations = OperationsFactory.createDbOperations(connection.getDialect());
         TableOperations tableOperations = OperationsFactory.createTableOperations(connection.getDialect());
-        ScriptGenerator generator = ScriptGeneratorFactory.createScriptGenerator(connection.getDialect(),folderName);
+        ScriptGenerator generator = ScriptGeneratorFactory.createScriptGenerator(connection.getDialect(),folderName,override);
         File folder = createFolder(folderName);
 
         List<Table> tables;

@@ -17,11 +17,11 @@ public class MySqlScriptGenerator implements ScriptGenerator {
     private Writer writer;
     private String folderName;
 
-    public MySqlScriptGenerator(String folderName) {
+    public MySqlScriptGenerator(String folderName,boolean override) {
         this.folderName = folderName;
 
         try {
-            writer = new BufferedWriter(new FileWriter(folderName+File.separator + "operations.txt"));
+            writer = new BufferedWriter(new FileWriter(folderName+File.separator + "operations.txt",!override));
         } catch (IOException e) {
             System.out.println("\nException occured, message is " + e.getMessage());
             throw new IOExceptionRuntime(e);

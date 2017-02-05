@@ -55,11 +55,11 @@ public class OracleScriptGenerator implements ScriptGenerator {
     private Writer writer;
     private String folderName;
 
-    public OracleScriptGenerator(String folderName) {
+    public OracleScriptGenerator(String folderName,boolean override) {
         this.folderName = folderName;
 
         try {
-            writer = new BufferedWriter(new FileWriter(folderName+File.separator + "operations.txt"));
+            writer = new BufferedWriter(new FileWriter(folderName+File.separator + "operations.txt",!override));
         } catch (IOException e) {
             System.out.println("\nException occured, message is " + e.getMessage());
             throw new IOExceptionRuntime(e);
@@ -69,7 +69,7 @@ public class OracleScriptGenerator implements ScriptGenerator {
     @Override
     public void startProcessingTable(Table table, List<Column> columns) {
         StringBuilder sb =
-                new StringBuilder("LOAD DATA INFILE '" + folderName + File.separator + table.getName() + ".ldr' \"str '{EOL}'\"" +
+                new StringBuilder("LOAD DATA INFILE '" + folderName + File.separator + table.getName() + ".ldr' \"str '\\n'\"" +
                         " INTO TABLE \"" + table.getName() + "\" FIELDS TERMINATED BY ',' TRAILING NULLCOLS(\n");
 
         for (Column c : columns) {
@@ -99,7 +99,7 @@ public class OracleScriptGenerator implements ScriptGenerator {
         }
         sb.setLength(sb.length()-2);
 
-        sb.append(")");
+        sb.append(")\n");
 
         try {
             writer.write(sb.toString());
