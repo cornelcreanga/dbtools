@@ -21,6 +21,5 @@ public interface TableOperations {
 
     long getNoOfRows(DbConnection connection, String schema, String table);
 
-
     void processTableRows(DbConnection connection, Table table, List<Column> columns, Consumer<List<Object>> consumer);
 }

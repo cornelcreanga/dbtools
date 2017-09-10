@@ -1,5 +1,7 @@
 package com.ccreanga;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import com.ccreanga.jdbc.DatabaseException;
 import com.ccreanga.jdbc.Dialect;
 import com.ccreanga.jdbc.model.DbConnection;
@@ -7,12 +9,12 @@ import com.ccreanga.jdbc.model.Schema;
 import com.ccreanga.usecases.export.DataAnonymizer;
 import com.ccreanga.usecases.export.cassandra.CassandraExport;
 import com.ccreanga.usecases.export.jdbc.SqlTablesExport;
+import com.ccreanga.usecases.info.SqlTablesInfo;
 import com.ccreanga.usecases.process.SqlTablesAnonymizer;
 import com.ccreanga.util.ConsoleUtil;
 import com.ccreanga.util.FormatUtil;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
-import org.apache.commons.cli.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -34,131 +36,56 @@ public class DBToolsApplication {
      * -an /home/cornel/projects/dbtools/src/main/resources/an.yml -host localhost -password root -schema test -user root -export * /tmp y
      * -an /home/cornel/projects/dbtools/src/main/resources/an.yml -dialect POSTGRESQL -host localhost -password test -schema test -user test -export * /tmp y
      *
-     * @param args
-     * @throws ParseException
      */
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
 
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.setWidth(120);
-        String host = null, user = null, schema = null;
-        char[] password = null;
-
-        Option hostOption = Option.builder(HOST)
-                .valueSeparator(' ')
-                .numberOfArgs(1)
-                .argName("host")
-                .longOpt(HOST)
-                .desc("Host (server:port)")
+        Parameters p = new Parameters();
+        JCommander jCommander = JCommander.newBuilder()
+                .addObject(p)
+                .programName("dbtools")
+                .acceptUnknownOptions(true)
                 .build();
-        Option dialectOption = Option.builder(DIALECT)
-                .valueSeparator(' ')
-                .numberOfArgs(1)
-                .argName("Dialect (MYSQL/POSTGRESQL/ORACLE/CASSANDRA)")
-                .longOpt(DIALECT)
-                .desc("Dialect (MYSQL/POSTGRESQL/ORACLE/CASSANDRA)")
-                .build();
-
-        Option userOption = Option.builder(USER)
-                .valueSeparator(' ')
-                .numberOfArgs(1)
-                .argName("username")
-                .longOpt(USER)
-                .desc("User")
-                .build();
-        Option passwdOption = Option.builder(PASSWORD)
-                .valueSeparator(' ')
-                .numberOfArgs(1)
-                .argName("password")
-                .longOpt(PASSWORD)
-                .desc("Password")
-                .build();
-        Option schemaOption = Option.builder(SCHEMA)
-                .valueSeparator(' ')
-                .numberOfArgs(1)
-                .argName("schema")
-                .longOpt(SCHEMA)
-                .desc("Schema")
-                .build();
-
-        Option exportOption = Option.builder(EXPORT)
-                .valueSeparator(' ')
-                .numberOfArgs(3)
-                .argName("pattern>  <folder> <overwrite")
-                .longOpt(EXPORT)
-                .desc("Exports the table(s) matching the specified pattern. It expects three params: table pattern, destination folder , overwrite(y/n). If anonymization parameters are" +
-                        " specified it will export anonymized values")
-                .build();
-
-        Option anonymizeOption = Option.builder(AN)
-                .valueSeparator(' ')
-                .numberOfArgs(1)
-                .argName("anonymization_file_rules> <force")
-                .longOpt(AN)
-                .desc("Anonymize data using the specified rules. When used with the export parameters it will generate export files, otherwise it will apply the changes directly into the database." +
-                        "If <force> is not configured to yes it will double check if you really want to do that")
-                .build();
-
-        Options options = new Options();
-        options.addOption(hostOption);
-        options.addOption(dialectOption);
-        options.addOption(userOption);
-        options.addOption(passwdOption);
-        options.addOption(schemaOption);
-        options.addOption(exportOption);
-        options.addOption(anonymizeOption);
-
-        DefaultParser parser = new DefaultParser();
-        CommandLine cmd = null;
         try {
-            cmd = parser.parse(options, args, false);
-        } catch (UnrecognizedOptionException e) {
-            exit(e.getMessage(), formatter, options);
+            jCommander.parse(args);
+            if (p.help){
+                jCommander.usage();
+                return;
+            }
+        } catch (ParameterException e) {
+            System.out.println(e.getMessage());
+            System.exit(1);
         }
 
+        String host=p.getHost(), schema=p.getSchema(), user=p.getUser(),export=p.getExport(),anonymize=p.getAnonymize(),info=p.getInfo();
         Dialect dialect = Dialect.MYSQL;
 
-        if (cmd.hasOption(DIALECT)) {
+        if (p.getDialect()!=null) {
             try {
-                dialect = Dialect.valueOf(cmd.getOptionValue(DIALECT));
+                dialect = Dialect.valueOf(p.getDialect());
             } catch (IllegalArgumentException e) {
-                exit("Don't understand dialect " + cmd.getOptionValue(DIALECT), formatter, options);
+                exit("Don't understand dialect " + p.getDialect(),jCommander);
             }
         } else {
             System.out.println("No dialect specified - using by default " + dialect);
         }
 
-        if (!cmd.hasOption(HOST)) {
-            exit("host is mandatory", formatter, options);
-        } else {
-            host = cmd.getOptionValue(HOST);
-        }
-        if (!cmd.hasOption(USER) && dialect.isSQL()) {
-            exit("user is mandatory", formatter, options);
-        } else {
-            user = cmd.getOptionValue(USER);
-        }
 
-        if (!cmd.hasOption(SCHEMA)) {
-            exit("schema is mandatory", formatter, options);
-        } else {
-            schema = cmd.getOptionValue(SCHEMA);
-        }
-        if (cmd.hasOption(USER)) {
-            if (!cmd.hasOption(PASSWORD)) {
+
+            char[] password;
+            if (p.getPassword()==null) {
                 password = ConsoleUtil.readPassword("[%s]", "Password:");
             } else {
-                password = cmd.getOptionValue(PASSWORD).toCharArray();
+                password = p.getPassword().toCharArray();
             }
-        }
+
 
         //anonymize database
-        if (cmd.hasOption(AN) && !cmd.hasOption(EXPORT)) {
+        if (anonymize!=null && export==null) {
             try (
                     DbConnection readConnection = connection(dialect, host, schema, user, password, true);
                     DbConnection writeConnection = connection(dialect, host, schema, user, password, false);
             ) {
-                anonymizeDatabase(readConnection, writeConnection, schema, new DataAnonymizer(cmd.getOptionValue(AN)));
+                anonymizeDatabase(readConnection, writeConnection, schema, new DataAnonymizer(anonymize));
             } catch (Exception e) {
                 System.out.println("An exception occured during the anonymization process, the full stracktrace is");
                 e.printStackTrace();//todo
@@ -167,24 +94,38 @@ public class DBToolsApplication {
         }
 
         //generate export files and optionally anonymize them
-        if (cmd.hasOption(EXPORT)) {
+        if (export!=null) {
             DataAnonymizer dataAnonymizer = null;
-            if (cmd.hasOption(AN)) {
-                dataAnonymizer = new DataAnonymizer(cmd.getOptionValue(AN));
+            if (anonymize!=null) {
+                dataAnonymizer = new DataAnonymizer(anonymize);
             }
-            String[] export = cmd.getOptionValues(EXPORT);
+            String[] exportParams = p.getExport().split(" ");
 
             if (dialect.isSQL()) {
                 try (DbConnection connection = connection(dialect, host, schema, user, password, true)) {
-                    exportSQLDatabase(connection, schema, export[0], export[1], booleanParam(export[2]), dataAnonymizer);
+                    exportSQLDatabase(connection, schema, exportParams[0], exportParams[1], booleanParam(exportParams[2]), dataAnonymizer);
                 } catch (DatabaseException | IOExceptionRuntime e) {
                     System.out.println("Finished execution due to unexpected error.");
                 }
             } else if (dialect==Dialect.CASSANDRA) {
+                System.out.println("cassandra support is not yet properly implemented");
+                System.exit(1);
                 try (Session session = session(host, schema, user, password)) {
-                    exportCassandra(session, schema, export[0], export[1], booleanParam(export[2]), dataAnonymizer);
+                    exportCassandra(session, schema, exportParams[0], exportParams[1], booleanParam(exportParams[2]), dataAnonymizer);
                 }
             }
+        }
+
+        if (info!=null){
+            if (dialect.isSQL()){
+                try (DbConnection connection = connection(dialect, host, schema, user, password, true)) {
+                    infoSQLDatabase(connection, schema, info);
+                } catch (DatabaseException | IOExceptionRuntime e) {
+                    System.out.println("Finished execution due to unexpected error.");
+                }
+
+            }
+
         }
 
     }
@@ -212,6 +153,15 @@ public class DBToolsApplication {
         sqlTablesExport.exportTables(connection, new Schema(schema), pattern, folder, overwrite);
         long t2 = System.currentTimeMillis();
         System.out.println("Export finished in " + FormatUtil.formatMillis(t2 - t1) + " seconds.");
+    }
+
+    private static void infoSQLDatabase(DbConnection connection, String schema, String pattern) {
+        SqlTablesInfo info = new SqlTablesInfo();
+        long t1 = System.currentTimeMillis();
+        info.info(connection, new Schema(schema), pattern);
+        long t2 = System.currentTimeMillis();
+        System.out.println("Export finished in " + FormatUtil.formatMillis(t2 - t1) + " seconds.");
+
     }
 
     private static void exportCassandra(Session session, String keyspace, String pattern, String folder, boolean overwrite, DataAnonymizer dataAnonymizer) {
@@ -249,6 +199,25 @@ public class DBToolsApplication {
                 Class.forName("org.postgresql.Driver");
                 connection = DriverManager.getConnection(
                         String.format("jdbc:postgresql://%s/%s?user=%s&password=%s", host, schema, user, new String(password)));
+            } else if (dialect == Dialect.SQL_SERVER) {
+                Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+
+                String connectionString =
+                        "jdbc:sqlserver://your_servername.database.windows.net:1433;"
+                                + "database=AdventureWorks;"
+                                + "user=your_username@your_servername;"
+                                + "password=your_password;"
+                                + "encrypt=true;"
+                                + "trustServerCertificate=false;"
+                                + "hostNameInCertificate=*.database.windows.net;"
+                                + "loginTimeout=30;";
+
+
+                connection = DriverManager.getConnection(
+                        String.format("jdbc:sqlserver://%s;database=%s", host, schema),
+                        user,
+                        new String(password));
+
             } else {
                 throw new IllegalArgumentException("unknown dialect:" + dialect);
             }
@@ -267,9 +236,9 @@ public class DBToolsApplication {
         }
     }
 
-    private static void exit(String message, HelpFormatter formatter, Options options) {
+    private static void exit(String message,JCommander jCommander) {
         System.out.println(message);
-        formatter.printHelp("dbtools", options);
+        jCommander.usage();
         System.exit(1);
     }
 

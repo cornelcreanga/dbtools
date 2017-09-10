@@ -7,6 +7,8 @@ import com.ccreanga.jdbc.oracle.OracleDbOperations;
 import com.ccreanga.jdbc.oracle.OracleTableOperations;
 import com.ccreanga.jdbc.postgresql.PostgreSqlDbOperations;
 import com.ccreanga.jdbc.postgresql.PostgreSqlTableOperations;
+import com.ccreanga.jdbc.sqlserver.SqlServerDbOperations;
+import com.ccreanga.jdbc.sqlserver.SqlServerTableOperations;
 
 public class OperationsFactory {
 
@@ -20,6 +22,9 @@ public class OperationsFactory {
             return new PostgreSqlDbOperations();
         if (dialect == Dialect.ORACLE)
             return new OracleDbOperations();
+        if (dialect == Dialect.SQL_SERVER)
+            return new SqlServerDbOperations();
+
         throw new IllegalArgumentException("unknown dialect " + dialect);
     }
 
@@ -30,6 +35,8 @@ public class OperationsFactory {
             return new PostgreSqlTableOperations();
         if (dialect == Dialect.ORACLE)
             return new OracleTableOperations();
+        if (dialect == Dialect.SQL_SERVER)
+            return new SqlServerTableOperations();
         throw new IllegalArgumentException("unknown dialect " + dialect);
     }
 
@@ -40,6 +47,8 @@ public class OperationsFactory {
         if (dialect == Dialect.POSTGRESQL)
             return new RsBasicOperations();
         if (dialect == Dialect.ORACLE)
+            return new RsBasicOperations();
+        if (dialect == Dialect.SQL_SERVER)
             return new RsBasicOperations();
         throw new IllegalArgumentException("unknown dialect " + dialect);
     }

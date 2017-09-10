@@ -11,8 +11,8 @@ public class ScriptGeneratorFactory {
             return new MySqlScriptGenerator(folderName,override);
         if (dialect == Dialect.POSTGRESQL)
             return new PostgreSqlScriptGenerator(folderName,override);
-        if (dialect == Dialect.ORACLE)
-            return new OracleScriptGenerator(folderName,override);
+//        if (dialect == Dialect.ORACLE)
+//            return new OracleScriptGenerator(folderName,override);
         throw new IllegalArgumentException("unknown dialect " + dialect);
     }
 
