@@ -24,14 +24,14 @@
         <lombok.version>1.16.12</lombok.version>
         <commons-cli.version>1.3.1</commons-cli.version>
         <commons-beanutils.version>1.9.3</commons-beanutils.version>
-        <snakeyaml.version>1.17</snakeyaml.version>
-        <commons-csv.version>1.4</commons-csv.version>
+        <snakeyaml.version>1.24</snakeyaml.version>
+        <commons-csv.version>1.6</commons-csv.version>
         <jcommander.version>1.71</jcommander.version>
 
-        <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
-        <maven-surefire-plugin.version>2.19</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>2.19</maven-failsafe-plugin.version>
+        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
+        <maven-assembly-plugin.version>3.1.1</maven-assembly-plugin.version>
+        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>2.22.1</maven-failsafe-plugin.version>
 
         <skipTests>true</skipTests>
         <skipITs>${skipTests}</skipITs>
